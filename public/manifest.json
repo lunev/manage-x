@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome Extension Manager",
+  "description": "Manage your chrome extension in one place",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alexander Lunev",
+    "email": "lunevdev@gmail.com"
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "logo.png",
+    "default_title": "Chrome Extension Manager"
+  },
+  "icons": {
+    "16": "logo.png",
+    "32": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
+  "permissions": ["storage", "management"]
+}
