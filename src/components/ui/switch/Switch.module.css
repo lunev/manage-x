@@ -1,0 +1,43 @@
+.container {
+  @apply inline-block;
+}
+
+.switch {
+  @apply inline-flex items-center gap-2 cursor-pointer mb-1;
+}
+
+.title {
+  @apply font-bold text-sm;
+}
+
+.label {
+  @apply relative inline-flex items-center cursor-pointer;
+}
+
+.checkbox {
+  @apply sr-only;
+}
+
+.checkbox + .bar {
+  @apply focus:outline-none focus:ring-2 focus:ring-green-400;
+}
+
+.checkbox:checked + .bar {
+  @apply bg-green-500 dark:bg-green-700 border-none;
+}
+
+.bar {
+  @apply w-8 h-4 bg-white border border-gray-300 dark:border-none rounded-full dark:bg-slate-600;
+}
+
+.dot {
+  @apply w-3 h-3 absolute top-[2px] left-[2px] bg-gray-400 rounded-full transition-all;
+}
+
+.checkbox:checked + .bar .dot {
+  @apply translate-x-4 bg-white;
+}
+
+.hint {
+  @apply text-xs opacity-80;
+}

@@ -1,0 +1,11 @@
+.header {
+  @apply px-3 py-2 flex items-center gap-1 text-xs border-b dark:border-gray-700;
+}
+
+.logo {
+  @apply flex items-center flex-1 gap-2;
+}
+
+.headline {
+  @apply text-sm font-bold cursor-pointer;
+}
