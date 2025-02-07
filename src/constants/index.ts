@@ -1,4 +1,2 @@
 export const APP_NAME = 'ManageX';
-export const STORAGE_KEYS = {
-  UPDATES_AVAILABLE: 'Updates available',
-};
+export const STORAGE_KEY_ROOT = 'persist:syncStorage';

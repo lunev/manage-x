@@ -1,5 +1,8 @@
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
+import { ArchiveIcon } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 import {
   DotsVerticalIcon,
   DrawingPinFilledIcon,
@@ -15,16 +18,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { ArchiveIcon } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import ExportButton from '@/components/ExportButton';
+import ExportButton from './ExportButton';
 import Logo from '@/components/ui/logo';
 
 const Header: React.FC = () => {
@@ -65,7 +65,7 @@ const Header: React.FC = () => {
               size="sm"
               aria-label="Show Groups"
               data-state={showGroups.active ? 'on' : 'off'}
-              onPressedChange={() => dispatch(togglePreferences('showGroups'))}
+              onClick={() => dispatch(togglePreferences('showGroups'))}
             >
               <ArchiveIcon />
             </Toggle>
