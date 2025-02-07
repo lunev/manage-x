@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Chrome Extension Manager",
-  "description": "Manage your chrome extension in one place",
+  "name": "ManageX",
+  "description": "Effortlessly manage, group, and export your extensions",
   "version": "1.0.0",
   "author": {
     "name": "Alexander Lunev",
@@ -9,18 +9,21 @@
   },
   "action": {
     "default_popup": "index.html",
-    "default_icon": "logo.png",
-    "default_title": "Chrome Extension Manager"
+    "default_icon": "/icons/logo.png",
+    "default_title": "ManageX"
+  },
+  "side_panel": {
+    "default_path": "index.html"
   },
   "icons": {
-    "16": "logo.png",
-    "32": "logo.png",
-    "48": "logo.png",
-    "128": "logo.png"
+    "16": "/icons/logo16.png",
+    "32": "/icons/logo32.png",
+    "48": "/icons/logo48.png",
+    "128": "/icons/logo128.png"
   },
   "background": {
     "service_worker": "service-worker.js",
     "type": "module"
   },
-  "permissions": ["storage", "management"]
+  "permissions": ["storage", "management", "sidePanel", "tabs"]
 }

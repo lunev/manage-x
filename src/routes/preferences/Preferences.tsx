@@ -1,27 +1,48 @@
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import BaseSwitch from '@/components/ui/switch/BaseSwitch';
-import { PreferenceProperties } from '@/features/preferences/preferenceProperties';
-import { toggle } from '@/features/preferences/preferences-slice';
+import AppBreadcrumb from '@/components/layout/breadcrumb/AppBreadcrumb';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import {
+  PreferenceKey,
+  togglePreferences,
+} from '@/features/preferences/preferences-slice';
+import { ArrowLeftIcon } from '@radix-ui/react-icons';
+import { useNavigate } from 'react-router-dom';
 
 const Preferences: React.FC = () => {
   const preferences = useAppSelector((state) => state.preferences);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   return (
-    <div data-testid="preferences">
-      <h2 className="sr-only">Preferences</h2>
-      {preferences &&
-        Object.values(PreferenceProperties).map((property) => (
-          <div key={property} className="mb-2">
-            <BaseSwitch
-              label={property.charAt(0).toUpperCase() + property.slice(1)}
-              checked={preferences[property]}
-              onChange={() => dispatch(toggle({ property }))}
-              hint="This is a simple hint"
+    <>
+      <AppBreadcrumb currentPath="Groups" />
+
+      {Object.entries(preferences).map(([id, property]) => (
+        <div key={id} className="mb-2">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id={id}
+              checked={property.active}
+              onCheckedChange={() =>
+                dispatch(togglePreferences(id as PreferenceKey))
+              }
             />
+            <Label htmlFor={id}>{property.label}</Label>
           </div>
-        ))}
-    </div>
+        </div>
+      ))}
+
+      <Button
+        className="mt-3"
+        variant="secondary"
+        size="sm"
+        onClick={() => navigate('/')}
+      >
+        <ArrowLeftIcon /> Back to Dashboard
+      </Button>
+    </>
   );
 };
 
