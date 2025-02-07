@@ -29,7 +29,7 @@ const Logo: React.FC<{ width?: number; height?: number }> = ({
           x2="100"
           y2="50"
           stroke="#FFFDE5"
-          stroke-width="4"
+          strokeWidth="4"
         />
 
         {/* Vertical line */}
@@ -39,7 +39,7 @@ const Logo: React.FC<{ width?: number; height?: number }> = ({
           x2="50"
           y2="100"
           stroke="#FFFDE5"
-          stroke-width="4"
+          strokeWidth="4"
         />
 
         {/* Center circle */}
@@ -49,7 +49,7 @@ const Logo: React.FC<{ width?: number; height?: number }> = ({
           r="12"
           fill="#00213F"
           stroke="#FFFDE5"
-          stroke-width="4"
+          strokeWidth="4"
         />
       </svg>
     </>

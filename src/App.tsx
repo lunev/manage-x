@@ -1,7 +1,6 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import RootLayout from '@/routes/root/Root';
 import Dashboard from '@/routes/dashboard/Dashboard';
-import Preferences from '@/routes/preferences/Preferences';
 import Details from '@/routes/details/Details';
 import Groups from '@/routes/groups/Groups';
 
@@ -13,7 +12,6 @@ function App() {
       <Routes>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="/preferences" element={<Preferences />} />
           <Route path="/details/:id" element={<Details />} />
           <Route path="groups" element={<Groups />} />
         </Route>

@@ -26,14 +26,15 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { CheckIcon, MoveIcon } from 'lucide-react';
 
-const ExtensionItem: React.FC<{ ext: Extension; onToggle: () => void }> = ({
-  ext,
-  onToggle,
-}) => {
+const ExtensionItem: React.FC<{
+  extension: Extension;
+  onToggle: () => void;
+}> = ({ extension, onToggle }) => {
   const navigate = useNavigate();
   const groups = useAppSelector((state) => state.groups.entities);
   const dispatch = useAppDispatch();
   const { toast } = useToast();
+  const { id, name, icons, enabled, shortName } = extension;
 
   const handleMoveToGroup = (groupId: string, extensionId: string) => {
     const group = groups.find((group) => group.id === groupId);
@@ -55,7 +56,7 @@ const ExtensionItem: React.FC<{ ext: Extension; onToggle: () => void }> = ({
         description: (
           <span
             dangerouslySetInnerHTML={{
-              __html: `<strong>${ext.name}</strong> has been moved to <strong>${name}</strong>`,
+              __html: `<strong>${name}</strong> has been moved to <strong>${name}</strong>`,
             }}
           />
         ),
@@ -66,24 +67,24 @@ const ExtensionItem: React.FC<{ ext: Extension; onToggle: () => void }> = ({
   };
 
   return (
-    <div key={ext.id} className="flex gap-2 items-center">
-      {ext.icons && ext.icons?.length > 0 && (
+    <div key={id} className="flex gap-2 items-center">
+      {icons && icons?.length > 0 && (
         <Avatar
-          className={`${!ext.enabled ? 'grayscale' : ''} w-4 h-4 text-xs text-white`}
+          className={`${!enabled ? 'grayscale' : ''} w-4 h-4 text-xs text-white`}
         >
-          <AvatarImage src={ext.icons.at(-1)?.url} alt={ext.name} />
+          <AvatarImage src={icons.at(-1)?.url} alt={name} />
           <AvatarFallback className="bg-green-500">
-            {ext.name.slice(0, 2).toUpperCase()}
+            {name.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       )}
       <div
         className="max-w-full flex-1 pr-2 text-ellipsis text-nowrap overflow-hidden"
-        title={ext.shortName}
+        title={shortName}
       >
-        {ext.name}
+        {name}
       </div>
-      <Switch checked={ext.enabled} onCheckedChange={onToggle} />
+      <Switch checked={enabled} onCheckedChange={onToggle} />
       <DropdownMenu>
         <DropdownMenuTrigger>
           <DotsVerticalIcon />
@@ -91,9 +92,9 @@ const ExtensionItem: React.FC<{ ext: Extension; onToggle: () => void }> = ({
         <DropdownMenuContent className="mr-4">
           <DropdownMenuLabel
             className="max-w-40 text-ellipsis overflow-hidden text-nowrap"
-            title={ext.name}
+            title={name}
           >
-            {ext.name}
+            {name}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuSub>
@@ -108,12 +109,12 @@ const ExtensionItem: React.FC<{ ext: Extension; onToggle: () => void }> = ({
                   groups.map((group) => (
                     <DropdownMenuItem
                       key={group.id}
-                      onClick={() => handleMoveToGroup(group.id, ext.id)}
+                      onClick={() => handleMoveToGroup(group.id, id)}
                       className="flex gap-2 items-center"
                     >
                       <span className="flex-1">{group.name}</span>
                       <span className="w-4">
-                        {group.extensions.includes(ext.id) && (
+                        {group.extensions.includes(id) && (
                           <CheckIcon width="16" />
                         )}
                       </span>
@@ -126,12 +127,12 @@ const ExtensionItem: React.FC<{ ext: Extension; onToggle: () => void }> = ({
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
-          <DropdownMenuItem onClick={() => navigate(`/details/${ext.id}`)}>
+          <DropdownMenuItem onClick={() => navigate(`/details/${id}`)}>
             <InfoCircledIcon /> Details
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
-              chrome.management.uninstall(ext.id, {}, () => {
+              chrome.management.uninstall(id, {}, () => {
                 if (chrome.runtime.lastError) {
                   return;
                 }

@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import AppBreadcrumb from '@/components/layout/breadcrumb/AppBreadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,8 +9,6 @@ import { GearIcon, LockClosedIcon } from '@radix-ui/react-icons';
 import { ProgressIndicator } from '@radix-ui/react-progress';
 import { Switch } from '@/components/ui/switch';
 import { ExternalLinkIcon, TrashIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { Label } from '@/components/ui/label';
 
 const Details: React.FC = () => {
