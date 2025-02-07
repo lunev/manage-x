@@ -1,17 +1,30 @@
-chrome.management.getAll(function (extensions) {
-  extensions.forEach(function (extension) {
-    console.log('Name: ' + extension.name);
-    console.log('ID: ' + extension.id);
-    console.log('Description: ' + extension.description);
-    console.log('Version: ' + extension.version);
-    console.log('Enabled: ' + extension.enabled);
-    console.log('Install Type: ' + extension.installType);
-    console.log('Permissions: ' + extension.permissions.join(', '));
-    if (extension.icons && extension.icons.length > 0) {
-      console.log('Icon URL: ' + extension.icons[0].url);
-    } else {
-      console.log('Icon: No icon available');
-    }
-    console.log('==========================================');
-  });
+chrome.storage.sync.get('persist:syncStorage', (data) => {
+  if (chrome.runtime.lastError) {
+    return;
+  }
+
+  if (data['persist:syncStorage']) {
+    const parsedStorage = JSON.parse(data['persist:syncStorage']);
+    const { preferences } = parsedStorage;
+
+    chrome.sidePanel
+      .setPanelBehavior({
+        openPanelOnActionClick: JSON.parse(preferences).sidePanel.active,
+      })
+      .catch((error) => console.error(error));
+  }
+});
+
+chrome.storage.onChanged.addListener((changes) => {
+  const parsedStorage = changes['persist:syncStorage'].newValue;
+
+  if (parsedStorage) {
+    const { preferences } = JSON.parse(parsedStorage);
+
+    chrome.sidePanel
+      .setPanelBehavior({
+        openPanelOnActionClick: JSON.parse(preferences).sidePanel.active,
+      })
+      .catch((error) => console.error(error));
+  }
 });

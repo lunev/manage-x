@@ -1,9 +1,6 @@
-export type Note = {
-  id: string;
-  title: string;
+export type Preferences = {
+  SidePanel: boolean;
+  ShowGroups: boolean;
 };
 
-export type Preferences = {
-  active: boolean;
-  muted: boolean;
-};
+export type Extension = chrome.management.ExtensionInfo;

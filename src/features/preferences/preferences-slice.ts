@@ -1,26 +1,42 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Preferences } from '@/types/';
-import { PreferenceProperties } from './preferenceProperties';
 
-const initialState: Preferences = {
-  [PreferenceProperties.Active]: true,
-  [PreferenceProperties.Muted]: false,
-};
+export type PreferenceKey = 'sidePanel' | 'showGroups' | 'showSearch';
 
-type ToggleActionPayload = {
-  property: PreferenceProperties;
-};
+const initialState: Record<PreferenceKey, { label: string; active: boolean }> =
+  {
+    showGroups: {
+      label: 'Show Groups',
+      active: true,
+    },
+    showSearch: {
+      label: 'Show Search',
+      active: true,
+    },
+    sidePanel: {
+      label: 'Show as Side Panel',
+      active: false,
+    },
+  };
 
 const preferencesSlice = createSlice({
   name: 'preferences',
   initialState,
   reducers: {
-    toggle(state, action: PayloadAction<ToggleActionPayload>) {
-      const { property } = action.payload;
-      state[property] = !state[property];
+    togglePreferences(state, action: PayloadAction<PreferenceKey>) {
+      const key = action.payload;
+      if (state[key]) {
+        state[key].active = !state[key].active;
+      }
+    },
+    disablePreferences(state, action: PayloadAction<PreferenceKey>) {
+      const key = action.payload;
+      if (state[key]) {
+        state[key].active = false;
+      }
     },
   },
 });
 
-export const { toggle } = preferencesSlice.actions;
+export const { togglePreferences, disablePreferences } =
+  preferencesSlice.actions;
 export default preferencesSlice.reducer;

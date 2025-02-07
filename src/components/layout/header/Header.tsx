@@ -1,26 +1,124 @@
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
-import logo from '@/assets/logo.png';
-import SettingsIcon from '@/components/ui/icons/SettingsIcon';
-import styles from './Header.module.css';
+import logo from '@/assets/logo48.png';
+import {
+  DotsVerticalIcon,
+  DrawingPinFilledIcon,
+  DrawingPinIcon,
+  MagnifyingGlassIcon,
+} from '@radix-ui/react-icons';
+import { Toggle } from '@/components/ui/toggle';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { togglePreferences } from '@/features/preferences/preferences-slice';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { ArchiveIcon } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import ExportButton from '@/components/ExportButton';
 
 const Header: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { showGroups, showSearch, sidePanel } = useAppSelector(
+    (state) => state.preferences,
+  );
+
   return (
-    <header className={styles.header}>
-      <div className={styles.logo}>
+    <header className="px-4 py-3 flex items-center gap-1 text-xs border-b dark:border-gray-700">
+      <div className="flex items-center flex-1 gap-2">
         <img src={logo} width="20" height="20" alt={`${APP_NAME} logo`} />
-        <Link to="/" className={styles.headline}>
+        <Link to="/" className="text-sm font-bold cursor-pointer">
           {APP_NAME}
         </Link>
       </div>
-      <Link
-        to="/preferences/"
-        data-testid="preferences"
-        title="Preferences"
-        aria-label="Preferences"
-      >
-        <SettingsIcon />
-      </Link>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Toggle
+              size="sm"
+              aria-label="Preferences"
+              data-state={showSearch.active ? 'on' : 'off'}
+              onClick={() => dispatch(togglePreferences('showSearch'))}
+            >
+              <MagnifyingGlassIcon />
+            </Toggle>
+          </TooltipTrigger>
+          <TooltipContent>
+            {showSearch.active ? 'Hide' : 'Show'} Search
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Toggle
+              size="sm"
+              aria-label="Show Groups"
+              data-state={showGroups.active ? 'on' : 'off'}
+              onPressedChange={() => dispatch(togglePreferences('showGroups'))}
+            >
+              <ArchiveIcon />
+            </Toggle>
+          </TooltipTrigger>
+          <TooltipContent>
+            {showGroups.active ? 'Hide' : 'Show'} Groups
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Toggle
+              size="sm"
+              aria-label="Pin as Panel"
+              data-state={sidePanel.active ? 'on' : 'off'}
+              onPressedChange={() => {
+                dispatch(togglePreferences('sidePanel'));
+                toast({
+                  description: (
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: `<strong>Note:</strong> Reopen the extension <br /> to apply the new pinning setting.`,
+                      }}
+                    />
+                  ),
+                  className: cn('top-2 right-2 flex fixed max-w-[300px]'),
+                  duration: 3000,
+                });
+              }}
+            >
+              {sidePanel.active ? <DrawingPinFilledIcon /> : <DrawingPinIcon />}
+            </Toggle>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{sidePanel.active ? 'Unpin' : 'Pin'} Side Panel</p>
+            <p className="italic">
+              <strong>Note:</strong> Reopen the extension <br /> to apply the
+              new pinning setting.
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <DotsVerticalIcon />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="mr-4">
+          <DropdownMenuItem>
+            <ExportButton />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </header>
   );
 };
