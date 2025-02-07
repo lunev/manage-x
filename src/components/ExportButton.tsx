@@ -44,7 +44,19 @@ const ExportButton: React.FC = () => {
         </style>
       </head>
       <body>
-        <h2>Extensions</h2>
+        <h1 style="margin-bottom: 20px;display: flex; align-items: center; gap: 10px;">
+          <svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50" fill="#FFFDE5"></circle>
+            <path d="M 50,0 A 50 50 0 0 1 100,50 L 50,50 Z" fill="#00afb6"></path>
+            <path d="M 100,50 A 50 50 0 0 1 50,100 L 50,50 Z" fill="#002c62"></path>
+            <path d="M 50,100 A 50 50 0 0 1 0,50 L 50,50 Z" fill="#e70020"></path>
+            <line x1="0" y1="50" x2="100" y2="50" stroke="#FFFDE5" stroke-width="4"></line>
+            <line x1="50" y1="0" x2="50" y2="100" stroke="#FFFDE5" stroke-width="4"></line>
+            <circle cx="50" cy="50" r="12" fill="#00213F" stroke="#FFFDE5" stroke-width="4"></circle>
+          </svg> 
+          <strong>ManageX</strong>
+          <span>Chrome Extension</span>
+        </h1>
         <table>
           <thead>
             <tr><th>Name</th><th>Description</th><th>Homepage</th></tr>
@@ -58,7 +70,6 @@ const ExportButton: React.FC = () => {
               .join('')}
           </tbody>
         </table>
-        <p>Powered By <strong>${APP_NAME}</strong> Chrome Extension</p>
       </body>
       </html>
     `;

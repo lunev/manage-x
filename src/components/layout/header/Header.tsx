@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
-import logo from '@/assets/logo48.png';
 import {
   DotsVerticalIcon,
   DrawingPinFilledIcon,
@@ -26,6 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import ExportButton from '@/components/ExportButton';
+import Logo from '@/components/ui/logo';
 
 const Header: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
   return (
     <header className="px-4 py-3 flex items-center gap-1 text-xs border-b dark:border-gray-700">
       <div className="flex items-center flex-1 gap-2">
-        <img src={logo} width="20" height="20" alt={`${APP_NAME} logo`} />
+        <Logo width={18} height={18} />
         <Link to="/" className="text-sm font-bold cursor-pointer">
           {APP_NAME}
         </Link>
