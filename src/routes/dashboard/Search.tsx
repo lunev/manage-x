@@ -33,7 +33,7 @@ const Search: React.FC<{ onSearch: (query: string) => void }> = ({
             />
             <Cross2Icon
               className={`absolute top-3 right-3 cursor-pointer transition-all duration-300 ${
-                inputValue ? 'opacity-50' : 'opacity-0'
+                inputValue ? 'opacity-50' : 'opacity-0 pointer-events-none'
               }`}
               onClick={() => handleClear()}
             />
