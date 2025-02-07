@@ -88,7 +88,9 @@ const Groups: React.FC = () => {
                     />
                     <Cross2Icon
                       className={`absolute top-3 right-3 cursor-pointer transition-all duration-300 ${
-                        editedGroupName ? 'opacity-50' : 'opacity-0'
+                        editedGroupName
+                          ? 'opacity-50'
+                          : 'opacity-0 pointer-events-none'
                       }`}
                       onClick={() => setEditedGroupName('')}
                     />
@@ -140,13 +142,14 @@ const Groups: React.FC = () => {
             autoFocus={isAdd}
             required
           />
+          <Cross2Icon
+            className={`absolute top-3 right-3 cursor-pointer transition-all duration-300 ${
+              inputValue ? 'opacity-50' : 'opacity-0 pointer-events-none'
+            }`}
+            onClick={() => setInputValue('')}
+          />
         </div>
-        <Cross2Icon
-          className={`absolute top-3 right-3 cursor-pointer transition-all duration-300 ${
-            inputValue ? 'opacity-50' : 'opacity-0'
-          }`}
-          onClick={() => setInputValue('')}
-        />
+
         <Button>Add</Button>
       </form>
     </>

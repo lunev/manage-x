@@ -36,8 +36,10 @@ const Header: React.FC = () => {
   return (
     <header className="px-4 py-3 flex items-center gap-1 text-xs border-b dark:border-gray-700">
       <div className="flex items-center flex-1 gap-2">
-        <Logo width={18} height={18} />
-        <Link to="/" className="text-sm font-bold cursor-pointer">
+        <span className="animate-rotateX">
+          <Logo width={18} height={18} />
+        </span>
+        <Link to="/" className="text-sm cursor-pointer">
           {APP_NAME}
         </Link>
       </div>
@@ -82,7 +84,7 @@ const Header: React.FC = () => {
               size="sm"
               aria-label="Pin as Panel"
               data-state={sidePanel.active ? 'on' : 'off'}
-              onPressedChange={() => {
+              onClick={() => {
                 dispatch(togglePreferences('sidePanel'));
                 toast({
                   description: (
