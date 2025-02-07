@@ -30,7 +30,7 @@ const ExportButton: React.FC = () => {
 
   const exportToHTML = (
     data: ExportedExtension[],
-    filename = 'extensions.html',
+    filename = `${APP_NAME}-extensions.html`,
   ) => {
     const htmlContent = `
       <!DOCTYPE html>
@@ -58,7 +58,7 @@ const ExportButton: React.FC = () => {
               .join('')}
           </tbody>
         </table>
-        <p>Powered By <strong>${APP_NAME}</strong></p>
+        <p>Powered By <strong>${APP_NAME}</strong> Chrome Extension</p>
       </body>
       </html>
     `;
