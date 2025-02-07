@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Extension } from '@/types';
 import { Input } from '@/components/ui/input';
-import ExtensionItem from '@/components/layout/extension/ExtensionItem';
+import ExtensionItem from './ExtensionItem';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
