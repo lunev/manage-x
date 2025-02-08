@@ -34,11 +34,9 @@ const Header: React.FC = () => {
   );
 
   return (
-    <header className="px-4 py-3 flex items-center gap-1 text-xs border-b dark:border-gray-700">
+    <header className="px-4 py-3 flex items-center gap-1 text-xs border-b dark:border-gray-700 fade-in">
       <div className="flex items-center flex-1 gap-2">
-        <span className="animate-rotateX">
-          <Logo width={18} height={18} />
-        </span>
+        <Logo width={18} height={18} />
         <Link to="/" className="text-sm cursor-pointer">
           {APP_NAME}
         </Link>
