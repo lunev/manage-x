@@ -4,15 +4,6 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
-      keyframes: {
-        rotateX: {
-          '0%': { transform: 'rotate(0deg)', opacity: '0' },
-          '100%': { transform: 'rotate(2160deg)', opacity: '1' },
-        },
-      },
-      animation: {
-        rotateX: 'rotateX 0.7s ease-out',
-      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
