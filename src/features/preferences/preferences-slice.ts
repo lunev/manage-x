@@ -1,6 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type PreferenceKey = 'sidePanel' | 'showGroups' | 'showSearch';
+export type PreferenceKey =
+  | 'sidePanel'
+  | 'showGroups'
+  | 'showSearch'
+  | 'showPermissions'
+  | 'showUrlRules';
 
 const initialState: Record<PreferenceKey, { label: string; active: boolean }> =
   {
@@ -11,6 +16,14 @@ const initialState: Record<PreferenceKey, { label: string; active: boolean }> =
     showSearch: {
       label: 'Show Search',
       active: true,
+    },
+    showPermissions: {
+      label: 'Show Permissions',
+      active: false,
+    },
+    showUrlRules: {
+      label: 'Show URL Rules',
+      active: false,
     },
     sidePanel: {
       label: 'Show as Side Panel',

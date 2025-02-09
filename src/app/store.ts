@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import preferencesSlice from '@/features/preferences/preferences-slice';
 import groupsSlice from '@/features/groups/groups-slice';
+import rulesSlice from '@/features/url-rules/url-rules-slice';
 import {
   persistStore,
   persistReducer,
@@ -21,6 +22,7 @@ const syncStorageConfig = {
 const rootReducer = combineReducers({
   preferences: preferencesSlice,
   groups: groupsSlice,
+  rules: rulesSlice,
 });
 
 const persistedReducer = persistReducer(syncStorageConfig, rootReducer);
