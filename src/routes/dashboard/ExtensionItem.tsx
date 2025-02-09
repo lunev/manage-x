@@ -82,7 +82,12 @@ const ExtensionItem: React.FC<{
         className="max-w-full flex-1 pr-2 text-ellipsis text-nowrap overflow-hidden"
         title={shortName}
       >
-        {name}
+        <span
+          className="cursor-pointer"
+          onClick={() => navigate(`/details/${id}`)}
+        >
+          {name}
+        </span>
       </div>
       <Switch checked={enabled} onCheckedChange={onToggle} />
       <DropdownMenu>
