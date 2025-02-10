@@ -57,7 +57,7 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                {showUrlRules.active ? 'Hide' : 'Show'} details
+                {showUrlRules.active ? 'Hide' : 'Show'} URL Rules
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
