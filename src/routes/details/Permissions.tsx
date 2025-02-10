@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/tooltip';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { togglePreferences } from '@/features/preferences/preferences-slice';
+import chromePermissions from '@/lib/chromePermissions.json';
+const permissions: Record<string, string> = chromePermissions;
 
 const Permissions: React.FC<{ extension: Extension }> = ({ extension }) => {
   const [permissionProgress, setPermissionProgress] = useState(0);
@@ -58,15 +60,38 @@ const Permissions: React.FC<{ extension: Extension }> = ({ extension }) => {
           <Progress className="mb-3" value={permissionProgress} />
           {showPermissions.active && (
             <div className="flex flex-wrap gap-1">
-              {extension.permissions.map((p) => (
-                <Badge
-                  key={p}
-                  variant="secondary"
-                  className="text-xs font-normal"
-                >
-                  {p}
-                </Badge>
-              ))}
+              {extension.permissions.map((p) => {
+                if (permissions[p]) {
+                  return (
+                    <TooltipProvider key={p}>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Badge
+                            key={p}
+                            variant="secondary"
+                            className="text-xs font-normal"
+                          >
+                            {p}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="max-w-56">
+                          {permissions[p]}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                } else {
+                  return (
+                    <Badge
+                      key={p}
+                      variant="secondary"
+                      className="text-xs font-normal"
+                    >
+                      {p}
+                    </Badge>
+                  );
+                }
+              })}
             </div>
           )}
         </div>

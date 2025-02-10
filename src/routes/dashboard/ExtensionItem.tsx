@@ -40,8 +40,7 @@ const ExtensionItem: React.FC<{
     const group = groups.find((group) => group.id === groupId);
 
     if (group) {
-      const { extensions, name } = group;
-      if (extensions.includes(extensionId)) {
+      if (group.extensions.includes(extensionId)) {
         return;
       }
 
@@ -56,7 +55,7 @@ const ExtensionItem: React.FC<{
         description: (
           <span
             dangerouslySetInnerHTML={{
-              __html: `<strong>${name}</strong> has been moved to <strong>${name}</strong>`,
+              __html: `<strong>${extension.name}</strong> has been moved to <strong>${group.name}</strong>`,
             }}
           />
         ),

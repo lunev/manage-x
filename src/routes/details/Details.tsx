@@ -9,10 +9,13 @@ import { ExternalLinkIcon, TrashIcon } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import UrlRules from './UrlRules';
 import Permissions from './Permissions';
+import { useAppDispatch } from '@/app/hooks';
+import { initExtension } from '@/features/extensions/extensions-slice';
 
 const Details: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [extension, setExtension] = useState<Extension | null>(null);
+  const dispatch = useAppDispatch();
 
   const fetchExtensions = () => {
     chrome.management.getAll((extensions) => {
@@ -29,6 +32,9 @@ const Details: React.FC = () => {
 
   useEffect(() => {
     fetchExtensions();
+    if (id) {
+      dispatch(initExtension({ extensionId: id }));
+    }
   }, [id]);
 
   if (!extension) {

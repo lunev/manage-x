@@ -13,10 +13,9 @@ import {
   TrashIcon,
   EyeNoneIcon,
   EyeOpenIcon,
+  Cross2Icon,
 } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
-import { useEffect, useState } from 'react';
-import { UrlRule } from '@/features/url-rules/url-rules-slice';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Tooltip,
@@ -25,19 +24,27 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { togglePreferences } from '@/features/preferences/preferences-slice';
+import { useState } from 'react';
+import {
+  addUrlRule,
+  removeUrlRule,
+  UrlType,
+} from '@/features/extensions/extensions-slice';
 
 const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
-  const [extensionRules, setExtensionRules] = useState<UrlRule | null>(null);
-  const rules = useAppSelector((state) => state.rules.urlRules);
-  const extensionRule = rules.find((rule) => rule.extensionId === extensionId);
+  const [url, setUrl] = useState('');
   const dispatch = useAppDispatch();
   const { showUrlRules } = useAppSelector((state) => state.preferences);
+  const { entities } = useAppSelector((state) => state.extensions);
+  const extension = entities.find((entity) => entity.id === extensionId);
 
-  useEffect(() => {
-    if (extensionRule) {
-      setExtensionRules(extensionRule);
+  const handleAddUrl = (e: React.FormEvent<HTMLFormElement>, type: UrlType) => {
+    e.preventDefault();
+    if (url.trim() !== '') {
+      dispatch(addUrlRule({ extensionId, url, type }));
+      setUrl('');
     }
-  }, [extensionRule, extensionId]);
+  };
 
   return (
     <>
@@ -66,20 +73,28 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
         {showUrlRules.active && (
           <Tabs defaultValue="enabled" className="w-full">
             <TabsList className="w-full">
-              <TabsTrigger value="enabled" className="text-xs flex-1">
+              <TabsTrigger
+                value="enabled"
+                className="text-xs flex-1"
+                onClick={() => setUrl('')}
+              >
                 Enabled URLs
               </TabsTrigger>
-              <TabsTrigger value="disabled" className="text-xs flex-1">
+              <TabsTrigger
+                value="disabled"
+                className="text-xs flex-1"
+                onClick={() => setUrl('')}
+              >
                 Disabled URLs
               </TabsTrigger>
             </TabsList>
             <TabsContent value="enabled">
-              {extensionRules?.enabledUrls.map((rule, index) => (
-                <form key={index} className="flex gap-2 mb-2">
+              {extension?.enabledUrls.map((rule) => (
+                <form key={rule.id} className="flex gap-2 mb-2">
                   <Input
-                    placeholder="Tab match url"
+                    placeholder="Tab match enabled url"
                     className="text-sm"
-                    value={rule}
+                    value={rule.url}
                     required
                     disabled
                   />
@@ -91,29 +106,52 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
                       <DropdownMenuItem>
                         <Pencil2Icon /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          dispatch(
+                            removeUrlRule({
+                              extensionId: extension.id,
+                              urlId: rule.id,
+                              type: 'enabled',
+                            }),
+                          )
+                        }
+                      >
                         <TrashIcon /> Remove
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </form>
               ))}
-              <form className="flex gap-2">
-                <Input
-                  placeholder="Tab match url"
-                  className="text-sm"
-                  required
-                />
+              <form
+                className="flex gap-2"
+                onSubmit={(e) => handleAddUrl(e, 'enabled')}
+              >
+                <div className="relative flex-1">
+                  <Input
+                    placeholder="Tab match enabled url"
+                    className="text-sm pr-8"
+                    required
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                  />
+                  <Cross2Icon
+                    className={`absolute top-3 right-3 cursor-pointer transition-all duration-300 ${
+                      url ? 'opacity-50' : 'opacity-0 pointer-events-none'
+                    }`}
+                    onClick={() => setUrl('')}
+                  />
+                </div>
                 <Button>Add</Button>
               </form>
             </TabsContent>
             <TabsContent value="disabled">
-              {extensionRules?.disabledUrls.map((rule, index) => (
-                <form key={index} className="flex gap-2 mb-2">
+              {extension?.disabledUrls.map((rule) => (
+                <form key={rule.id} className="flex gap-2 mb-2">
                   <Input
-                    placeholder="Tab match url"
+                    placeholder="Tab match disabled url"
                     className="text-sm"
-                    value={rule}
+                    value={rule.url}
                     required
                     disabled
                   />
@@ -125,19 +163,42 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
                       <DropdownMenuItem>
                         <Pencil2Icon /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          dispatch(
+                            removeUrlRule({
+                              extensionId: extension.id,
+                              urlId: rule.id,
+                              type: 'disabled',
+                            }),
+                          )
+                        }
+                      >
                         <TrashIcon /> Remove
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </form>
               ))}
-              <form className="flex gap-2">
-                <Input
-                  placeholder="Tab match url"
-                  className="text-sm"
-                  required
-                />
+              <form
+                className="flex gap-2"
+                onSubmit={(e) => handleAddUrl(e, 'disabled')}
+              >
+                <div className="relative flex-1">
+                  <Input
+                    placeholder="Tab match disabled url"
+                    className="text-sm pr-8"
+                    required
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                  />
+                  <Cross2Icon
+                    className={`absolute top-3 right-3 cursor-pointer transition-all duration-300 ${
+                      url ? 'opacity-50' : 'opacity-0 pointer-events-none'
+                    }`}
+                    onClick={() => setUrl('')}
+                  />
+                </div>
                 <Button>Add</Button>
               </form>
             </TabsContent>

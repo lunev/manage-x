@@ -24,3 +24,15 @@ export const matchUrl = (pattern: string, url: string) => {
 
   return false;
 };
+
+export const getSelfId = () => {
+  return new Promise((resolve, reject) => {
+    chrome.management.getSelf((extensionInfo) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(extensionInfo.id);
+      }
+    });
+  });
+};
