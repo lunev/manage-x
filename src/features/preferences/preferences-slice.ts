@@ -19,11 +19,11 @@ const initialState: Record<PreferenceKey, { label: string; active: boolean }> =
     },
     showPermissions: {
       label: 'Show Permissions',
-      active: false,
+      active: true,
     },
     showUrlRules: {
       label: 'Show URL Rules',
-      active: false,
+      active: true,
     },
     sidePanel: {
       label: 'Show as Side Panel',
