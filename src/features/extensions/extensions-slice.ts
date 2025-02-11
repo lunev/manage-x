@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { v4 as uuidv4 } from 'uuid';
 
 export type UrlRule = {
   id: string;
@@ -53,7 +52,7 @@ const extensionsSlice = createSlice({
 
       if (extension) {
         extension[`${type}Urls`].push({
-          id: uuidv4(),
+          id: extensionId,
           url,
         });
       }
