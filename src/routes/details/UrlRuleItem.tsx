@@ -29,25 +29,28 @@ const UrlRuleItem: React.FC<{
 }> = ({ rule, extensionId, type }) => {
   const [inputValue, setInputValue] = useState(rule.url);
   const dispatch = useAppDispatch();
+  const canSave = inputValue !== '' && inputValue !== rule.url;
 
   const handleChangeUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
   };
 
   const handleSaveUrl = () => {
-    dispatch(
-      updateUrlRule({
-        extensionId,
-        urlId: rule.id,
-        type,
-        newUrl: inputValue,
-      }),
-    );
-    toast({
-      description: <span>Url Rule has been saved.</span>,
-      className: cn('top-2 right-2 flex fixed max-w-[200px]'),
-      duration: 3000,
-    });
+    if (canSave) {
+      dispatch(
+        updateUrlRule({
+          extensionId,
+          urlId: rule.id,
+          type,
+          newUrl: inputValue,
+        }),
+      );
+      toast({
+        description: <span>Url Rule has been saved.</span>,
+        className: cn('top-2 right-2 flex fixed max-w-[200px]'),
+        duration: 3000,
+      });
+    }
   };
 
   const handleRemoveUrl = () => {
@@ -80,7 +83,7 @@ const UrlRuleItem: React.FC<{
           onChange={handleChangeUrl}
           onBlur={handleSaveUrl}
         />
-        {inputValue !== '' && inputValue !== rule.url && (
+        {canSave && (
           <Button
             size="icon"
             variant="ghost"
