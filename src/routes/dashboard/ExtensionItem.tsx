@@ -21,7 +21,10 @@ import {
 
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { moveExtensionToGroup } from '@/features/groups/groups-slice';
+import {
+  moveExtensionToGroup,
+  removeExtensionFromGroup,
+} from '@/features/groups/groups-slice';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { CheckIcon, MoveIcon } from 'lucide-react';
@@ -32,6 +35,7 @@ const ExtensionItem: React.FC<{
 }> = ({ extension, onToggle }) => {
   const navigate = useNavigate();
   const groups = useAppSelector((state) => state.groups.entities);
+  const activeGroup = groups.find((group) => group.active);
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { id, name, icons, enabled, shortName } = extension;
@@ -63,6 +67,22 @@ const ExtensionItem: React.FC<{
         duration: 3000,
       });
     }
+  };
+
+  // Handle removing the extension from the group
+  const handleRemoveFromGroup = (groupId: string, extensionId: string) => {
+    dispatch(removeExtensionFromGroup({ groupId, extensionId }));
+    toast({
+      description: (
+        <span
+          dangerouslySetInnerHTML={{
+            __html: `<strong>${extension.name}</strong> has been removed from the group`,
+          }}
+        />
+      ),
+      className: cn('top-2 right-2 flex fixed max-w-[300px]'),
+      duration: 3000,
+    });
   };
 
   return (
@@ -131,6 +151,20 @@ const ExtensionItem: React.FC<{
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
+          {activeGroup && (
+            <DropdownMenuItem
+              onClick={() => {
+                const groupId = groups.find((group) =>
+                  group.extensions.includes(id),
+                )?.id;
+                if (groupId) {
+                  handleRemoveFromGroup(groupId, id);
+                }
+              }}
+            >
+              <InfoCircledIcon /> Remove from this group
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onClick={() => navigate(`/details/${id}`)}>
             <InfoCircledIcon /> Details
           </DropdownMenuItem>
@@ -143,7 +177,7 @@ const ExtensionItem: React.FC<{
               });
             }}
           >
-            <TrashIcon /> Remove
+            <TrashIcon /> Uninstall
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

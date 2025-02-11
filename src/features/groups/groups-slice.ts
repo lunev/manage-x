@@ -72,6 +72,17 @@ const groupsSlice = createSlice({
         newGroup.extensions.push(extensionId);
       }
     },
+    removeExtensionFromGroup(
+      state,
+      action: PayloadAction<{ groupId: string; extensionId: string }>,
+    ) {
+      const { groupId, extensionId } = action.payload;
+      const group = state.entities.find((group) => group.id === groupId);
+
+      if (group) {
+        group.extensions = group.extensions.filter((id) => id !== extensionId);
+      }
+    },
   },
 });
 
@@ -80,6 +91,7 @@ export const {
   renameGroup,
   removeGroup,
   moveExtensionToGroup,
+  removeExtensionFromGroup,
   setActiveGroup,
 } = groupsSlice.actions;
 export default groupsSlice.reducer;
