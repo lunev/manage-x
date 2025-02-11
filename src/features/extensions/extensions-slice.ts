@@ -1,15 +1,15 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-export type UrlRuleItem = {
+export type UrlRule = {
   id: string;
   url: string;
 };
 
 export type Extension = {
   id: string;
-  enabledUrls: UrlRuleItem[];
-  disabledUrls: UrlRuleItem[];
+  enabledUrls: UrlRule[];
+  disabledUrls: UrlRule[];
 };
 
 export type UrlType = 'enabled' | 'disabled';
@@ -78,16 +78,16 @@ const extensionsSlice = createSlice({
         }
       }
     },
-    editUrlRule: (
+    updateUrlRule: (
       state,
       action: PayloadAction<{
         extensionId: string;
         urlId: string;
         type: UrlType;
-        newUrlValue: string;
+        newUrl: string;
       }>,
     ) => {
-      const { extensionId, urlId, type, newUrlValue } = action.payload;
+      const { extensionId, urlId, type, newUrl } = action.payload;
       const extension = findExtensionById(state, extensionId);
 
       if (extension) {
@@ -95,13 +95,13 @@ const extensionsSlice = createSlice({
           (rule) => rule.id === urlId,
         );
         if (urlIndex !== -1) {
-          extension[`${type}Urls`][urlIndex].url = newUrlValue;
+          extension[`${type}Urls`][urlIndex].url = newUrl;
         }
       }
     },
   },
 });
 
-export const { initExtension, addUrlRule, removeUrlRule, editUrlRule } =
+export const { initExtension, addUrlRule, removeUrlRule, updateUrlRule } =
   extensionsSlice.actions;
 export default extensionsSlice.reducer;

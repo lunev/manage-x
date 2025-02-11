@@ -1,21 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
-import {
-  DotsVerticalIcon,
-  Link1Icon,
-  Pencil2Icon,
-  TrashIcon,
-  EyeNoneIcon,
-  EyeOpenIcon,
-  Cross2Icon,
-} from '@radix-ui/react-icons';
-import { Button } from '@/components/ui/button';
+import { Link1Icon, EyeNoneIcon, EyeOpenIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Tooltip,
@@ -24,27 +8,21 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { togglePreferences } from '@/features/preferences/preferences-slice';
-import { useState } from 'react';
-import {
-  addUrlRule,
-  removeUrlRule,
-  UrlType,
-} from '@/features/extensions/extensions-slice';
+import AddRuleForm from './AddRuleForm';
+import UrlRuleItem from './UrlRuleItem';
+import { UrlRule } from '@/features/extensions/extensions-slice';
 
 const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
-  const [url, setUrl] = useState('');
   const dispatch = useAppDispatch();
   const { showUrlRules } = useAppSelector((state) => state.preferences);
   const { entities } = useAppSelector((state) => state.extensions);
   const extension = entities.find((entity) => entity.id === extensionId);
 
-  const handleAddUrl = (e: React.FormEvent<HTMLFormElement>, type: UrlType) => {
-    e.preventDefault();
-    if (url.trim() !== '') {
-      dispatch(addUrlRule({ extensionId, url, type }));
-      setUrl('');
-    }
-  };
+  if (!extension) {
+    return null;
+  }
+
+  const { enabledUrls, disabledUrls } = extension;
 
   return (
     <>
@@ -73,132 +51,38 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
         {showUrlRules.active && (
           <Tabs defaultValue="enabled" className="w-full">
             <TabsList className="w-full">
-              <TabsTrigger
-                value="enabled"
-                className="text-xs flex-1"
-                onClick={() => setUrl('')}
-              >
-                Enabled URLs
+              <TabsTrigger value="enabled" className="text-xs flex-1">
+                {enabledUrls?.length
+                  ? `Enabled URLs (${enabledUrls.length})`
+                  : 'Enabled URLs'}
               </TabsTrigger>
-              <TabsTrigger
-                value="disabled"
-                className="text-xs flex-1"
-                onClick={() => setUrl('')}
-              >
-                Disabled URLs
+              <TabsTrigger value="disabled" className="text-xs flex-1">
+                {disabledUrls?.length
+                  ? `Disabled URLs (${disabledUrls.length})`
+                  : 'Disabled URLs'}
               </TabsTrigger>
             </TabsList>
             <TabsContent value="enabled">
-              {extension?.enabledUrls.map((rule) => (
-                <form key={rule.id} className="flex gap-2 mb-2">
-                  <Input
-                    placeholder="Enable on URL (e.g., *.google.com)"
-                    className="text-sm"
-                    value={rule.url}
-                    required
-                  />
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <DotsVerticalIcon />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="mr-4">
-                      <DropdownMenuItem>
-                        <Pencil2Icon /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          dispatch(
-                            removeUrlRule({
-                              extensionId: extension.id,
-                              urlId: rule.id,
-                              type: 'enabled',
-                            }),
-                          )
-                        }
-                      >
-                        <TrashIcon /> Remove
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </form>
+              {enabledUrls.map((rule: UrlRule) => (
+                <UrlRuleItem
+                  key={rule.id}
+                  rule={rule}
+                  extensionId={extension.id}
+                  type="enabled"
+                />
               ))}
-              <form
-                className="flex gap-2"
-                onSubmit={(e) => handleAddUrl(e, 'enabled')}
-              >
-                <div className="relative flex-1">
-                  <Input
-                    placeholder="Enable on URL (e.g., *.google.com)"
-                    className="text-sm pr-8"
-                    required
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                  />
-                  <Cross2Icon
-                    className={`absolute top-3 right-3 cursor-pointer transition-all duration-300 ${
-                      url ? 'opacity-50' : 'opacity-0 pointer-events-none'
-                    }`}
-                    onClick={() => setUrl('')}
-                  />
-                </div>
-                <Button>Add</Button>
-              </form>
+              <AddRuleForm extensionId={extensionId} type="enabled" />
             </TabsContent>
             <TabsContent value="disabled">
-              {extension?.disabledUrls.map((rule) => (
-                <form key={rule.id} className="flex gap-2 mb-2">
-                  <Input
-                    placeholder="Disable on URL (e.g., *.google.com)"
-                    className="text-sm"
-                    value={rule.url}
-                    required
-                  />
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <DotsVerticalIcon />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="mr-4">
-                      <DropdownMenuItem>
-                        <Pencil2Icon /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() =>
-                          dispatch(
-                            removeUrlRule({
-                              extensionId: extension.id,
-                              urlId: rule.id,
-                              type: 'disabled',
-                            }),
-                          )
-                        }
-                      >
-                        <TrashIcon /> Remove
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </form>
+              {disabledUrls.map((rule) => (
+                <UrlRuleItem
+                  key={rule.id}
+                  rule={rule}
+                  extensionId={extension.id}
+                  type="disabled"
+                />
               ))}
-              <form
-                className="flex gap-2"
-                onSubmit={(e) => handleAddUrl(e, 'disabled')}
-              >
-                <div className="relative flex-1">
-                  <Input
-                    placeholder="Disable on URL (e.g., *.google.com)"
-                    className="text-sm pr-8"
-                    required
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                  />
-                  <Cross2Icon
-                    className={`absolute top-3 right-3 cursor-pointer transition-all duration-300 ${
-                      url ? 'opacity-50' : 'opacity-0 pointer-events-none'
-                    }`}
-                    onClick={() => setUrl('')}
-                  />
-                </div>
-                <Button>Add</Button>
-              </form>
+              <AddRuleForm extensionId={extensionId} type="disabled" />
             </TabsContent>
           </Tabs>
         )}
