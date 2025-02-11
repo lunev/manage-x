@@ -18,7 +18,9 @@ const GroupTabs: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const groups = useAppSelector((state) => state.groups.entities);
-  const { showGroups } = useAppSelector((state) => state.preferences);
+  const { groups: groupsPreferences } = useAppSelector(
+    (state) => state.preferences,
+  );
   const activeGroup = useMemo(
     () => groups.find((group) => group.active),
     [groups],
@@ -26,7 +28,7 @@ const GroupTabs: React.FC = () => {
 
   return (
     <>
-      {showGroups.active && (
+      {groupsPreferences.visible && (
         <div className="mb-3 flex gap-2 items-center">
           <Tabs defaultValue={activeGroup?.name || 'All'} className="w-full">
             <TabsList className="w-full">

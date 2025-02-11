@@ -1,50 +1,53 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type PreferenceKey =
-  | 'sidePanel'
-  | 'showGroups'
-  | 'showSearch'
-  | 'showPermissions'
-  | 'showUrlRules';
+export type PreferenceType = {
+  key: 'sidePanel' | 'groups' | 'search' | 'permissions' | 'urlRules';
+  label: string;
+  visible: boolean;
+};
 
-const initialState: Record<PreferenceKey, { label: string; active: boolean }> =
-  {
-    showGroups: {
-      label: 'Show Groups',
-      active: true,
-    },
-    showSearch: {
-      label: 'Show Search',
-      active: true,
-    },
-    showPermissions: {
-      label: 'Show Permissions',
-      active: true,
-    },
-    showUrlRules: {
-      label: 'Show URL Rules',
-      active: true,
-    },
-    sidePanel: {
-      label: 'Show as Side Panel',
-      active: false,
-    },
-  };
+type PreferencesState = Record<
+  PreferenceType['key'],
+  Omit<PreferenceType, 'key'>
+>;
+
+const initialState: PreferencesState = {
+  groups: {
+    label: 'Groups',
+    visible: true,
+  },
+  search: {
+    label: 'Search',
+    visible: true,
+  },
+  permissions: {
+    label: 'Permissions',
+    visible: true,
+  },
+  urlRules: {
+    label: 'URL Rules',
+    visible: true,
+  },
+  sidePanel: {
+    label: 'Side Panel',
+    visible: false,
+  },
+};
 
 const preferencesSlice = createSlice({
   name: 'preferences',
   initialState,
   reducers: {
-    togglePreferences(state, action: PayloadAction<PreferenceKey>) {
+    togglePreferences(state, action: PayloadAction<PreferenceType['key']>) {
       const key = action.payload;
       if (state[key]) {
-        state[key].active = !state[key].active;
+        state[key].visible = !state[key].visible;
       }
     },
-    disablePreferences(state, action: PayloadAction<PreferenceKey>) {
+    disablePreferences(state, action: PayloadAction<PreferenceType['key']>) {
       const key = action.payload;
       if (state[key]) {
-        state[key].active = false;
+        state[key].visible = false;
       }
     },
   },

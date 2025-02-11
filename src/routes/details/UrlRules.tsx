@@ -14,7 +14,7 @@ import { UrlRule } from '@/features/extensions/extensions-slice';
 
 const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
   const dispatch = useAppDispatch();
-  const { showUrlRules } = useAppSelector((state) => state.preferences);
+  const { urlRules } = useAppSelector((state) => state.preferences);
   const { entities } = useAppSelector((state) => state.extensions);
   const extension = entities.find((entity) => entity.id === extensionId);
 
@@ -40,19 +40,19 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
               <TooltipTrigger>
                 <span
                   className="cursor-pointer"
-                  onClick={() => dispatch(togglePreferences('showUrlRules'))}
+                  onClick={() => dispatch(togglePreferences('urlRules'))}
                 >
-                  {showUrlRules.active ? <EyeOpenIcon /> : <EyeNoneIcon />}
+                  {urlRules.visible ? <EyeOpenIcon /> : <EyeNoneIcon />}
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                {showUrlRules.active ? 'Hide' : 'Show'} URL Rules
+                {urlRules.visible ? 'Hide' : 'Show'} URL Rules
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </h2>
 
-        {showUrlRules.active && (
+        {urlRules.visible && (
           <Tabs defaultValue="enabled" className="w-full">
             <TabsList className="w-full">
               <TabsTrigger value="enabled" className="text-xs flex-1">

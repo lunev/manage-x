@@ -12,7 +12,9 @@ const Dashboard: React.FC = () => {
   const [query, setQuery] = useState('');
   const dispatch = useAppDispatch();
   const groups = useAppSelector((state) => state.groups.entities);
-  const { showGroups } = useAppSelector((state) => state.preferences);
+  const { groups: groupsPreferences } = useAppSelector(
+    (state) => state.preferences,
+  );
   const activeGroup = groups.find((group) => group.active);
 
   const fetchCurrentExtension = useCallback(
@@ -59,10 +61,10 @@ const Dashboard: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!showGroups.active) {
+    if (!groupsPreferences.visible) {
       dispatch(setActiveGroup(null));
     }
-  }, [dispatch, showGroups.active]);
+  }, [dispatch, groupsPreferences.visible]);
 
   return (
     <div data-testid="dashboard">
