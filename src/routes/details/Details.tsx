@@ -106,7 +106,7 @@ const Details: React.FC = () => {
             });
           }}
         >
-          <TrashIcon /> Remove
+          <TrashIcon /> Uninstall
         </Button>
 
         <div className="flex items-center space-x-2">
