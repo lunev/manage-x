@@ -92,11 +92,10 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
               {extension?.enabledUrls.map((rule) => (
                 <form key={rule.id} className="flex gap-2 mb-2">
                   <Input
-                    placeholder="Tab match enabled url"
+                    placeholder="Enable on URL (e.g., *.google.com)"
                     className="text-sm"
                     value={rule.url}
                     required
-                    disabled
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger>
@@ -129,7 +128,7 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
               >
                 <div className="relative flex-1">
                   <Input
-                    placeholder="Tab match enabled url"
+                    placeholder="Enable on URL (e.g., *.google.com)"
                     className="text-sm pr-8"
                     required
                     value={url}
@@ -149,11 +148,10 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
               {extension?.disabledUrls.map((rule) => (
                 <form key={rule.id} className="flex gap-2 mb-2">
                   <Input
-                    placeholder="Tab match disabled url"
+                    placeholder="Disable on URL (e.g., *.google.com)"
                     className="text-sm"
                     value={rule.url}
                     required
-                    disabled
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger>
@@ -186,7 +184,7 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
               >
                 <div className="relative flex-1">
                   <Input
-                    placeholder="Tab match disabled url"
+                    placeholder="Disable on URL (e.g., *.google.com)"
                     className="text-sm pr-8"
                     required
                     value={url}
