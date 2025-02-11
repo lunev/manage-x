@@ -16,11 +16,14 @@ import {
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { togglePreferences } from '@/features/preferences/preferences-slice';
 import chromePermissions from '@/lib/chromePermissions.json';
-const permissions: Record<string, string> = chromePermissions;
+
+export type ChromePermissionsType = {
+  [permissionKey: string]: string;
+};
 
 const Permissions: React.FC<{ extension: Extension }> = ({ extension }) => {
   const [permissionProgress, setPermissionProgress] = useState(0);
-  const { showPermissions } = useAppSelector((state) => state.preferences);
+  const { permissions } = useAppSelector((state) => state.preferences);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -44,24 +47,22 @@ const Permissions: React.FC<{ extension: Extension }> = ({ extension }) => {
                 <TooltipTrigger>
                   <span
                     className="cursor-pointer"
-                    onClick={() =>
-                      dispatch(togglePreferences('showPermissions'))
-                    }
+                    onClick={() => dispatch(togglePreferences('permissions'))}
                   >
-                    {showPermissions.active ? <EyeOpenIcon /> : <EyeNoneIcon />}
+                    {permissions.visible ? <EyeOpenIcon /> : <EyeNoneIcon />}
                   </span>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {showPermissions.active ? 'Hide' : 'Show'} details
+                  {permissions.visible ? 'Hide' : 'Show'} details
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </h2>
           <Progress className="mb-3" value={permissionProgress} />
-          {showPermissions.active && (
+          {permissions.visible && (
             <div className="flex flex-wrap gap-1">
               {extension.permissions.map((p) => {
-                if (permissions[p]) {
+                if ((chromePermissions as ChromePermissionsType)[p]) {
                   return (
                     <TooltipProvider key={p}>
                       <Tooltip>
@@ -75,7 +76,7 @@ const Permissions: React.FC<{ extension: Extension }> = ({ extension }) => {
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent className="max-w-56">
-                          {permissions[p]}
+                          {(chromePermissions as ChromePermissionsType)[p]}
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>

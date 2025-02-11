@@ -7,7 +7,7 @@ const Search: React.FC<{ onSearch: (query: string) => void }> = ({
   onSearch,
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const { showSearch } = useAppSelector((state) => state.preferences);
+  const { search } = useAppSelector((state) => state.preferences);
 
   const handleInputChange = (query: string) => {
     setInputValue(query);
@@ -21,7 +21,7 @@ const Search: React.FC<{ onSearch: (query: string) => void }> = ({
 
   return (
     <>
-      {showSearch.active && (
+      {search.visible && (
         <div className="mb-3">
           <div className="relative">
             <MagnifyingGlassIcon className="absolute translate-x-2 translate-y-3 opacity-50" />

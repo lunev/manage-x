@@ -1,3 +1,4 @@
+import { STORAGE_KEY_ROOT } from '@/constants';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -35,4 +36,28 @@ export const getSelfId = () => {
       }
     });
   });
+};
+
+export const storagePersisted = {
+  get: async (key: string) => {
+    const data = await chrome.storage.sync.get([STORAGE_KEY_ROOT]);
+    const rootData = data[STORAGE_KEY_ROOT];
+    if (rootData) {
+      try {
+        const storage = JSON.parse(rootData);
+        return JSON.parse(storage[key]);
+      } catch (parseError) {
+        console.log('Error parsing stored data:', parseError);
+      }
+    } else {
+      console.log('No data found for the key:', key);
+    }
+  },
+  listen: (callback: (changes: unknown) => void) => {
+    chrome.storage.onChanged.addListener((changes) => {
+      if (changes) {
+        callback(changes);
+      }
+    });
+  },
 };
