@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
-type UrlRuleItem = {
+export type UrlRuleItem = {
   id: string;
   url: string;
 };
@@ -78,9 +78,30 @@ const extensionsSlice = createSlice({
         }
       }
     },
+    editUrlRule: (
+      state,
+      action: PayloadAction<{
+        extensionId: string;
+        urlId: string;
+        type: UrlType;
+        newUrlValue: string;
+      }>,
+    ) => {
+      const { extensionId, urlId, type, newUrlValue } = action.payload;
+      const extension = findExtensionById(state, extensionId);
+
+      if (extension) {
+        const urlIndex = extension[`${type}Urls`].findIndex(
+          (rule) => rule.id === urlId,
+        );
+        if (urlIndex !== -1) {
+          extension[`${type}Urls`][urlIndex].url = newUrlValue;
+        }
+      }
+    },
   },
 });
 
-export const { initExtension, addUrlRule, removeUrlRule } =
+export const { initExtension, addUrlRule, removeUrlRule, editUrlRule } =
   extensionsSlice.actions;
 export default extensionsSlice.reducer;
