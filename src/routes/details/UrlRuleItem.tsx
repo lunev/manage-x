@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -17,8 +18,9 @@ import {
   UrlType,
 } from '@/features/extensions/extensions-slice';
 import { useAppDispatch } from '@/app/hooks';
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 const UrlRuleItem: React.FC<{
   rule: UrlRule;
@@ -41,6 +43,26 @@ const UrlRuleItem: React.FC<{
         newUrl: inputValue,
       }),
     );
+    toast({
+      description: <span>Url Rule has been saved.</span>,
+      className: cn('top-2 right-2 flex fixed max-w-[200px]'),
+      duration: 3000,
+    });
+  };
+
+  const handleRemoveUrl = () => {
+    dispatch(
+      removeUrlRule({
+        extensionId,
+        urlId: rule.id,
+        type,
+      }),
+    );
+    toast({
+      description: <span>Url Rule has been removed.</span>,
+      className: cn('top-2 right-2 flex fixed max-w-[200px]'),
+      duration: 3000,
+    });
   };
 
   useEffect(() => {
@@ -76,17 +98,7 @@ const UrlRuleItem: React.FC<{
           <DotsVerticalIcon />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="mr-4">
-          <DropdownMenuItem
-            onClick={() =>
-              dispatch(
-                removeUrlRule({
-                  extensionId,
-                  urlId: rule.id,
-                  type,
-                }),
-              )
-            }
-          >
+          <DropdownMenuItem onClick={handleRemoveUrl}>
             <TrashIcon /> Remove
           </DropdownMenuItem>
         </DropdownMenuContent>
