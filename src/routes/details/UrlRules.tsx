@@ -23,14 +23,18 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
   }
 
   const { enabledUrls, disabledUrls } = extension;
+  const totalRules = enabledUrls.length + disabledUrls.length;
 
   return (
     <>
       <div className="mb-6">
         <h2 className="mb-2 flex gap-1 items-center justify-between">
           <span className="flex gap-1 items-center">
-            <Link1Icon /> <span>Url Rules</span>
+            <Link1Icon />
+            <span className="font-medium">Url Rules</span>
+            {totalRules > 0 && <span className="">({totalRules})</span>}
           </span>
+
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
