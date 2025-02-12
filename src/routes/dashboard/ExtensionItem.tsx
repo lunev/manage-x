@@ -4,7 +4,9 @@ import { Extension } from '@/types';
 import {
   DotsVerticalIcon,
   InfoCircledIcon,
+  Link1Icon,
   TrashIcon,
+  LinkBreak1Icon,
 } from '@radix-ui/react-icons';
 import {
   DropdownMenu,
@@ -69,14 +71,13 @@ const ExtensionItem: React.FC<{
     }
   };
 
-  // Handle removing the extension from the group
   const handleRemoveFromGroup = (groupId: string, extensionId: string) => {
     dispatch(removeExtensionFromGroup({ groupId, extensionId }));
     toast({
       description: (
         <span
           dangerouslySetInnerHTML={{
-            __html: `<strong>${extension.name}</strong> has been removed from the group`,
+            __html: `<strong>${extension.name}</strong> has been removed from this group`,
           }}
         />
       ),
@@ -162,9 +163,12 @@ const ExtensionItem: React.FC<{
                 }
               }}
             >
-              <InfoCircledIcon /> Remove from this group
+              <LinkBreak1Icon /> Remove from this group
             </DropdownMenuItem>
           )}
+          <DropdownMenuItem onClick={() => navigate(`/details/${id}`)}>
+            <Link1Icon /> URL Rules
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => navigate(`/details/${id}`)}>
             <InfoCircledIcon /> Details
           </DropdownMenuItem>

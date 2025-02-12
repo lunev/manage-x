@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
 
 export type UrlRule = {
   id: string;
@@ -7,8 +8,10 @@ export type UrlRule = {
 
 export type Extension = {
   id: string;
+  name: string;
   enabledUrls: UrlRule[];
   disabledUrls: UrlRule[];
+  enabled: boolean;
 };
 
 export type UrlType = 'enabled' | 'disabled';
@@ -28,15 +31,27 @@ const extensionsSlice = createSlice({
   name: 'extensions',
   initialState,
   reducers: {
-    initExtension: (state, action: PayloadAction<{ extensionId: string }>) => {
-      const { extensionId } = action.payload;
-      const existingExtension = findExtensionById(state, extensionId);
+    initExtension: (state, action: PayloadAction<{ extension: Extension }>) => {
+      const { extension } = action.payload;
+      const existingExtension = findExtensionById(state, extension.id);
       if (!existingExtension) {
         state.entities.push({
-          id: extensionId,
+          id: extension.id,
+          name: extension.name,
           enabledUrls: [],
           disabledUrls: [],
+          enabled: extension.enabled,
         });
+      }
+    },
+    toggleExtension: (
+      state,
+      action: PayloadAction<{ extensionId: string }>,
+    ) => {
+      const { extensionId } = action.payload;
+      const extension = findExtensionById(state, extensionId);
+      if (extension) {
+        extension.enabled = !extension.enabled;
       }
     },
     addUrlRule: (
@@ -52,7 +67,7 @@ const extensionsSlice = createSlice({
 
       if (extension) {
         extension[`${type}Urls`].push({
-          id: extensionId,
+          id: uuidv4(),
           url,
         });
       }
@@ -101,6 +116,11 @@ const extensionsSlice = createSlice({
   },
 });
 
-export const { initExtension, addUrlRule, removeUrlRule, updateUrlRule } =
-  extensionsSlice.actions;
+export const {
+  initExtension,
+  addUrlRule,
+  removeUrlRule,
+  updateUrlRule,
+  toggleExtension,
+} = extensionsSlice.actions;
 export default extensionsSlice.reducer;
