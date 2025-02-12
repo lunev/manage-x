@@ -5,6 +5,7 @@ import { setActiveGroup } from '@/features/groups/groups-slice';
 import Search from './Search';
 import GroupTabs from './GroupTabs';
 import ExtensionGroup from './ExtensionGroup';
+import { toggleExtension } from '@/features/extensions/extensions-slice';
 
 const Dashboard: React.FC = () => {
   const [extensions, setExtensions] = useState<Extension[] | null>(null);
@@ -27,6 +28,7 @@ const Dashboard: React.FC = () => {
 
   const handleToggle = (id: string, enabled: boolean) => {
     chrome.management.setEnabled(id, !enabled, fetchExtensions);
+    dispatch(toggleExtension({ extensionId: id }));
   };
 
   const filteredExtensions = useMemo(() => {

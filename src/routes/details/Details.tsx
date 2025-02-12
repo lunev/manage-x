@@ -10,7 +10,10 @@ import { Label } from '@/components/ui/label';
 import UrlRules from './UrlRules';
 import Permissions from './Permissions';
 import { useAppDispatch } from '@/app/hooks';
-import { initExtension } from '@/features/extensions/extensions-slice';
+import {
+  initExtension,
+  toggleExtension,
+} from '@/features/extensions/extensions-slice';
 
 const Details: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -21,12 +24,23 @@ const Details: React.FC = () => {
     if (!id) return;
     chrome.management.get(id, (extension) => {
       setExtension(extension);
-      dispatch(initExtension({ extensionId: id }));
+      dispatch(
+        initExtension({
+          extension: {
+            id: extension.id,
+            name: extension.name,
+            enabledUrls: [],
+            disabledUrls: [],
+            enabled: extension.enabled,
+          },
+        }),
+      );
     });
   };
 
   const handleToggle = (id: string, enabled: boolean) => {
     chrome.management.setEnabled(id, !enabled, fetchExtension);
+    dispatch(toggleExtension({ extensionId: id }));
   };
 
   useEffect(() => {

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ManageX",
-  "description": "Effortlessly manage, group, and export your extensions",
+  "description": "Manage, group, and export extensions with rules to enable/disable them by URL.",
   "version": "1.0.0",
   "author": {
     "name": "Alexander Lunev",
