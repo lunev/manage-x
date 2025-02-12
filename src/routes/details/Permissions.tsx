@@ -16,8 +16,6 @@ import {
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { togglePreferences } from '@/features/preferences/preferences-slice';
 import chromePermissions from '@/lib/chromePermissions.json';
-import SmileSad from '@/components/ui/smile-sad';
-import SmileHappy from '@/components/ui/smile-happy';
 
 export type ChromePermissionsType = {
   [permissionKey: string]: string;
@@ -43,7 +41,6 @@ const Permissions: React.FC<{ extension: Extension }> = ({ extension }) => {
           <h2 className="mb-2 flex gap-1 items-center justify-between">
             <span className="flex gap-1 items-center">
               <LockClosedIcon /> <span>Permissions</span>
-              {permissionProgress >= 20 ? <SmileSad /> : <SmileHappy />}
             </span>
             <TooltipProvider>
               <Tooltip>
