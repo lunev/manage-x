@@ -17,24 +17,20 @@ const Details: React.FC = () => {
   const [extension, setExtension] = useState<Extension | null>(null);
   const dispatch = useAppDispatch();
 
-  const fetchExtensions = () => {
-    chrome.management.getAll((extensions) => {
-      const currentExtension = extensions.find((ext) => ext.id === id);
-      if (currentExtension) {
-        setExtension(currentExtension);
-      }
+  const fetchExtension = () => {
+    if (!id) return;
+    chrome.management.get(id, (extension) => {
+      setExtension(extension);
+      dispatch(initExtension({ extensionId: id }));
     });
   };
 
   const handleToggle = (id: string, enabled: boolean) => {
-    chrome.management.setEnabled(id, !enabled, fetchExtensions);
+    chrome.management.setEnabled(id, !enabled, fetchExtension);
   };
 
   useEffect(() => {
-    fetchExtensions();
-    if (id) {
-      dispatch(initExtension({ extensionId: id }));
-    }
+    fetchExtension();
   }, [id]);
 
   if (!extension) {

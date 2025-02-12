@@ -17,11 +17,13 @@ const Dashboard: React.FC = () => {
   );
   const activeGroup = groups.find((group) => group.active);
 
-  const fetchCurrentExtension = useCallback(
-    () => chrome.management.getSelf(setCurrentExt),
-    [],
-  );
-  const fetchExtensions = () => chrome.management.getAll(setExtensions);
+  const fetchCurrentExtension = useCallback(() => {
+    chrome.management.getSelf(setCurrentExt);
+  }, []);
+
+  const fetchExtensions = useCallback(() => {
+    chrome.management.getAll((exts) => setExtensions([...exts]));
+  }, []);
 
   const handleToggle = (id: string, enabled: boolean) => {
     chrome.management.setEnabled(id, !enabled, fetchExtensions);
@@ -58,7 +60,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchExtensions();
     fetchCurrentExtension();
-  }, []);
+  }, [fetchCurrentExtension, fetchExtensions]);
 
   useEffect(() => {
     if (!groupsPreferences.visible) {
