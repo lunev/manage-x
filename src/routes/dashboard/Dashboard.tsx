@@ -10,6 +10,7 @@ import { toggleExtension } from '@/features/extensions/extensions-slice';
 const Dashboard: React.FC = () => {
   const [extensions, setExtensions] = useState<Extension[] | null>(null);
   const [currentExt, setCurrentExt] = useState<Extension | null>(null);
+  const [currentTabUrl, setCurrentTabUrl] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const dispatch = useAppDispatch();
   const groups = useAppSelector((state) => state.groups.entities);
@@ -59,6 +60,19 @@ const Dashboard: React.FC = () => {
     fetchExtensions();
   };
 
+  const fetchTabUrl = () => {
+    chrome.tabs.query(
+      { active: true, lastFocusedWindow: true },
+      async (tabs) => {
+        setCurrentTabUrl(tabs[0]?.url || '');
+      },
+    );
+  };
+
+  useEffect(() => {
+    fetchTabUrl();
+  }, []);
+
   useEffect(() => {
     fetchExtensions();
     fetchCurrentExtension();
@@ -79,6 +93,7 @@ const Dashboard: React.FC = () => {
         <ExtensionGroup
           title="Enabled"
           extensions={enabledExtensions}
+          tabUrl={currentTabUrl}
           onToggleGroup={() => handleToggleGroup(false)}
           onToggleItem={handleToggle}
         />
@@ -88,6 +103,7 @@ const Dashboard: React.FC = () => {
         <ExtensionGroup
           title="Disabled"
           extensions={disabledExtensions}
+          tabUrl={currentTabUrl}
           onToggleGroup={() => handleToggleGroup(true)}
           onToggleItem={handleToggle}
         />

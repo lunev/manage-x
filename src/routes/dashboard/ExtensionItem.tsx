@@ -28,51 +28,58 @@ import {
   removeExtensionFromGroup,
 } from '@/features/groups/groups-slice';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import { cn, matchUrl } from '@/lib/utils';
 import { CheckIcon, MoveIcon } from 'lucide-react';
 
 const ExtensionItem: React.FC<{
   extension: Extension;
+  tabUrl: string | null;
   onToggle: () => void;
-}> = ({ extension, onToggle }) => {
+}> = ({ extension, tabUrl, onToggle }) => {
   const navigate = useNavigate();
   const groups = useAppSelector((state) => state.groups.entities);
+  const extensions = useAppSelector((state) => state.extensions.entities);
   const activeGroup = groups.find((group) => group.active);
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { id, name, icons, enabled, shortName } = extension;
 
+  const hasMatchingUrlRules = () => {
+    if (!tabUrl) return false;
+
+    const currentExtension = extensions.find((ext) => ext.id === extension.id);
+    if (!currentExtension) return false;
+
+    return (
+      currentExtension.disabledUrls?.some((item) =>
+        matchUrl(item.url, tabUrl),
+      ) ||
+      currentExtension.enabledUrls?.some((item) => matchUrl(item.url, tabUrl))
+    );
+  };
+
   const handleMoveToGroup = (groupId: string, extensionId: string) => {
-    const group = groups.find((group) => group.id === groupId);
+    const group = groups.find((g) => g.id === groupId);
+    if (!group || group.extensions.includes(extensionId)) return;
 
-    if (group) {
-      if (group.extensions.includes(extensionId)) {
-        return;
-      }
+    dispatch(moveExtensionToGroup({ groupId, extensionId }));
 
-      dispatch(
-        moveExtensionToGroup({
-          groupId,
-          extensionId,
-        }),
-      );
-
-      toast({
-        description: (
-          <span
-            dangerouslySetInnerHTML={{
-              __html: `<strong>${extension.name}</strong> has been moved to <strong>${group.name}</strong>`,
-            }}
-          />
-        ),
-        className: cn('top-2 right-2 flex fixed max-w-[300px]'),
-        duration: 3000,
-      });
-    }
+    toast({
+      description: (
+        <span
+          dangerouslySetInnerHTML={{
+            __html: `<strong>${extension.name}</strong> has been moved to <strong>${group.name}</strong>`,
+          }}
+        />
+      ),
+      className: cn('top-2 right-2 flex fixed max-w-[300px]'),
+      duration: 3000,
+    });
   };
 
   const handleRemoveFromGroup = (groupId: string, extensionId: string) => {
     dispatch(removeExtensionFromGroup({ groupId, extensionId }));
+
     toast({
       description: (
         <span
@@ -99,7 +106,7 @@ const ExtensionItem: React.FC<{
         </Avatar>
       )}
       <div
-        className="max-w-full flex-1 pr-2 text-ellipsis text-nowrap overflow-hidden"
+        className="max-w-full flex-1 flex gap-1 pr-2 text-ellipsis text-nowrap overflow-hidden"
         title={shortName}
       >
         <span
@@ -108,6 +115,15 @@ const ExtensionItem: React.FC<{
         >
           {name}
         </span>
+        {hasMatchingUrlRules() && (
+          <span
+            className="text-red-600 -translate-y-1"
+            title="Extension has active URL rules"
+            style={{ fontSize: '10px' }}
+          >
+            Rules Applied
+          </span>
+        )}
       </div>
       <Switch checked={enabled} onCheckedChange={onToggle} />
       <DropdownMenu>

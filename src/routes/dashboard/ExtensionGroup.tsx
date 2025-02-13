@@ -12,9 +12,10 @@ import ExtensionItem from './ExtensionItem';
 const ExtensionGroup: React.FC<{
   title: string;
   extensions: Extension[];
+  tabUrl: string | null;
   onToggleGroup: () => void;
   onToggleItem: (id: string, enabled: boolean) => void;
-}> = ({ title, extensions, onToggleGroup, onToggleItem }) => {
+}> = ({ title, extensions, tabUrl, onToggleGroup, onToggleItem }) => {
   const groups = useAppSelector((state) => state.groups.entities);
   const activeGroup = groups.find((group) => group.active);
 
@@ -45,6 +46,7 @@ const ExtensionGroup: React.FC<{
           <ExtensionItem
             key={extension.id}
             extension={extension}
+            tabUrl={tabUrl}
             onToggle={() => onToggleItem(extension.id, extension.enabled)}
           />
         ))}
