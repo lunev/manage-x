@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Extension } from '@/types';
 import {
   EyeNoneIcon,
   EyeOpenIcon,
@@ -21,7 +20,9 @@ export type ChromePermissionsType = {
   [permissionKey: string]: string;
 };
 
-const Permissions: React.FC<{ extension: Extension }> = ({ extension }) => {
+const Permissions: React.FC<{
+  extension: Pick<chrome.management.ExtensionInfo, 'permissions'>;
+}> = ({ extension }) => {
   const [permissionProgress, setPermissionProgress] = useState(0);
   const { permissions } = useAppSelector((state) => state.preferences);
   const dispatch = useAppDispatch();

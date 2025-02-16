@@ -22,7 +22,7 @@ const initialState: GroupsState = {
     },
     {
       id: uuidv4(),
-      name: 'Development',
+      name: 'Private',
       extensions: [],
       active: false,
     },

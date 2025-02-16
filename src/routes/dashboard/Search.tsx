@@ -27,7 +27,7 @@ const Search: React.FC<{ onSearch: (query: string) => void }> = ({
             <MagnifyingGlassIcon className="absolute translate-x-2 translate-y-3 opacity-50" />
             <Input
               className={`w-full mb-2 px-7 text-sm`}
-              placeholder="Search by name or description"
+              placeholder="Search"
               value={inputValue}
               onChange={(e) => handleInputChange(e.target.value)}
             />

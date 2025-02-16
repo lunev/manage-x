@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Extension } from '@/types';
 import { UploadIcon } from 'lucide-react';
 import { APP_NAME } from '@/constants';
 
 type ExportedExtension = Pick<
-  Extension,
+  chrome.management.ExtensionInfo,
   'name' | 'description' | 'homepageUrl' | 'version'
 >;
 

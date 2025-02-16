@@ -1,6 +1,6 @@
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Extension } from '@/types';
+import { ExtensionLocal } from '@/types';
 import {
   DotsVerticalIcon,
   InfoCircledIcon,
@@ -30,9 +30,15 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { cn, matchUrl } from '@/lib/utils';
 import { CheckIcon, MoveIcon } from 'lucide-react';
+import { enablePreferences } from '@/features/preferences/preferences-slice';
+import {
+  addUrlRule,
+  resetAllUrlRules,
+  UrlType,
+} from '@/features/extensions/extensions-slice';
 
 const ExtensionItem: React.FC<{
-  extension: Extension;
+  extension: ExtensionLocal;
   tabUrl: string | null;
   onToggle: () => void;
 }> = ({ extension, tabUrl, onToggle }) => {
@@ -42,14 +48,11 @@ const ExtensionItem: React.FC<{
   const activeGroup = groups.find((group) => group.active);
   const dispatch = useAppDispatch();
   const { toast } = useToast();
-  const { id, name, icons, enabled, shortName } = extension;
+  const { id, name, icons, enabled } = extension;
+  const currentExtension = extensions.find((ext) => ext.id === extension.id);
 
   const hasMatchingUrlRules = () => {
-    if (!tabUrl) return false;
-
-    const currentExtension = extensions.find((ext) => ext.id === extension.id);
-    if (!currentExtension) return false;
-
+    if (!tabUrl || !currentExtension) return false;
     return (
       currentExtension.disabledUrls?.some((item) =>
         matchUrl(item.url, tabUrl),
@@ -61,9 +64,7 @@ const ExtensionItem: React.FC<{
   const handleMoveToGroup = (groupId: string, extensionId: string) => {
     const group = groups.find((g) => g.id === groupId);
     if (!group || group.extensions.includes(extensionId)) return;
-
     dispatch(moveExtensionToGroup({ groupId, extensionId }));
-
     toast({
       description: (
         <span
@@ -93,6 +94,41 @@ const ExtensionItem: React.FC<{
     });
   };
 
+  const handleUrlRule = () => {
+    dispatch(enablePreferences('urlRules'));
+    navigate(`/details/${id}?add-rule`);
+  };
+
+  const isUrlRuleInList = (type: UrlType) => {
+    if (tabUrl) {
+      const { origin } = new URL(tabUrl);
+      return currentExtension?.[`${type}Urls`].some((e) =>
+        e.url.includes(origin),
+      );
+    }
+  };
+
+  const handleAddUrlRule = (type: UrlType) => {
+    if (tabUrl) {
+      const { origin } = new URL(tabUrl);
+
+      if (origin && !isUrlRuleInList(type)) {
+        dispatch(addUrlRule({ extensionId: extension.id, url: origin, type }));
+        toast({
+          description: (
+            <span
+              dangerouslySetInnerHTML={{
+                __html: `New URL Rule <strong>${origin}</strong> has been added to the <strong>${type} URL Rules</strong> for the <strong>${extension.name}</strong>`,
+              }}
+            />
+          ),
+          className: cn('top-2 right-2 flex fixed max-w-[300px]'),
+          duration: 3000,
+        });
+      }
+    }
+  };
+
   return (
     <div key={id} className="flex gap-2 items-center">
       {icons && icons?.length > 0 && (
@@ -105,10 +141,7 @@ const ExtensionItem: React.FC<{
           </AvatarFallback>
         </Avatar>
       )}
-      <div
-        className="max-w-full flex-1 flex gap-1 pr-2 text-ellipsis text-nowrap overflow-hidden"
-        title={shortName}
-      >
+      <div className="max-w-full flex-1 flex gap-1 pr-2 text-ellipsis text-nowrap overflow-hidden">
         <span
           className="cursor-pointer"
           onClick={() => navigate(`/details/${id}`)}
@@ -182,9 +215,44 @@ const ExtensionItem: React.FC<{
               <LinkBreak1Icon /> Remove from this group
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem onClick={() => navigate(`/details/${id}`)}>
-            <Link1Icon /> URL Rules
-          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Link1Icon />
+              URL Rules
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={() => navigate(`/details/${id}`)}>
+                  Manage URL Rules
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleAddUrlRule('enabled')}
+                  disabled={isUrlRuleInList('enabled')}
+                >
+                  Enable on this domain
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleAddUrlRule('disabled')}
+                  disabled={isUrlRuleInList('disabled')}
+                >
+                  Disable on this domain
+                </DropdownMenuItem>
+                {hasMatchingUrlRules() && (
+                  <DropdownMenuItem
+                    onClick={() =>
+                      dispatch(resetAllUrlRules({ extensionId: id }))
+                    }
+                  >
+                    Reset All Url Rules
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleUrlRule}>
+                  Add New URL Rule
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
           <DropdownMenuItem onClick={() => navigate(`/details/${id}`)}>
             <InfoCircledIcon /> Details
           </DropdownMenuItem>

@@ -12,11 +12,11 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
-import { syncStorage } from 'redux-persist-webextension-storage';
+import { localStorage } from 'redux-persist-webextension-storage';
 
-const syncStorageConfig = {
-  key: 'syncStorage',
-  storage: syncStorage,
+const localStorageConfig = {
+  key: 'localStorage',
+  storage: localStorage,
 };
 
 const rootReducer = combineReducers({
@@ -25,7 +25,7 @@ const rootReducer = combineReducers({
   groups: groupsSlice,
 });
 
-const persistedReducer = persistReducer(syncStorageConfig, rootReducer);
+const persistedReducer = persistReducer(localStorageConfig, rootReducer);
 
 const store = configureStore({
   reducer: persistedReducer,

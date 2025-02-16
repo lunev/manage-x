@@ -2,39 +2,24 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AppBreadcrumb from '@/components/layout/breadcrumb/AppBreadcrumb';
 import { Button } from '@/components/ui/button';
-import { Extension } from '@/types';
-import { GearIcon } from '@radix-ui/react-icons';
+import { GearIcon, ExternalLinkIcon, TrashIcon } from '@radix-ui/react-icons';
 import { Switch } from '@/components/ui/switch';
-import { ExternalLinkIcon, TrashIcon } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import UrlRules from './UrlRules';
 import Permissions from './Permissions';
 import { useAppDispatch } from '@/app/hooks';
-import {
-  initExtension,
-  toggleExtension,
-} from '@/features/extensions/extensions-slice';
+import { toggleExtension } from '@/features/extensions/extensions-slice';
 
 const Details: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [extension, setExtension] = useState<Extension | null>(null);
+  const [extension, setExtension] =
+    useState<chrome.management.ExtensionInfo | null>(null);
   const dispatch = useAppDispatch();
 
   const fetchExtension = () => {
     if (!id) return;
     chrome.management.get(id, (extension) => {
       setExtension(extension);
-      dispatch(
-        initExtension({
-          extension: {
-            id: extension.id,
-            name: extension.name,
-            enabledUrls: [],
-            disabledUrls: [],
-            enabled: extension.enabled,
-          },
-        }),
-      );
     });
   };
 

@@ -1,64 +1,51 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Extension } from '@/types';
+import { useCallback, useEffect, useState } from 'react';
+import { ExtensionLocal, ExtensionPersisted } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { setActiveGroup } from '@/features/groups/groups-slice';
 import Search from './Search';
 import GroupTabs from './GroupTabs';
 import ExtensionGroup from './ExtensionGroup';
-import { toggleExtension } from '@/features/extensions/extensions-slice';
+import {
+  initExtensions,
+  toggleExtension,
+} from '@/features/extensions/extensions-slice';
 
 const Dashboard: React.FC = () => {
-  const [extensions, setExtensions] = useState<Extension[] | null>(null);
-  const [currentExt, setCurrentExt] = useState<Extension | null>(null);
+  const [extensions, setExtensions] = useState<ExtensionLocal[] | null>(null);
   const [currentTabUrl, setCurrentTabUrl] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const dispatch = useAppDispatch();
   const groups = useAppSelector((state) => state.groups.entities);
-  const { groups: groupsPreferences } = useAppSelector(
-    (state) => state.preferences,
-  );
+  const groupsPreferences = useAppSelector((state) => state.preferences.groups);
   const activeGroup = groups.find((group) => group.active);
 
-  const fetchCurrentExtension = useCallback(() => {
-    chrome.management.getSelf(setCurrentExt);
-  }, []);
-
   const fetchExtensions = useCallback(() => {
-    chrome.management.getAll((exts) => setExtensions([...exts]));
-  }, []);
+    chrome.management.getAll((fetchedExtensions) => {
+      if (!fetchedExtensions?.length) return;
 
-  const handleToggle = (id: string, enabled: boolean) => {
-    chrome.management.setEnabled(id, !enabled, fetchExtensions);
-    dispatch(toggleExtension({ extensionId: id }));
-  };
+      const localExtensions: ExtensionLocal[] = [];
+      const persistedExtensions: ExtensionPersisted[] = [];
 
-  const filteredExtensions = useMemo(() => {
-    if (!extensions) return [];
+      for (const extension of fetchedExtensions) {
+        const { id, name, icons, enabled } = extension;
 
-    let filtered = extensions.filter(
-      (ext) =>
-        ext.id !== currentExt?.id &&
-        (ext.name.toLowerCase().includes(query.toLowerCase()) ||
-          ext.description.toLowerCase().includes(query.toLowerCase())),
-    );
+        // Skip if it's the "Manage X" id
+        if (id === chrome.runtime.id) continue;
 
-    if (activeGroup) {
-      filtered = filtered.filter((ext) =>
-        activeGroup.extensions.includes(ext.id),
-      );
-    }
-    return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [extensions, currentExt, query, activeGroup]);
+        localExtensions.push({ id, name, icons, enabled });
+        persistedExtensions.push({
+          id,
+          name,
+          enabled,
+          enabledUrls: [],
+          disabledUrls: [],
+        });
+      }
 
-  const enabledExtensions = filteredExtensions?.filter((ext) => ext.enabled);
-  const disabledExtensions = filteredExtensions?.filter((ext) => !ext.enabled);
-
-  const handleToggleGroup = (state: boolean) => {
-    filteredExtensions?.forEach((ext) => {
-      chrome.management.setEnabled(ext.id, state);
+      dispatch(initExtensions({ extensions: persistedExtensions }));
+      setExtensions(localExtensions);
     });
-    fetchExtensions();
-  };
+  }, [dispatch]);
 
   const fetchTabUrl = () => {
     chrome.tabs.query(
@@ -69,14 +56,40 @@ const Dashboard: React.FC = () => {
     );
   };
 
-  useEffect(() => {
-    fetchTabUrl();
-  }, []);
+  const handleToggle = (id: string, enabled: boolean) => {
+    chrome.management.setEnabled(id, !enabled, fetchExtensions);
+    dispatch(toggleExtension({ extensionId: id }));
+  };
+
+  const filteredExtensions = () => {
+    if (!extensions) return [];
+
+    let filtered = extensions.filter((e: ExtensionLocal) =>
+      e.name.toLowerCase().includes(query.toLowerCase()),
+    );
+
+    if (activeGroup) {
+      filtered = filtered.filter((e: ExtensionLocal) =>
+        activeGroup.extensions.includes(e.id),
+      );
+    }
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
+  };
+
+  const enabledExtensions = filteredExtensions()?.filter((e) => e.enabled);
+  const disabledExtensions = filteredExtensions()?.filter((e) => !e.enabled);
+
+  const handleToggleGroup = (state: boolean) => {
+    filteredExtensions()?.forEach((ext) => {
+      chrome.management.setEnabled(ext.id, state);
+    });
+    fetchExtensions();
+  };
 
   useEffect(() => {
+    fetchTabUrl();
     fetchExtensions();
-    fetchCurrentExtension();
-  }, [fetchCurrentExtension, fetchExtensions]);
+  }, [fetchExtensions]);
 
   useEffect(() => {
     if (!groupsPreferences.visible) {

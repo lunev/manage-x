@@ -26,21 +26,9 @@ export const matchUrl = (pattern: string, url: string) => {
   return false;
 };
 
-export const getSelfId = () => {
-  return new Promise((resolve, reject) => {
-    chrome.management.getSelf((extensionInfo) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        resolve(extensionInfo.id);
-      }
-    });
-  });
-};
-
 export const storagePersisted = {
   get: async (key: string) => {
-    const data = await chrome.storage.sync.get([STORAGE_KEY_ROOT]);
+    const data = await chrome.storage.local.get([STORAGE_KEY_ROOT]);
     const rootData = data[STORAGE_KEY_ROOT];
     if (rootData) {
       try {
@@ -52,12 +40,5 @@ export const storagePersisted = {
     } else {
       console.log('No data found for the key:', key);
     }
-  },
-  listen: (callback: (changes: unknown) => void) => {
-    chrome.storage.onChanged.addListener((changes) => {
-      if (changes) {
-        callback(changes);
-      }
-    });
   },
 };

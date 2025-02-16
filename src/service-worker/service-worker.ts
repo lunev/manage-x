@@ -1,48 +1,40 @@
-import { Extension } from '@/features/extensions/extensions-slice';
+import { ExtensionPersisted } from '@/types';
 import { matchUrl, storagePersisted } from '@/lib/utils';
 
 const checkTab = async () => {
-  let activeUrlRules = 0;
   const extensions = await storagePersisted.get('extensions');
   if (!extensions || !extensions.entities) return;
+
+  let currentTabUrlRules = 0;
 
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, async (tabs) => {
     if (!tabs.length || !tabs[0].url) return;
     const tabUrl = tabs[0].url;
 
-    const updatePromises = extensions.entities.map(
-      (extension: Extension) =>
-        new Promise<void>((resolve, reject) => {
-          const shouldBeDisabled = extension.disabledUrls?.some((item) =>
-            matchUrl(item.url, tabUrl),
-          );
-          const shouldBeEnabled = extension.enabledUrls?.some((item) =>
-            matchUrl(item.url, tabUrl),
-          );
+    extensions.entities.forEach((extension: ExtensionPersisted) => {
+      const defaultEnabledStatus = extension.enabled;
 
-          if (shouldBeDisabled || shouldBeEnabled) {
-            activeUrlRules++;
-          }
+      const shouldBeDisabled = extension.disabledUrls?.some((item) =>
+        matchUrl(item.url, tabUrl),
+      );
+      const shouldBeEnabled = extension.enabledUrls?.some((item) =>
+        matchUrl(item.url, tabUrl),
+      );
 
-          const newState = shouldBeDisabled
-            ? false
-            : shouldBeEnabled
-              ? true
-              : extension.enabled;
+      if (shouldBeDisabled || shouldBeEnabled) {
+        currentTabUrlRules++;
+      }
 
-          chrome.management.setEnabled(extension.id, newState, () => {
-            if (chrome.runtime.lastError) {
-              reject(chrome.runtime.lastError);
-            } else {
-              resolve();
-            }
-          });
-        }),
-    );
+      const newState = shouldBeDisabled
+        ? false
+        : shouldBeEnabled
+          ? true
+          : defaultEnabledStatus;
 
-    await Promise.all(updatePromises);
+      chrome.management.setEnabled(extension.id, newState);
+    });
 
-    updateBadge(activeUrlRules);
+    updateBadge(currentTabUrlRules);
   });
 };
 
