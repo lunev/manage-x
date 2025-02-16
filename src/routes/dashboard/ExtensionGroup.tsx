@@ -1,5 +1,5 @@
 import { useAppSelector } from '@/app/hooks';
-import { Extension } from '@/types';
+import { ExtensionLocal } from '@/types';
 import { SwitchIcon } from '@radix-ui/react-icons';
 import {
   Tooltip,
@@ -11,7 +11,7 @@ import ExtensionItem from './ExtensionItem';
 
 const ExtensionGroup: React.FC<{
   title: string;
-  extensions: Extension[];
+  extensions: ExtensionLocal[];
   tabUrl: string | null;
   onToggleGroup: () => void;
   onToggleItem: (id: string, enabled: boolean) => void;

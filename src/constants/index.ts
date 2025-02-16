@@ -1,2 +1,2 @@
 export const APP_NAME = 'ManageX';
-export const STORAGE_KEY_ROOT = 'persist:syncStorage';
+export const STORAGE_KEY_ROOT = 'persist:localStorage';

@@ -44,6 +44,12 @@ const preferencesSlice = createSlice({
         state[key].visible = !state[key].visible;
       }
     },
+    enablePreferences(state, action: PayloadAction<PreferenceType['key']>) {
+      const key = action.payload;
+      if (state[key]) {
+        state[key].visible = true;
+      }
+    },
     disablePreferences(state, action: PayloadAction<PreferenceType['key']>) {
       const key = action.payload;
       if (state[key]) {
@@ -53,6 +59,6 @@ const preferencesSlice = createSlice({
   },
 });
 
-export const { togglePreferences, disablePreferences } =
+export const { togglePreferences, enablePreferences, disablePreferences } =
   preferencesSlice.actions;
 export default preferencesSlice.reducer;

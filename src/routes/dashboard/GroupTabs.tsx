@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -21,10 +20,7 @@ const GroupTabs: React.FC = () => {
   const { groups: groupsPreferences } = useAppSelector(
     (state) => state.preferences,
   );
-  const activeGroup = useMemo(
-    () => groups.find((group) => group.active),
-    [groups],
-  );
+  const activeGroup = groups.find((group) => group.active);
 
   return (
     <>

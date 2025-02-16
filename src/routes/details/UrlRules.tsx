@@ -10,13 +10,16 @@ import {
 import { togglePreferences } from '@/features/preferences/preferences-slice';
 import AddRuleForm from './AddRuleForm';
 import UrlRuleItem from './UrlRuleItem';
-import { UrlRule } from '@/features/extensions/extensions-slice';
+import { useSearchParams } from 'react-router-dom';
+import { UrlRule } from '@/types';
 
 const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
   const dispatch = useAppDispatch();
   const { urlRules } = useAppSelector((state) => state.preferences);
   const { entities } = useAppSelector((state) => state.extensions);
   const extension = entities.find((entity) => entity.id === extensionId);
+  const [searchParams] = useSearchParams();
+  const isAdd = searchParams.has('add-rule');
 
   if (!extension) {
     return null;
@@ -75,7 +78,11 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
                   type="enabled"
                 />
               ))}
-              <AddRuleForm extensionId={extensionId} type="enabled" />
+              <AddRuleForm
+                extensionId={extensionId}
+                type="enabled"
+                isAdd={isAdd}
+              />
             </TabsContent>
             <TabsContent value="disabled">
               {disabledUrls.map((rule) => (

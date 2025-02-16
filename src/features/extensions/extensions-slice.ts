@@ -1,23 +1,11 @@
+import { ExtensionPersisted } from '@/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
-
-export type UrlRule = {
-  id: string;
-  url: string;
-};
-
-export type Extension = {
-  id: string;
-  name: string;
-  enabledUrls: UrlRule[];
-  disabledUrls: UrlRule[];
-  enabled: boolean;
-};
 
 export type UrlType = 'enabled' | 'disabled';
 
 type ExtensionsState = {
-  entities: Extension[];
+  entities: ExtensionPersisted[];
 };
 
 const initialState: ExtensionsState = {
@@ -31,18 +19,17 @@ const extensionsSlice = createSlice({
   name: 'extensions',
   initialState,
   reducers: {
-    initExtension: (state, action: PayloadAction<{ extension: Extension }>) => {
-      const { extension } = action.payload;
-      const existingExtension = findExtensionById(state, extension.id);
-      if (!existingExtension) {
-        state.entities.push({
-          id: extension.id,
-          name: extension.name,
-          enabledUrls: [],
-          disabledUrls: [],
-          enabled: extension.enabled,
-        });
-      }
+    initExtensions: (
+      state,
+      action: PayloadAction<{ extensions: ExtensionPersisted[] }>,
+    ) => {
+      const { extensions } = action.payload;
+
+      extensions.forEach((extension) => {
+        if (!state.entities.find((entity) => entity.id === extension.id)) {
+          state.entities.push(extension);
+        }
+      });
     },
     toggleExtension: (
       state,
@@ -113,14 +100,29 @@ const extensionsSlice = createSlice({
         }
       }
     },
+    resetAllUrlRules: (
+      state,
+      action: PayloadAction<{
+        extensionId: string;
+      }>,
+    ) => {
+      const { extensionId } = action.payload;
+      const extension = findExtensionById(state, extensionId);
+
+      if (extension) {
+        extension.disabledUrls = [];
+        extension.enabledUrls = [];
+      }
+    },
   },
 });
 
 export const {
-  initExtension,
+  initExtensions,
+  toggleExtension,
   addUrlRule,
   removeUrlRule,
   updateUrlRule,
-  toggleExtension,
+  resetAllUrlRules,
 } = extensionsSlice.actions;
 export default extensionsSlice.reducer;

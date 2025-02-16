@@ -14,13 +14,13 @@ import {
 import {
   removeUrlRule,
   updateUrlRule,
-  UrlRule,
   UrlType,
 } from '@/features/extensions/extensions-slice';
 import { useAppDispatch } from '@/app/hooks';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { UrlRule } from '@/types';
 
 const UrlRuleItem: React.FC<{
   rule: UrlRule;

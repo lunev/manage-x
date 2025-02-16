@@ -5,10 +5,11 @@ import { useAppDispatch } from '@/app/hooks';
 import { addUrlRule, UrlType } from '@/features/extensions/extensions-slice';
 import { Button } from '@/components/ui/button';
 
-const AddRuleForm: React.FC<{ extensionId: string; type: UrlType }> = ({
-  extensionId,
-  type,
-}) => {
+const AddRuleForm: React.FC<{
+  extensionId: string;
+  type: UrlType;
+  isAdd?: boolean;
+}> = ({ extensionId, type, isAdd }) => {
   const [url, setUrl] = useState('');
   const dispatch = useAppDispatch();
 
@@ -29,6 +30,7 @@ const AddRuleForm: React.FC<{ extensionId: string; type: UrlType }> = ({
           required
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+          autoFocus={isAdd}
         />
         <Cross2Icon
           className={`absolute top-3 right-3 cursor-pointer transition-all duration-300 ${
