@@ -31,6 +31,13 @@ const extensionsSlice = createSlice({
         }
       });
     },
+    updateExtensions: (
+      state,
+      action: PayloadAction<{ extensions: ExtensionPersisted[] }>,
+    ) => {
+      const { extensions } = action.payload;
+      state.entities = extensions;
+    },
     toggleExtension: (
       state,
       action: PayloadAction<{ extensionId: string }>,
@@ -119,6 +126,7 @@ const extensionsSlice = createSlice({
 
 export const {
   initExtensions,
+  updateExtensions,
   toggleExtension,
   addUrlRule,
   removeUrlRule,

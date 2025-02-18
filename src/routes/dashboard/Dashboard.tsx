@@ -8,6 +8,7 @@ import ExtensionGroup from './ExtensionGroup';
 import {
   initExtensions,
   toggleExtension,
+  updateExtensions,
 } from '@/features/extensions/extensions-slice';
 
 const Dashboard: React.FC = () => {
@@ -17,6 +18,9 @@ const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
   const groups = useAppSelector((state) => state.groups.entities);
   const groupsPreferences = useAppSelector((state) => state.preferences.groups);
+  const persistedExtensionsState = useAppSelector(
+    (state) => state.extensions.entities,
+  );
   const activeGroup = groups.find((group) => group.active);
 
   const fetchExtensions = useCallback(() => {
@@ -41,7 +45,6 @@ const Dashboard: React.FC = () => {
           disabledUrls: [],
         });
       }
-
       dispatch(initExtensions({ extensions: persistedExtensions }));
       setExtensions(localExtensions);
     });
@@ -85,6 +88,20 @@ const Dashboard: React.FC = () => {
     });
     fetchExtensions();
   };
+
+  const cleanUpExtensions = () => {
+    if (extensions) {
+      const installedIds = new Set(extensions.map((extension) => extension.id));
+      const cleanedStoredExtensions = persistedExtensionsState.filter(
+        (extension) => installedIds.has(extension.id),
+      );
+      dispatch(updateExtensions({ extensions: cleanedStoredExtensions }));
+    }
+  };
+
+  useEffect(() => {
+    cleanUpExtensions();
+  }, [extensions]);
 
   useEffect(() => {
     fetchTabUrl();
