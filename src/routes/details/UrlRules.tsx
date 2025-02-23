@@ -34,7 +34,7 @@ const UrlRules: React.FC<{ extensionId: string }> = ({ extensionId }) => {
         <h2 className="mb-2 flex gap-1 items-center justify-between">
           <span className="flex gap-1 items-center">
             <Link1Icon />
-            <span className="font-medium">Url Rules</span>
+            <span>Url Rules</span>
             {totalRules > 0 && <span className="">({totalRules})</span>}
           </span>
 
