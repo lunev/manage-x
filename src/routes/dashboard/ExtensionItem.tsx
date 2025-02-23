@@ -46,6 +46,7 @@ const ExtensionItem: React.FC<{
   const groups = useAppSelector((state) => state.groups.entities);
   const extensions = useAppSelector((state) => state.extensions.entities);
   const activeGroup = groups.find((group) => group.active);
+  const preferences = useAppSelector((state) => state.preferences);
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { id, name, icons, enabled } = extension;
@@ -171,36 +172,39 @@ const ExtensionItem: React.FC<{
             {name}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <MoveIcon />
-              Move to group
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                {groups &&
-                  groups.length > 0 &&
-                  groups.map((group) => (
-                    <DropdownMenuItem
-                      key={group.id}
-                      onClick={() => handleMoveToGroup(group.id, id)}
-                      className="flex gap-2 items-center"
-                    >
-                      <span className="flex-1">{group.name}</span>
-                      <span className="w-4">
-                        {group.extensions.includes(id) && (
-                          <CheckIcon width="16" />
-                        )}
-                      </span>
-                    </DropdownMenuItem>
-                  ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/groups?add')}>
-                  New Group
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+          {preferences.groups.visible && (
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <MoveIcon />
+                Move to group
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent>
+                  {groups &&
+                    groups.length > 0 &&
+                    groups.map((group) => (
+                      <DropdownMenuItem
+                        key={group.id}
+                        onClick={() => handleMoveToGroup(group.id, id)}
+                        className="flex gap-2 items-center"
+                      >
+                        <span className="flex-1">{group.name}</span>
+                        <span className="w-4">
+                          {group.extensions.includes(id) && (
+                            <CheckIcon width="16" />
+                          )}
+                        </span>
+                      </DropdownMenuItem>
+                    ))}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => navigate('/groups?add')}>
+                    New Group
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+          )}
+
           {activeGroup && (
             <DropdownMenuItem
               onClick={() => {
