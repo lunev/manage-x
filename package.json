@@ -8,7 +8,7 @@
     "build": "tsc -b && NODE_ENV=production vite build",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
-    "zip": "node build-zip.js"
+    "zip": "npm run build && node build-zip.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

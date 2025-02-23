@@ -3,7 +3,7 @@ import archiver from 'archiver';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// For ES Modules, simulate `__dirname`
+// Simulate `__dirname` in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -18,20 +18,27 @@ if (!fs.existsSync(sourceDir)) {
 }
 
 // Read and parse the manifest.json
-let version = '1.0.0'; // Default version if manifest.json is missing
+let extensionName = 'chrome-extension'; // Default name
+let version = '1.0.0'; // Default version
+
 try {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+  if (manifest.name) {
+    extensionName = manifest.name.replace(/\s+/g, '-').toLowerCase(); // Normalize name
+  }
   if (manifest.version) {
     version = manifest.version;
   }
 } catch (err) {
   console.warn(
-    `Warning: Could not read version from "${manifestPath}". Using default version "${version}".`,
+    `Warning: Could not read manifest.json. Using defaults "${extensionName}" v"${version}".`,
   );
 }
 
-// Dynamic output file name with version
-const outputFileName = `chrome-extension/chrome-extension-v${version}.zip`;
+// Generate the output filename
+const outputFileName = `chrome-extension/${extensionName}-v${version}.zip`;
+
+console.log(`Creating ZIP: ${outputFileName}`);
 
 // Create ZIP file stream
 const output = fs.createWriteStream(outputFileName);
