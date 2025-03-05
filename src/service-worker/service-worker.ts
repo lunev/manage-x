@@ -50,7 +50,8 @@ const checkTab = async () => {
 
 const updateBadge = (count: number) => {
   chrome.action.setBadgeText({ text: count > 0 ? `${count}` : '' });
-  chrome.action.setBadgeBackgroundColor({ color: [225, 0, 0, 100] });
+  chrome.action.setBadgeBackgroundColor({ color: '#f2f2f2' });
+  chrome.action.setBadgeTextColor({ color: '#333' });
 };
 
 chrome.tabs.onUpdated.addListener(checkTab);
