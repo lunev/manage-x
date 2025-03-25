@@ -5,10 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development vite build --mode development --watch",
-    "build": "tsc -b && NODE_ENV=production vite build",
+    "build": "tsc -b && NODE_ENV=production vite build && node build-zip.js",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "zip": "npm run build && node build-zip.js"
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
