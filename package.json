@@ -32,7 +32,7 @@
     "@reduxjs/toolkit": "^2.2.7",
     "@testing-library/jest-dom": "^6.6.2",
     "@testing-library/react": "^16.0.1",
-    "@vitest/browser": "^2.1.4",
+    "@vitest/browser": "^3.0.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
@@ -58,8 +58,8 @@
     "@types/redux-persist-webextension-storage": "^1.0.3",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-react": "^4.3.1",
-    "@vitest/coverage-v8": "^2.1.4",
-    "@vitest/ui": "^2.1.4",
+    "@vitest/coverage-v8": "^3.0.9",
+    "@vitest/ui": "^3.0.9",
     "archiver": "^7.0.1",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.13.0",
@@ -75,7 +75,7 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.12.2",
-    "vite": "^5.4.15",
-    "vitest": "^2.1.9"
+    "vite": "^6.2.3",
+    "vitest": "^3.0.9"
   }
 }
