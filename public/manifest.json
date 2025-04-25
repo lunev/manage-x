@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ManageX",
+  "name": "ManageX: Extension Manager with URL-based Rules",
   "description": "Manage, group, and export extensions with rules to enable/disable them by URL.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": {
     "name": "Alexander Lunev",
     "email": "lunevdev@gmail.com"

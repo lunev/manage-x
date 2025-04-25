@@ -6,9 +6,7 @@ import Groups from '@/routes/groups/Groups';
 
 function App() {
   return (
-    <HashRouter
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-    >
+    <HashRouter>
       <Routes>
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Dashboard />} />

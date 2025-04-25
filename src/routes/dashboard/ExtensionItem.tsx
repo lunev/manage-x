@@ -49,7 +49,7 @@ const ExtensionItem: React.FC<{
   const preferences = useAppSelector((state) => state.preferences);
   const dispatch = useAppDispatch();
   const { toast } = useToast();
-  const { id, name, icons, enabled } = extension;
+  const { id, name, icons, enabled, installType } = extension;
   const currentExtension = extensions.find((ext) => ext.id === extension.id);
 
   const hasMatchingUrlRules = () => {
@@ -134,7 +134,7 @@ const ExtensionItem: React.FC<{
     <div key={id} className="flex gap-2 items-center">
       {icons && icons?.length > 0 && (
         <Avatar
-          className={`${!enabled ? 'grayscale' : ''} w-4 h-4 text-xs text-white`}
+          className={`${!enabled ? 'grayscale' : ''} w-4 h-4 text-xs text-white relative`}
         >
           <AvatarImage src={icons.at(-1)?.url} alt={name} />
           <AvatarFallback className="bg-green-500">
@@ -142,16 +142,26 @@ const ExtensionItem: React.FC<{
           </AvatarFallback>
         </Avatar>
       )}
-      <div className="max-w-full flex-1 flex gap-1 pr-2 text-ellipsis text-nowrap overflow-hidden">
+      <div className="max-w-full flex-1 flex gap-1 pr-2">
         <span
           className="cursor-pointer"
           onClick={() => navigate(`/details/${id}`)}
         >
-          {name}
+          <span className="text-ellipsis block text-nowrap overflow-hidden">
+            {name.length > 40 ? name.slice(0, 40) + '...' : name}
+          </span>
         </span>
+        {installType === 'development' && (
+          <div
+            className="text-orange-600 font-semibold -translate-y-1 text-nowrap"
+            style={{ fontSize: '8px' }}
+          >
+            DEV MODE
+          </div>
+        )}
         {hasMatchingUrlRules() && (
           <span
-            className="text-red-600 -translate-y-1"
+            className="text-red-600 -translate-y-1 text-nowrap"
             title="Extension has active URL rules"
             style={{ fontSize: '10px' }}
           >

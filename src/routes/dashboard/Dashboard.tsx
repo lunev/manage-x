@@ -31,12 +31,12 @@ const Dashboard: React.FC = () => {
       const persistedExtensions: ExtensionPersisted[] = [];
 
       for (const extension of fetchedExtensions) {
-        const { id, name, icons, enabled } = extension;
+        const { id, name, icons, enabled, installType } = extension;
 
         // Skip if it's the "Manage X" id
         if (id === chrome.runtime.id) continue;
 
-        localExtensions.push({ id, name, icons, enabled });
+        localExtensions.push({ id, name, icons, enabled, installType });
         persistedExtensions.push({
           id,
           name,
