@@ -5,6 +5,8 @@ import {
   DotsVerticalIcon,
   DrawingPinFilledIcon,
   DrawingPinIcon,
+  ExternalLinkIcon,
+  GearIcon,
   MagnifyingGlassIcon,
 } from '@radix-ui/react-icons';
 import {
@@ -22,7 +24,7 @@ const Header: React.FC = () => {
     <header className="px-4 py-3 flex items-center gap-1 text-xs border-b dark:border-gray-700 fade-in">
       <div className="flex items-center flex-1 gap-2">
         <Logo width={18} height={18} />
-        <Link to="/" className="text-sm cursor-pointer">
+        <Link to="/" className="text-sm font-medium cursor-pointer">
           {APP_NAME}
         </Link>
       </div>
@@ -44,6 +46,18 @@ const Header: React.FC = () => {
         <DropdownMenuContent className="mr-4">
           <DropdownMenuItem>
             <ExportButton />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => chrome.tabs.create({ url: 'chrome://extensions/' })}
+          >
+            <GearIcon /> Manage Extensions
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              chrome.tabs.create({ url: 'https://chromewebstore.google.com/' })
+            }
+          >
+            <ExternalLinkIcon /> Chrome Web Store
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
