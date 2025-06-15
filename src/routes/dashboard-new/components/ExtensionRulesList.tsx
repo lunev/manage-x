@@ -1,0 +1,63 @@
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import { toggleExtensionUrlRule } from '@/features/extension-rules/extension-rules-slice';
+import useExtensions from '@/hooks/useExtensions';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import { ExtensionRule } from '@/types';
+import { cn } from '@/lib/utils';
+
+const ExtensionRulesList: React.FC = () => {
+  const rules = useAppSelector((state) => state.extensionRules.entities);
+  const { extensions } = useExtensions();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  if (!rules) return null;
+
+  return (
+    <div className="mt-3 mb-5">
+      <h2 className="muted-heading my-1 flex gap-1 items-center">
+        <span>Extension Rules</span>
+        <Tooltip>
+          <TooltipTrigger>
+            <QuestionMarkCircledIcon className="opacity-60" />
+          </TooltipTrigger>
+          <TooltipContent side="right" className="max-w-[240px] text-xs">
+            <p>
+              Extension Rules let you define when a specific extension should be enabled or disabled based on the page
+              URL.
+            </p>
+          </TooltipContent>
+        </Tooltip>
+      </h2>
+      <div className="mb-2 flex flex-col gap-1">
+        {rules.map((rule: ExtensionRule) => {
+          const extension = extensions.find((ext) => ext.id === rule.id);
+          return (
+            <div key={rule.id} className="flex items-center gap-2">
+              <Avatar className={cn('w-4 h-4 text-xs text-white relative', { grayscale: !rule.active })}>
+                <AvatarImage src={extension?.icons?.at(-1)?.url} alt={extension?.name} />
+                <AvatarFallback className="bg-green-500">{extension?.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <Link to={`/extension-rules/${rule.id}/edit/`} className="flex-1 line-clamp-1">
+                {rule.name}
+              </Link>
+              <Switch checked={rule.active} onCheckedChange={() => dispatch(toggleExtensionUrlRule({ id: rule.id }))} />
+            </div>
+          );
+        })}
+      </div>
+      {rules.length < extensions.length && (
+        <Button size="xs" variant="success" onClick={() => navigate('/extension-rules/new/')}>
+          Add
+        </Button>
+      )}
+    </div>
+  );
+};
+
+export default ExtensionRulesList;

@@ -1,13 +1,9 @@
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
-import { ArchiveIcon } from 'lucide-react';
 import {
   DotsVerticalIcon,
-  DrawingPinFilledIcon,
-  DrawingPinIcon,
   ExternalLinkIcon,
   GearIcon,
-  MagnifyingGlassIcon,
 } from '@radix-ui/react-icons';
 import {
   DropdownMenu,
@@ -17,7 +13,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import ExportButton from './ExportButton';
 import Logo from '@/components/ui/logo';
-import TogglePreferences from './TogglePreferences';
 
 const Header: React.FC = () => {
   return (
@@ -28,17 +23,6 @@ const Header: React.FC = () => {
           {APP_NAME}
         </Link>
       </div>
-      <TogglePreferences
-        preferenceKey={'search'}
-        icon={<MagnifyingGlassIcon />}
-      />
-      <TogglePreferences preferenceKey={'groups'} icon={<ArchiveIcon />} />
-      <TogglePreferences
-        preferenceKey={'sidePanel'}
-        icon={<DrawingPinIcon />}
-        iconActive={<DrawingPinFilledIcon />}
-        toastMessage="Note: Reopen the extension to apply the new pinning setting."
-      />
       <DropdownMenu>
         <DropdownMenuTrigger>
           <DotsVerticalIcon />

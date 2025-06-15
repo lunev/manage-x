@@ -1,20 +1,25 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import RootLayout from '@/routes/root/Root';
-import Dashboard from '@/routes/dashboard/Dashboard';
-import Details from '@/routes/details/Details';
-import Groups from '@/routes/groups/Groups';
+import Dashboard from '@/routes/dashboard-new/Dashboard';
+import ExtensionRules from '@/routes/extension-rules/ExtensionRules';
+import GroupRules from '@/routes/group-rules/GroupRules';
 
 function App() {
   return (
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<RootLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="/details/:id" element={<Details />} />
-          <Route path="groups" element={<Groups />} />
-        </Route>
-      </Routes>
-    </HashRouter>
+    <TooltipProvider delayDuration={100}>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<RootLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="/extension-rules/new/" element={<ExtensionRules />} />
+            <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+            <Route path="/group-rules/new" element={<GroupRules />} />
+            <Route path="/group-rules/:id/edit" element={<GroupRules />} />
+          </Route>
+        </Routes>
+      </HashRouter>
+    </TooltipProvider>
   );
 }
 

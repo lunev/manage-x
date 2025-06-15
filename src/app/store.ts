@@ -2,16 +2,9 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import preferencesSlice from '@/features/preferences/preferences-slice';
 import groupsSlice from '@/features/groups/groups-slice';
 import extensionsSlice from '@/features/extensions/extensions-slice';
-import {
-  persistStore,
-  persistReducer,
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
-} from 'redux-persist';
+import groupRuleSlice from '@/features/group-rules/group-rules-slice';
+import extensionRuleSlice from '@/features/extension-rules/extension-rules-slice';
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import { localStorage } from 'redux-persist-webextension-storage';
 
 const localStorageConfig = {
@@ -23,6 +16,8 @@ const rootReducer = combineReducers({
   extensions: extensionsSlice,
   preferences: preferencesSlice,
   groups: groupsSlice,
+  groupRules: groupRuleSlice,
+  extensionRules: extensionRuleSlice,
 });
 
 const persistedReducer = persistReducer(localStorageConfig, rootReducer);
