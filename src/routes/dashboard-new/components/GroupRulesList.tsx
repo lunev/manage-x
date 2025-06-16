@@ -47,7 +47,9 @@ const GroupRulesList: React.FC = () => {
                     {extensions
                       .filter((ext) => rule.extensions.includes(ext.id))
                       .map((ext) => (
-                        <p className="line-clamp-1">{ext.name}</p>
+                        <p key={ext.id} className="line-clamp-1">
+                          {ext.name}
+                        </p>
                       ))}
                   </TooltipContent>
                 </Tooltip>
