@@ -3,10 +3,13 @@ import groupRuleSlice from '@/features/group-rules/group-rules-slice';
 import extensionRuleSlice from '@/features/extension-rules/extension-rules-slice';
 import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import { localStorage } from 'redux-persist-webextension-storage';
+import { migrate } from './migrateState';
 
 const localStorageConfig = {
   key: 'localStorage',
   storage: localStorage,
+  version: 1,
+  migrate,
 };
 
 const rootReducer = combineReducers({
