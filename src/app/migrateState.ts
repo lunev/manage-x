@@ -14,7 +14,7 @@ type ManageXPersistedState = PersistedState & {
 
 export const migrate = async (state: ManageXPersistedState | undefined): Promise<ManageXPersistedState | undefined> => {
   if (state?.extensions) {
-    const newExtensionRules: ExtensionRule[] = state?.extensions?.entities
+    const newExtensionRules = state.extensions.entities
       .filter((ext) => ext.enabled)
       .map((ext) => ({
         id: ext.id,
@@ -24,14 +24,17 @@ export const migrate = async (state: ManageXPersistedState | undefined): Promise
         active: ext.enabled,
       }));
 
+    const newState = { ...state };
+
+    delete newState.extensions;
+    delete newState.preferences;
+    delete newState.groups;
+
     return {
-      ...state,
+      ...newState,
       extensionRules: {
         entities: newExtensionRules,
       },
-      extensions: undefined,
-      preferences: undefined,
-      groups: undefined,
     };
   }
 
