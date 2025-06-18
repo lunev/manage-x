@@ -5,6 +5,8 @@ type ManageXPersistedState = PersistedState & {
   extensions?: {
     entities: ExtensionPersisted[];
   };
+  preferences?: unknown;
+  groups?: unknown;
   extensionRules?: {
     entities: ExtensionRule[];
   };
@@ -27,7 +29,9 @@ export const migrate = async (state: ManageXPersistedState | undefined): Promise
       extensionRules: {
         entities: newExtensionRules,
       },
-      extensions: state.extensions,
+      extensions: undefined,
+      preferences: undefined,
+      groups: undefined,
     };
   }
 
