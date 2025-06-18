@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ManageX: Extension Manager with URL-based Rules",
   "description": "Manage, group, and export extensions with rules to enable/disable them by URL.",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "author": {
     "name": "Alexander Lunev",
     "email": "lunevdev@gmail.com"
@@ -25,13 +25,7 @@
     "service_worker": "service-worker.js",
     "type": "module"
   },
-  "permissions": [
-    "storage",
-    "unlimitedStorage",
-    "management",
-    "sidePanel",
-    "tabs"
-  ],
+  "permissions": ["storage", "unlimitedStorage", "management", "sidePanel", "tabs"],
   "commands": {
     "_execute_action": {
       "suggested_key": {
