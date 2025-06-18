@@ -1,60 +1,75 @@
-import { ExtensionPersisted } from '@/types';
-import { matchUrl, storagePersisted } from '@/lib/utils';
+import {
+  addDefaultExtensionState,
+  getCurrentTabParams,
+  initDefaultExtensionsState,
+  removeDefaultExtensionState,
+  setDefaultExtensionState,
+} from '@/lib/utils';
+import { setupRulesManager } from './utils/rulesManager';
 
-const checkTab = async () => {
-  const extensions = await storagePersisted.get('extensions');
-  if (!extensions?.entities) return;
+/**
+ * On extension install or update:
+ * Save the current state (enabled/disabled) of all installed extensions.
+ * This allows restoring them to their original state later.
+ */
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  if (reason === 'install' || reason === 'update') {
+    await initDefaultExtensionsState();
+  }
+});
 
-  let currentTabUrlRules = 0;
+/**
+ * When a new extension is installed by the user or system:
+ * Add its state to the stored default extension states.
+ */
+chrome.management.onInstalled.addListener(async (installedExtension) => {
+  await addDefaultExtensionState(installedExtension);
+});
 
-  chrome.tabs.query({ active: true, lastFocusedWindow: true }, async (tabs) => {
-    if (!tabs.length || !tabs[0].url) return;
-    const tabUrl = tabs[0].url;
+/**
+ * When an extension is uninstalled:
+ * Remove its state record from the default extension states.
+ */
+chrome.management.onUninstalled.addListener(async (uninstalledExtension) => {
+  await removeDefaultExtensionState(uninstalledExtension);
+});
 
-    const extensionPromises = extensions.entities.map(
-      (extension: ExtensionPersisted) => {
-        return new Promise<void>((resolve) => {
-          const defaultEnabledStatus = extension.enabled;
+/**
+ * Initialize the rules manager that automatically enables/disables
+ * extensions based on matched URLs or group rules.
+ */
+setupRulesManager();
 
-          const shouldBeDisabled = extension.disabledUrls?.some((item) =>
-            matchUrl(item.url, tabUrl),
-          );
-          const shouldBeEnabled = extension.enabledUrls?.some((item) =>
-            matchUrl(item.url, tabUrl),
-          );
-
-          const newState = shouldBeDisabled
-            ? false
-            : shouldBeEnabled
-              ? true
-              : defaultEnabledStatus;
-
-          chrome.management.get(extension.id, () => {
-            if (!chrome.runtime.lastError) {
-              chrome.management.setEnabled(extension.id, newState);
-              if (shouldBeDisabled || shouldBeEnabled) {
-                currentTabUrlRules++;
-              }
-            }
-            resolve();
-          });
-        });
-      },
-    );
-
-    await Promise.all(extensionPromises);
-
-    updateBadge(currentTabUrlRules);
-  });
+/**
+ * Stores the user's manual enable/disable actions from chrome://extensions
+ * by updating the saved default state of that extension.
+ */
+const handleToggleExtensionState = async (extension: chrome.management.ExtensionInfo) => {
+  await setDefaultExtensionState(extension.id, extension.enabled);
 };
 
-const updateBadge = (count: number) => {
-  chrome.action.setBadgeText({ text: count > 0 ? `${count}` : '' });
-  chrome.action.setBadgeBackgroundColor({ color: '#f2f2f2' });
-  chrome.action.setBadgeTextColor({ color: '#333' });
+/**
+ * Checks if the active tab is the system `chrome://extensions/` page.
+ * If so, listen for manual toggles (enable/disable) and persist them.
+ * Otherwise, remove those listeners to avoid duplication.
+ */
+const syncExtensionState = async () => {
+  const currentTab = await getCurrentTabParams();
+  const isSystemExtensionsPage = currentTab?.url?.includes('chrome://extensions/');
+
+  if (isSystemExtensionsPage) {
+    chrome.management.onEnabled.addListener(handleToggleExtensionState);
+    chrome.management.onDisabled.addListener(handleToggleExtensionState);
+  } else {
+    chrome.management.onEnabled.removeListener(handleToggleExtensionState);
+    chrome.management.onDisabled.removeListener(handleToggleExtensionState);
+  }
 };
 
-chrome.tabs.onUpdated.addListener(checkTab);
-chrome.tabs.onActivated.addListener(checkTab);
-chrome.storage.onChanged.addListener(checkTab);
-chrome.management.onUninstalled.addListener(checkTab);
+// Keep extension state synced on navigation and tab changes
+chrome.tabs.onUpdated.addListener(syncExtensionState);
+chrome.tabs.onActivated.addListener(syncExtensionState);
+chrome.tabs.onCreated.addListener(syncExtensionState);
+
+// Initial run
+syncExtensionState();

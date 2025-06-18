@@ -1,10 +1,6 @@
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
-import {
-  DotsVerticalIcon,
-  ExternalLinkIcon,
-  GearIcon,
-} from '@radix-ui/react-icons';
+import { DotsVerticalIcon, ExternalLinkIcon, GearIcon } from '@radix-ui/react-icons';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,16 +27,10 @@ const Header: React.FC = () => {
           <DropdownMenuItem>
             <ExportButton />
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() => chrome.tabs.create({ url: 'chrome://extensions/' })}
-          >
+          <DropdownMenuItem onClick={() => chrome.tabs.create({ url: 'chrome://extensions/' })}>
             <GearIcon /> Manage Extensions
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={() =>
-              chrome.tabs.create({ url: 'https://chromewebstore.google.com/' })
-            }
-          >
+          <DropdownMenuItem onClick={() => chrome.tabs.create({ url: 'https://chromewebstore.google.com/' })}>
             <ExternalLinkIcon /> Chrome Web Store
           </DropdownMenuItem>
         </DropdownMenuContent>

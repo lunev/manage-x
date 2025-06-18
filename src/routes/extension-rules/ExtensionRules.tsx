@@ -1,5 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/app/hooks';
+import {
+  addExtensionUrlRule,
+  removeExtensionUrlRule,
+  updateExtensionUrlRule,
+} from '@/features/extension-rules/extension-rules-slice';
 import useExtensions from '@/hooks/useExtensions';
 import { ArrowLeftIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,13 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import ExtensionsCombobox from './components/ExtensionsCombobox';
 import { Button } from '@/components/ui/button';
 import { ExtensionRule } from '@/types';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import {
-  addExtensionUrlRule,
-  removeExtensionUrlRule,
-  updateExtensionUrlRule,
-} from '@/features/extension-rules/extension-rules-slice';
 import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
+import { getDefaultExtensionState } from '@/lib/utils';
 
 const ExtensionRules: React.FC = () => {
   const { id } = useParams();
@@ -47,13 +48,20 @@ const ExtensionRules: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleRemove = (id: string) => {
+  const handleRemove = async (id: string) => {
+    // Restore the extension to its default state
+    const defaultState = await getDefaultExtensionState(id);
+    chrome.management.setEnabled(id, defaultState.enabled);
+
     dispatch(removeExtensionUrlRule({ id }));
     navigate('/');
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!formData.name.trim()) return;
+
     if (editedExtensionRule) {
       dispatch(updateExtensionUrlRule(formData));
     } else {
@@ -79,14 +87,10 @@ const ExtensionRules: React.FC = () => {
       </div>
       <div className="mb-3">
         <label className="muted-heading mb-0.5 block">URL Rules</label>
-        <Tabs defaultValue="enabled" className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger value="enabled" className="flex-1 text-xs">
-              Enabled URLs
-            </TabsTrigger>
-            <TabsTrigger value="disabled" className="flex-1 text-xs">
-              Disabled URLs
-            </TabsTrigger>
+        <Tabs defaultValue="enabled">
+          <TabsList>
+            <TabsTrigger value="enabled">Enabled URLs</TabsTrigger>
+            <TabsTrigger value="disabled">Disabled URLs</TabsTrigger>
           </TabsList>
           <TabsContent value="enabled">
             <Textarea
@@ -95,6 +99,10 @@ const ExtensionRules: React.FC = () => {
               name="enabledUrls"
               value={formData.enabledUrls}
               onChange={handleChange}
+              placeholder="google.com
+*.google.com
+docs.*.com
+localhost:3000"
             />
           </TabsContent>
           <TabsContent value="disabled">
@@ -104,6 +112,10 @@ const ExtensionRules: React.FC = () => {
               name="disabledUrls"
               value={formData.disabledUrls}
               onChange={handleChange}
+              placeholder="google.com
+*.google.com
+docs.*.com
+localhost:3000"
             />
           </TabsContent>
         </Tabs>

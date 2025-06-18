@@ -13,6 +13,7 @@ import { GroupRule } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { addGroupUrlRule, removeGroupUrlRule, updateGroupUrlRule } from '@/features/group-rules/group-rules-slice';
 import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
+import { getDefaultExtensionState } from '@/lib/utils';
 
 const GroupRules: React.FC = () => {
   const { id } = useParams();
@@ -57,7 +58,15 @@ const GroupRules: React.FC = () => {
     setFormData((prev) => ({ ...prev, extensions: updatedExtensions }));
   };
 
-  const handleRemove = (id: string) => {
+  const handleRemove = async (id: string) => {
+    // Restore the extension to its default enabled/disabled state
+    if (editedGroupRule?.extensions.length) {
+      for (const extensionId of editedGroupRule.extensions) {
+        const defaultState = await getDefaultExtensionState(extensionId);
+        chrome.management.setEnabled(extensionId, defaultState.enabled);
+      }
+    }
+
     dispatch(removeGroupUrlRule({ id }));
     navigate('/');
   };
@@ -123,6 +132,10 @@ const GroupRules: React.FC = () => {
               name="enabledUrls"
               value={formData.enabledUrls}
               onChange={handleChange}
+              placeholder="google.com
+*.google.com
+docs.*.com
+localhost:3000"
             />
           </TabsContent>
           <TabsContent value="disabled">
@@ -132,6 +145,10 @@ const GroupRules: React.FC = () => {
               name="disabledUrls"
               value={formData.disabledUrls}
               onChange={handleChange}
+              placeholder="google.com
+*.google.com
+docs.*.com
+localhost:3000"
             />
           </TabsContent>
         </Tabs>
