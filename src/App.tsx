@@ -1,7 +1,7 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import RootLayout from '@/routes/root/Root';
-import Dashboard from '@/routes/dashboard-new/Dashboard';
+import Dashboard from '@/routes/dashboard/Dashboard';
 import ExtensionRules from '@/routes/extension-rules/ExtensionRules';
 import GroupRules from '@/routes/group-rules/GroupRules';
 

@@ -29,3 +29,9 @@ export type ExtensionRule = {
   disabledUrls: string;
   active: boolean;
 };
+
+export type ExtensionDefaultState = {
+  id: string;
+  name: string;
+  enabled: boolean;
+};
