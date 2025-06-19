@@ -1,3 +1,4 @@
+import { mergeStringArrays, mergeUrlStrings } from '@/lib/utils';
 import { GroupRule } from '@/types';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -39,8 +40,34 @@ const groupRuleSlice = createSlice({
         state.entities[groupIndex].active = !state.entities[groupIndex].active;
       }
     },
+    mergeGroupRules: (state, action: PayloadAction<GroupRule[]>) => {
+      const newRules = action.payload;
+      const currentMap = new Map(state.entities.map((rule) => [rule.id, rule]));
+
+      for (const newRule of newRules) {
+        const existingRule = currentMap.get(newRule.id);
+
+        if (!existingRule) {
+          currentMap.set(newRule.id, newRule);
+        } else {
+          const mergedRule: GroupRule = {
+            ...existingRule,
+            name: existingRule.name || newRule.name,
+            extensions: mergeStringArrays(existingRule.extensions, newRule.extensions),
+            enabledUrls: mergeUrlStrings(existingRule.enabledUrls, newRule.enabledUrls),
+            disabledUrls: mergeUrlStrings(existingRule.disabledUrls, newRule.disabledUrls),
+            active: newRule.active,
+          };
+
+          currentMap.set(newRule.id, mergedRule);
+        }
+      }
+
+      state.entities = Array.from(currentMap.values());
+    },
   },
 });
 
-export const { addGroupUrlRule, removeGroupUrlRule, updateGroupUrlRule, toggleGroupUrlRule } = groupRuleSlice.actions;
+export const { addGroupUrlRule, removeGroupUrlRule, updateGroupUrlRule, toggleGroupUrlRule, mergeGroupRules } =
+  groupRuleSlice.actions;
 export default groupRuleSlice.reducer;

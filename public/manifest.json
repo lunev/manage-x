@@ -35,5 +35,8 @@
         "linux": "Ctrl+Shift+E"
       }
     }
+  },
+  "options_ui": {
+    "page": "options.html"
   }
 }

@@ -160,3 +160,25 @@ export const setDefaultExtensionState = async (id: string, enabled: boolean) => 
     console.error('Unable to set the extension state.', error);
   }
 };
+
+// Helper to merge URLs
+export const mergeUrlStrings = (oldStr: string, newStr: string): string => {
+  const oldUrls = oldStr
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const newUrls = newStr
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const mergedSet = new Set([...oldUrls, ...newUrls]);
+
+  return Array.from(mergedSet).join('\n');
+};
+
+// Helper to merge arrays of strings
+export const mergeStringArrays = (a: string[], b: string[]): string[] => {
+  const mergedSet = new Set([...a, ...b]);
+  return Array.from(mergedSet);
+};
