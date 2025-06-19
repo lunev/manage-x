@@ -1,14 +1,14 @@
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
-import { DotsVerticalIcon, ExternalLinkIcon, GearIcon } from '@radix-ui/react-icons';
+import { DotsVerticalIcon, DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
+import { exportUrlRules } from '@/lib/export';
+import Logo from '@/components/ui/logo';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import ExportButton from './ExportButton';
-import Logo from '@/components/ui/logo';
 
 const Header: React.FC = () => {
   return (
@@ -24,14 +24,11 @@ const Header: React.FC = () => {
           <DotsVerticalIcon />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="mr-4">
-          <DropdownMenuItem>
-            <ExportButton />
+          <DropdownMenuItem onSelect={exportUrlRules}>
+            <UploadIcon /> Export URL Rules
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => chrome.tabs.create({ url: 'chrome://extensions/' })}>
-            <GearIcon /> Manage Extensions
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => chrome.tabs.create({ url: 'https://chromewebstore.google.com/' })}>
-            <ExternalLinkIcon /> Chrome Web Store
+          <DropdownMenuItem onSelect={() => chrome.runtime.openOptionsPage()}>
+            <DownloadIcon /> Import URL Rules
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

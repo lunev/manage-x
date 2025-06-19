@@ -35,3 +35,8 @@ export type ExtensionDefaultState = {
   name: string;
   enabled: boolean;
 };
+
+export type ExportedData = {
+  extensionRules: ExtensionRule[];
+  groupRules: GroupRule[];
+};
