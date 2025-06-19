@@ -87,7 +87,7 @@ const ExtensionRules: React.FC = () => {
       </div>
       <div className="mb-3">
         <label className="muted-heading mb-0.5 block">URL Rules</label>
-        <Tabs defaultValue="enabled">
+        <Tabs defaultValue="disabled">
           <TabsList>
             <TabsTrigger value="enabled">Enabled URLs</TabsTrigger>
             <TabsTrigger value="disabled">Disabled URLs</TabsTrigger>
