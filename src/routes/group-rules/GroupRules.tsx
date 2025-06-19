@@ -116,7 +116,7 @@ const GroupRules: React.FC = () => {
       </div>
       <div className="mb-3">
         <label className="muted-heading mb-0.5 block">URL Rules</label>
-        <Tabs defaultValue="enabled" className="w-full">
+        <Tabs defaultValue="disabled" className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="enabled" className="flex-1 text-xs">
               Enabled URLs
