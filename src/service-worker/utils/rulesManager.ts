@@ -14,8 +14,11 @@ export const manageExtensions = async () => {
   const groups = (groupRules?.entities ?? []) as GroupRule[];
 
   const extRuleMap = new Map(individualRules.map((r) => [r.id, r]));
+  const extIds = new Set([...individualRules.map((r) => r.id), ...groups.flatMap((g) => g.extensions)]);
 
-  for (const extId of new Set([...individualRules.map((r) => r.id), ...groups.flatMap((g) => g.extensions)])) {
+  const promises: Promise<void>[] = [];
+
+  for (const extId of extIds) {
     const rule = extRuleMap.get(extId);
     const groupMatches = groups.filter((g) => g.active && g.extensions.includes(extId));
 
@@ -51,16 +54,21 @@ export const manageExtensions = async () => {
     const shouldDisable = disabledPatterns.some((pattern) => matchUrl(tabUrl, pattern));
     const shouldEnable = enabledPatterns.some((pattern) => matchUrl(tabUrl, pattern));
 
-    const defaultState = await getDefaultExtensionState(extId);
-
-    if (shouldDisable) {
-      await chrome.management.setEnabled(extId, false);
-    } else if (shouldEnable) {
-      await chrome.management.setEnabled(extId, true);
-    } else {
-      await chrome.management.setEnabled(extId, defaultState.enabled);
-    }
+    promises.push(
+      (async () => {
+        const defaultState = await getDefaultExtensionState(extId);
+        if (shouldDisable) {
+          await chrome.management.setEnabled(extId, false);
+        } else if (shouldEnable) {
+          await chrome.management.setEnabled(extId, true);
+        } else {
+          await chrome.management.setEnabled(extId, defaultState.enabled);
+        }
+      })(),
+    );
   }
+
+  await Promise.all(promises);
 };
 
 export function setupRulesManager() {
