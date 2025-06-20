@@ -16,6 +16,7 @@ export const manageExtensions = async () => {
   const extRuleMap = new Map(individualRules.map((r) => [r.id, r]));
   const extIds = new Set([...individualRules.map((r) => r.id), ...groups.flatMap((g) => g.extensions)]);
 
+  let affectedCount = 0;
   const promises: Promise<void>[] = [];
 
   for (const extId of extIds) {
@@ -57,18 +58,30 @@ export const manageExtensions = async () => {
     promises.push(
       (async () => {
         const defaultState = await getDefaultExtensionState(extId);
+        let newState: boolean;
+
         if (shouldDisable) {
-          await chrome.management.setEnabled(extId, false);
+          newState = false;
         } else if (shouldEnable) {
-          await chrome.management.setEnabled(extId, true);
+          newState = true;
         } else {
-          await chrome.management.setEnabled(extId, defaultState.enabled);
+          newState = defaultState.enabled;
         }
+
+        if (newState !== defaultState.enabled) {
+          affectedCount++;
+        }
+
+        await chrome.management.setEnabled(extId, newState);
       })(),
     );
   }
 
   await Promise.all(promises);
+
+  // Set badge with affected count
+  chrome.action.setBadgeText({ text: affectedCount > 0 ? String(affectedCount) : '' });
+  chrome.action.setBadgeBackgroundColor({ color: '#ededed' });
 };
 
 export function setupRulesManager() {
