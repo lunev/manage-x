@@ -15,7 +15,7 @@ type ManageXPersistedState = PersistedState & {
 export const migrate = async (state: ManageXPersistedState | undefined): Promise<ManageXPersistedState | undefined> => {
   if (state?.extensions) {
     const newExtensionRules = state.extensions.entities
-      .filter((ext) => ext.enabled)
+      .filter((ext) => ext.enabledUrls?.length > 0 || ext.disabledUrls?.length > 0)
       .map((ext) => ({
         id: ext.id,
         name: ext.name,
