@@ -1,12 +1,16 @@
 import useExtensions from '@/hooks/useExtensions';
+import { useExtensionHasRules } from '@/hooks/useExtensionHasRules';
 import { toggleDefaultExtensionState } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ExtensionItem: React.FC<{
   ext: chrome.management.ExtensionInfo;
   toggle: (id: string, newState: boolean) => void;
 }> = ({ ext, toggle }) => {
+  const hasRules = useExtensionHasRules(ext.id);
+
   return (
     <div className="flex items-center gap-2">
       <Avatar className={`${!ext.enabled ? 'grayscale' : ''} w-4 h-4 text-xs text-white relative`}>
@@ -14,7 +18,18 @@ const ExtensionItem: React.FC<{
         <AvatarFallback className="bg-green-500">{ext.name.slice(0, 2).toUpperCase()}</AvatarFallback>
       </Avatar>
       <div className="flex-1 line-clamp-1">{ext.name}</div>
-      <Switch checked={ext.enabled} onCheckedChange={() => toggle(ext.id, !ext.enabled)} />
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <Switch checked={ext.enabled} onCheckedChange={() => toggle(ext.id, !ext.enabled)} disabled={hasRules} />
+          </div>
+        </TooltipTrigger>
+        {hasRules && (
+          <TooltipContent side="top" align="center" className="max-w-xs">
+            Controlled by rules
+          </TooltipContent>
+        )}
+      </Tooltip>
     </div>
   );
 };
