@@ -7,7 +7,7 @@ import {
   updateExtensionUrlRule,
 } from '@/features/extension-rules/extension-rules-slice';
 import useExtensions from '@/hooks/useExtensions';
-import { ArrowLeftIcon } from '@radix-ui/react-icons';
+import { ArrowLeftIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import ExtensionsCombobox from './components/ExtensionsCombobox';
@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { ExtensionRule } from '@/types';
 import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
 import { getDefaultExtensionState } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ExtensionRules: React.FC = () => {
   const { id } = useParams();
@@ -36,16 +37,44 @@ const ExtensionRules: React.FC = () => {
         },
   );
 
+  const [errors, setErrors] = useState<{
+    id?: string;
+    urlRules?: string;
+  }>({});
+
+  const validateForm = () => {
+    const newErrors: typeof errors = {};
+
+    if (!formData.id.trim()) {
+      newErrors.id = 'Please select an extension';
+    }
+
+    const hasEnabledUrls = formData.enabledUrls.trim().length > 0;
+    const hasDisabledUrls = formData.disabledUrls.trim().length > 0;
+
+    if (!hasEnabledUrls && !hasDisabledUrls) {
+      newErrors.urlRules = 'At least one URL is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSelectExtension = (id: string) => {
     const ext = extensions.find((ext) => ext.id === id);
     if (ext) {
       setFormData((prev) => ({ ...prev, id, name: ext.name }));
+      setErrors((prev) => ({ ...prev, id: undefined }));
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+    if ((name === 'enabledUrls' && value.trim()) || (name === 'disabledUrls' && value.trim())) {
+      setErrors((prev) => ({ ...prev, urlRules: undefined }));
+    }
   };
 
   const handleRemove = async (id: string) => {
@@ -60,7 +89,7 @@ const ExtensionRules: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.name.trim()) return;
+    if (!validateForm()) return;
 
     if (editedExtensionRule) {
       dispatch(updateExtensionUrlRule(formData));
@@ -84,9 +113,33 @@ const ExtensionRules: React.FC = () => {
           extensionRules={extensionRules}
           onSelect={handleSelectExtension}
         />
+        {errors.id && <p className="text-xs text-red-500 mt-1">{errors.id}</p>}
       </div>
       <div className="mb-3">
-        <label className="muted-heading mb-0.5 block">URL Rules</label>
+        <label className="muted-heading mb-0.5 flex gap-1 items-center">
+          <span>URL Rules</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <QuestionMarkCircledIcon className="opacity-60" />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[340px] ml-5">
+              <ul className="list-disc list-inside mt-1 space-y-1">
+                <li>
+                  <code>example.com</code> — matches this exact domain only.
+                </li>
+                <li>
+                  <code>*.example.com</code> — matches all subdomains (e.g., <em>blog.example.com</em>).
+                </li>
+                <li>
+                  <code>docs.*.com</code> — wildcard matches any characters (e.g., <em>docs.google.com</em>).
+                </li>
+                <li>
+                  Supports <code>localhost</code> and IPs like <code>localhost:3000</code> or <code>192.168.1.*</code>.
+                </li>
+              </ul>
+            </TooltipContent>
+          </Tooltip>
+        </label>
         <Tabs defaultValue="disabled">
           <TabsList>
             <TabsTrigger value="enabled">Enabled URLs</TabsTrigger>
@@ -99,10 +152,7 @@ const ExtensionRules: React.FC = () => {
               name="enabledUrls"
               value={formData.enabledUrls}
               onChange={handleChange}
-              placeholder="google.com
-*.google.com
-docs.*.com
-localhost:3000"
+              placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
             />
           </TabsContent>
           <TabsContent value="disabled">
@@ -112,13 +162,11 @@ localhost:3000"
               name="disabledUrls"
               value={formData.disabledUrls}
               onChange={handleChange}
-              placeholder="google.com
-*.google.com
-docs.*.com
-localhost:3000"
+              placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
             />
           </TabsContent>
         </Tabs>
+        {errors.urlRules && <p className="text-xs text-red-500 mt-1">{errors.urlRules}</p>}
       </div>
       <div className="flex gap-2">
         <div className="flex-1 flex gap-2">

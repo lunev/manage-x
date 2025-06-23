@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "ManageX: Extension Manager with URL-based Rules",
-  "description": "Manage, group, and export extensions with rules to enable/disable them by URL.",
+  "description": "Smartly enable or disable Chrome extensions based on website URLs!",
   "version": "2.0.0",
   "author": {
     "name": "Alexander Lunev",
@@ -25,7 +25,7 @@
     "service_worker": "service-worker.js",
     "type": "module"
   },
-  "permissions": ["storage", "unlimitedStorage", "management", "sidePanel", "tabs"],
+  "permissions": ["storage", "management", "tabs"],
   "commands": {
     "_execute_action": {
       "suggested_key": {

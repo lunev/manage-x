@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import useExtensions from '@/hooks/useExtensions';
-import { ArrowLeftIcon } from '@radix-ui/react-icons';
+import { ArrowLeftIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { addGroupUrlRule, removeGroupUrlRule, updateGroupUrlRule } from '@/features/group-rules/group-rules-slice';
 import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
 import { getDefaultExtensionState } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const GroupRules: React.FC = () => {
   const { id } = useParams();
@@ -35,8 +36,39 @@ const GroupRules: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  const [errors, setErrors] = useState<{
+    name?: string;
+    extensions?: string;
+    urlRules?: string;
+  }>({});
+
+  const validateForm = () => {
+    const newErrors: typeof errors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name field is required';
+    }
+
+    if (!formData.extensions.length) {
+      newErrors.extensions = 'At least one extension is required';
+    }
+
+    const hasEnabledUrls = formData.enabledUrls.trim().length > 0;
+    const hasDisabledUrls = formData.disabledUrls.trim().length > 0;
+
+    if (!hasEnabledUrls && !hasDisabledUrls) {
+      newErrors.urlRules = 'At least one URL is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     if (editedGroupRule) {
       dispatch(updateGroupUrlRule(formData));
     } else {
@@ -48,6 +80,10 @@ const GroupRules: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
+    if ((name === 'enabledUrls' && value.trim()) || (name === 'disabledUrls' && value.trim())) {
+      setErrors((prev) => ({ ...prev, urlRules: undefined }));
+    }
   };
 
   const handleSelect = (id: string) => {
@@ -56,6 +92,7 @@ const GroupRules: React.FC = () => {
       : [...formData.extensions, id];
 
     setFormData((prev) => ({ ...prev, extensions: updatedExtensions }));
+    setErrors((prev) => ({ ...prev, extensions: undefined }));
   };
 
   const handleRemove = async (id: string) => {
@@ -81,14 +118,8 @@ const GroupRules: React.FC = () => {
         <label htmlFor="name" className="muted-heading mb-1 block">
           Name
         </label>
-        <Input
-          required
-          className="w-full text-xs"
-          name="name"
-          id="name"
-          value={formData.name}
-          onChange={handleChange}
-        />
+        <Input className="w-full text-xs" name="name" id="name" value={formData.name} onChange={handleChange} />
+        {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
       </div>
       <div className="mb-3">
         <label className="muted-heading mb-1 block">
@@ -113,9 +144,33 @@ const GroupRules: React.FC = () => {
             </li>
           ))}
         </ul>
+        {errors.extensions && <p className="text-xs text-red-500 mt-1">{errors.extensions}</p>}
       </div>
       <div className="mb-3">
-        <label className="muted-heading mb-0.5 block">URL Rules</label>
+        <label className="muted-heading mb-0.5 flex gap-1 items-center">
+          <span>URL Rules</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <QuestionMarkCircledIcon className="opacity-60" />
+            </TooltipTrigger>
+            <TooltipContent className="max-w-[340px] ml-5">
+              <ul className="list-disc list-inside mt-1 space-y-1">
+                <li>
+                  <code>example.com</code> — matches this exact domain only.
+                </li>
+                <li>
+                  <code>*.example.com</code> — matches all subdomains (e.g., <em>blog.example.com</em>).
+                </li>
+                <li>
+                  <code>docs.*.com</code> — wildcard matches any characters (e.g., <em>docs.google.com</em>).
+                </li>
+                <li>
+                  Supports <code>localhost</code> and IPs like <code>localhost:3000</code> or <code>192.168.1.*</code>.
+                </li>
+              </ul>
+            </TooltipContent>
+          </Tooltip>
+        </label>
         <Tabs defaultValue="disabled" className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="enabled" className="flex-1 text-xs">
@@ -132,10 +187,7 @@ const GroupRules: React.FC = () => {
               name="enabledUrls"
               value={formData.enabledUrls}
               onChange={handleChange}
-              placeholder="google.com
-*.google.com
-docs.*.com
-localhost:3000"
+              placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
             />
           </TabsContent>
           <TabsContent value="disabled">
@@ -145,13 +197,11 @@ localhost:3000"
               name="disabledUrls"
               value={formData.disabledUrls}
               onChange={handleChange}
-              placeholder="google.com
-*.google.com
-docs.*.com
-localhost:3000"
+              placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
             />
           </TabsContent>
         </Tabs>
+        {errors.urlRules && <p className="text-xs text-red-500 mt-1">{errors.urlRules}</p>}
       </div>
       <div className="flex gap-2">
         <div className="flex-1 flex gap-2">
