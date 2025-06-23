@@ -24,15 +24,18 @@ let version = '1.0.0'; // Default version
 try {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
   if (manifest.name) {
-    extensionName = manifest.name.replace(/\s+/g, '-').toLowerCase(); // Normalize name
+    extensionName = manifest.name
+      .replace(/[^a-z0-9-_]/gi, '-') // Keep only letters, digits, hyphens, and underscores
+      .replace(/-+/g, '-') // Collapse multiple hyphens
+      .replace(/^-|-$/g, '') // Trim hyphens from start/end
+      .toLowerCase(); // Normalize to lowercase
   }
+
   if (manifest.version) {
     version = manifest.version;
   }
 } catch (err) {
-  console.warn(
-    `Warning: Could not read manifest.json. Using defaults "${extensionName}" v"${version}".`,
-  );
+  console.warn(`Warning: Could not read manifest.json. Using defaults "${extensionName}" v"${version}".`);
 }
 
 // Generate the output filename
@@ -46,9 +49,7 @@ const archive = archiver('zip', { zlib: { level: 9 } });
 
 // Event listeners
 output.on('close', () => {
-  console.log(
-    `ZIP file created: ${outputFileName} (${archive.pointer()} bytes)`,
-  );
+  console.log(`ZIP file created: ${outputFileName} (${archive.pointer()} bytes)`);
 });
 archive.on('error', (err) => {
   throw err;
