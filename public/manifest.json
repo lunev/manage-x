@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ManageX: Extension Manager with URL-based Rules",
+  "name": "ManageX",
   "description": "Smartly enable or disable Chrome extensions based on website URLs!",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "author": {
     "name": "Alexander Lunev",
     "email": "lunevdev@gmail.com"
