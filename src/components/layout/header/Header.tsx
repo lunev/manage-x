@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
-import { DotsVerticalIcon, DownloadIcon, RocketIcon, UploadIcon } from '@radix-ui/react-icons';
+import { DotsVerticalIcon, DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
 import { exportUrlRules } from '@/lib/export';
 import Logo from '@/components/ui/logo';
 import {
@@ -29,9 +29,6 @@ const Header: React.FC = () => {
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => chrome.runtime.openOptionsPage()}>
             <DownloadIcon /> Import URL Rules
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => chrome.tabs.create({ url: 'https://www.patreon.com/lunevdev' })}>
-            <RocketIcon /> Support the extension
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
