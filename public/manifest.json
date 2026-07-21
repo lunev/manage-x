@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ManageX",
-  "description": "Smartly enable or disable Chrome extensions based on website URLs!",
-  "version": "2.0.2",
+  "name": "ManageX – Extension Manager",
+  "description": "Automatically enable or disable Chrome extensions based on the website you're visiting.",
+  "version": "2.0.3",
   "author": {
     "name": "Alexander Lunev",
     "email": "lunevdev@gmail.com"
@@ -10,7 +10,7 @@
   "action": {
     "default_popup": "index.html",
     "default_icon": "icons/logo.png",
-    "default_title": "ManageX"
+    "default_title": "ManageX – Extension Manager"
   },
   "side_panel": {
     "default_path": "index.html"
