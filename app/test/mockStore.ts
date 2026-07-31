@@ -1,36 +1,23 @@
 import { configureStore } from '@reduxjs/toolkit';
-import preferencesSlice from '@/features/preferences/preferences-slice';
+import extensionRuleSlice from '@/features/extension-rules/extension-rules-slice';
+import groupRuleSlice from '@/features/group-rules/group-rules-slice';
+import { ExtensionRule, GroupRule } from '@/types';
 
 export type PreloadedState = {
-  preferences?: {
-    sidePanel: {
-      label: string;
-      value: false;
-    };
-    groups: {
-      label: string;
-      value: false;
-    };
-  };
+  extensionRules?: { entities: ExtensionRule[] };
+  groupRules?: { entities: GroupRule[] };
 };
 
 export const createMockStore = (initialState: PreloadedState = {}) => {
   return configureStore({
     reducer: {
-      preferences: preferencesSlice,
+      extensionRules: extensionRuleSlice,
+      groupRules: groupRuleSlice,
     },
     preloadedState: {
-      preferences: {
-        sidePanel: {
-          label: 'Show as Side Panel',
-          value: false,
-        },
-        groups: {
-          label: 'Show Groups',
-          value: false,
-        },
-      },
-      ...initialState.preferences,
+      extensionRules: { entities: [] },
+      groupRules: { entities: [] },
+      ...initialState,
     },
   });
 };
