@@ -4,6 +4,7 @@ import {
   initDefaultExtensionsState,
   removeDefaultExtensionState,
   setDefaultExtensionState,
+  setPendingUpdateVersion,
 } from '@/lib/utils';
 import { setupRulesManager } from './utils/rulesManager';
 import { consumeProgrammaticToggle } from './utils/programmaticToggleTracker';
@@ -16,6 +17,12 @@ import { consumeProgrammaticToggle } from './utils/programmaticToggleTracker';
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === 'install' || reason === 'update') {
     await initDefaultExtensionsState();
+  }
+
+  // Flag the new version so the popup can show a "what's new" notice.
+  // Only on real updates, not fresh installs.
+  if (reason === 'update') {
+    await setPendingUpdateVersion(chrome.runtime.getManifest().version);
   }
 });
 
