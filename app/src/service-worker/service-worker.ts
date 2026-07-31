@@ -6,6 +6,7 @@ import {
   setDefaultExtensionState,
 } from '@/lib/utils';
 import { setupRulesManager } from './utils/rulesManager';
+import { consumeProgrammaticToggle } from './utils/programmaticToggleTracker';
 
 /**
  * On extension install or update:
@@ -42,9 +43,12 @@ setupRulesManager();
 
 /**
  * Stores the user's manual enable/disable actions from chrome://extensions
- * by updating the saved default state of that extension.
+ * by updating the saved default state of that extension. Skips toggles that
+ * our own rule engine just made (see markProgrammaticToggle), since those
+ * fire the same onEnabled/onDisabled events as a real manual toggle.
  */
 const handleToggleExtensionState = async (extension: chrome.management.ExtensionInfo) => {
+  if (consumeProgrammaticToggle(extension.id)) return;
   await setDefaultExtensionState(extension.id, extension.enabled);
 };
 

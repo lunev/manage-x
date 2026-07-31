@@ -1,6 +1,7 @@
 import { ExtensionRule, GroupRule } from '@/types';
 import matchUrl from 'match-url-wildcard';
 import { storagePersisted, getDefaultExtensionState, getCurrentTabParams } from '@/lib/utils';
+import { markProgrammaticToggle } from './programmaticToggleTracker';
 
 export const manageExtensions = async () => {
   const activeTab = await getCurrentTabParams();
@@ -70,6 +71,7 @@ export const manageExtensions = async () => {
 
         if (newState !== defaultState.enabled) {
           affectedCount++;
+          markProgrammaticToggle(extId);
         }
 
         await chrome.management.setEnabled(extId, newState);
