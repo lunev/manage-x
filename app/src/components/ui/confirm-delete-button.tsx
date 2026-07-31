@@ -21,8 +21,10 @@ const ConfirmDeleteButton: React.FC<ConfirmDeleteButtonProps> = ({
         setCountdown(countdown - 1);
       }, 1000);
     } else if (isConfirming && countdown === 0) {
-      setIsConfirming(false);
-      setCountdown(5);
+      timer = setTimeout(() => {
+        setIsConfirming(false);
+        setCountdown(5);
+      }, 0);
     }
 
     return () => {
