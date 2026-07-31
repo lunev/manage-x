@@ -170,6 +170,21 @@ export const setDefaultExtensionState = async (id: string, enabled: boolean) => 
   }
 };
 
+export const setPendingUpdateVersion = async (version: string) => {
+  await chrome.storage.local.set({ [STORAGE_KEYS.pendingUpdateVersion]: version });
+};
+
+export const getPendingUpdateVersion = async (): Promise<string | undefined> => {
+  const { [STORAGE_KEYS.pendingUpdateVersion]: version } = await chrome.storage.local.get(
+    STORAGE_KEYS.pendingUpdateVersion,
+  );
+  return version;
+};
+
+export const clearPendingUpdateVersion = async () => {
+  await chrome.storage.local.remove(STORAGE_KEYS.pendingUpdateVersion);
+};
+
 // Helper to merge URLs
 export const mergeUrlStrings = (oldStr: string, newStr: string): string => {
   const oldUrls = oldStr
