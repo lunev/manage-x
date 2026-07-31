@@ -46,17 +46,26 @@ export const initDefaultExtensionsState = async () => {
   // Gets all installed extensions
   const extensions = await chrome.management.getAll();
 
-  // Builds a list of extensions with only essential fields, excluding this extension (ManageX)
-  const initialExtensionsState: ExtensionDefaultState[] = extensions
-    .filter((ext) => ext.id !== chrome.runtime.id)
+  // Extensions already tracked keep their recorded default as-is: re-snapshotting their
+  // *current* enabled state here would wrongly treat a rule-imposed state as the new
+  // baseline (e.g. on a manual reload of this extension while a rule has something disabled).
+  const existingExtStateArr: ExtensionDefaultState[] = (await fetchDefaultExtensionsState()) ?? [];
+  const existingIds = new Set(existingExtStateArr.map((ext) => ext.id));
+
+  // Only extensions not tracked yet (this extension excluded) get a fresh baseline entry.
+  const newEntries: ExtensionDefaultState[] = extensions
+    .filter((ext) => ext.id !== chrome.runtime.id && !existingIds.has(ext.id))
     .map((ext) => ({
       id: ext.id,
       name: ext.name,
       enabled: ext.enabled,
     }));
 
-  // Saves the initial state of all other extensions to chrome.storage
-  await chrome.storage.local.set({ [STORAGE_KEYS.defaultExtensionsState]: initialExtensionsState });
+  if (newEntries.length > 0) {
+    await chrome.storage.local.set({
+      [STORAGE_KEYS.defaultExtensionsState]: [...existingExtStateArr, ...newEntries],
+    });
+  }
 };
 
 export const getDefaultExtensionState = async (id: string) => {
