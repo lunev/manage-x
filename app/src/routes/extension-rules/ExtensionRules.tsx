@@ -113,7 +113,7 @@ const ExtensionRules: React.FC = () => {
           extensionRules={extensionRules}
           onSelect={handleSelectExtension}
         />
-        {errors.id && <p className="text-xs text-red-500 mt-1">{errors.id}</p>}
+        {errors.id && <p className="text-xs text-destructive mt-1">{errors.id}</p>}
       </div>
       <div className="mb-3">
         <label className="muted-heading mb-0.5 flex gap-1 items-center">
@@ -166,7 +166,7 @@ const ExtensionRules: React.FC = () => {
             />
           </TabsContent>
         </Tabs>
-        {errors.urlRules && <p className="text-xs text-red-500 mt-1">{errors.urlRules}</p>}
+        {errors.urlRules && <p className="text-xs text-destructive mt-1">{errors.urlRules}</p>}
       </div>
       <div className="flex gap-2">
         <div className="flex-1 flex gap-2">

@@ -33,8 +33,11 @@ const GroupRulesList: React.FC = () => {
       {rules?.length > 0 && (
         <div className="mb-2 flex flex-col gap-1">
           {rules.map((rule: GroupRule) => (
-            <div key={rule.id} className="flex gap-2 items-center">
-              <div className="w-4 h-4 rounded-full flex items-center justify-center bg-muted text-xxxs">
+            <div
+              key={rule.id}
+              className="flex gap-2 items-center rounded-md px-1 -mx-1 py-0.5 -my-0.5 hover:bg-muted/60 transition-colors"
+            >
+              <div className="w-5 h-5 rounded-full flex items-center justify-center bg-muted text-xxxs">
                 {rule.name.slice(0, 1)}
               </div>
               <div className="flex-1">

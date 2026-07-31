@@ -23,9 +23,9 @@ interface ComboboxType {
 
 const ExtensionLogo: React.FC<Extension> = ({ id, name, icons }) => {
   return (
-    <Avatar id={id} className="w-4 h-4 text-xs text-white">
+    <Avatar id={id} className="w-5 h-5 text-xs text-white">
       <AvatarImage src={icons?.at(-1)?.url} alt={name} />
-      <AvatarFallback className="bg-green-500">{name.slice(0, 2).toUpperCase()}</AvatarFallback>
+      <AvatarFallback className="bg-primary text-primary-foreground">{name.slice(0, 2).toUpperCase()}</AvatarFallback>
     </Avatar>
   );
 };
