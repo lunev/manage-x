@@ -14,7 +14,7 @@ export const storagePersisted = {
     if (rootData) {
       try {
         const storage = JSON.parse(rootData);
-        return JSON.parse(storage[key]);
+        return storage[key] ? JSON.parse(storage[key]) : undefined;
       } catch (parseError) {
         console.log('Error parsing stored data:', parseError);
       }
