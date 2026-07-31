@@ -1,67 +1,26 @@
-# Chrome Extension Manager
+# ManageX – Extension Manager
 
-# 🚀 Final Feature List for the New Extension  
+A Chrome extension (Manifest V3) that automatically enables or disables your other Chrome extensions based on the website you're visiting.
 
-## 🛠 Essential Features (Fixing Current Issues)  
-### 1. Sidebar Mode  
-- Allow users to access the extension from a **persistent sidebar** instead of a dropdown.  
-- Toggle between **sidebar and popup mode**.  
+## Why
 
-### 2. Better Group Management  
-- **Create, rename, reorder, and delete groups** easily.  
-- **Mass toggle**: Enable or disable all extensions in a group with one click.  
-- Remember the **last selected group** when reopening the extension.  
+Most extensions run all the time, even on sites where you don't need them. ManageX lets you define simple URL-based rules so extensions turn on or off automatically as you browse — keeping your toolbar focused and reducing background clutter.
 
-### 3. Show Disabled Extensions at the Top  
-- A toggle to **prioritize disabled/starred extensions** at the top of the list.  
+## Features
 
-### 4. Separate Active & Inactive Extensions Visually  
-- Add a **clear title section** for active and inactive extensions.  
+- **Extension rules** — enable or disable a single extension based on "Enabled URLs" / "Disabled URLs" patterns (exact domains, `*.subdomain` wildcards, mid-string wildcards like `docs.*.com`, `localhost`, and IP patterns like `192.168.1.*`).
+- **Group rules** — bundle multiple extensions together and control them with one shared rule.
+- **Automatic enforcement** — a background service worker matches the active tab's URL against your rules in real time (on tab navigation, tab switch, and rule changes) and toggles extensions accordingly.
+- **Dashboard** — one place to see all installed extensions (grouped by enabled/disabled) and manage your rules.
+- **Badge counter** — the toolbar badge shows how many extensions changed state on the current page.
+- **Export / Import** — back up your rules to a JSON file from the popup, and restore them from the Options page.
+- **Popup or side panel** — use ManageX as a popup or Chrome's side panel.
+- **Keyboard shortcut** — `Ctrl+Shift+E` (`Cmd+Shift+E` on Mac) opens ManageX instantly.
+- Extensions controlled by an active rule are locked in the dashboard (their toggle is disabled) to avoid conflicting manual changes, and are restored to their original state if the rule is removed.
+- Follows your OS's light/dark theme automatically.
 
-### 5. Compact & Customizable UI  
-- More **compact list mode** for users who prefer efficiency.  
-- Toggle between **light mode, dark mode, and system theme**.  
+Everything runs locally — rules and settings are stored in the browser via `chrome.storage`, and nothing is sent to any external server.
 
-### 6. No Data Loss After Updates  
-- Ensure **group assignments and settings persist** after extension updates.  
+## Development
 
-### 7. Fix Folder Visibility & Saving Issues  
-- Ensure newly created folders **always appear** immediately.  
-- Allow users to **manually reorder extensions inside folders**.  
-
-### 8. Easier Access to Extension Pages  
-- Right-click options to open an **extension’s settings page, Web Store page, or extension manager**.  
-
-### 9. Bulk Actions  
-- Select multiple extensions to **move to a folder, favorite, disable, or uninstall at once**.  
-
-### 10. Search Bar Improvements  
-- Search should work for **both extension names and descriptions**.  
-
----
-
-## 🔥 Advanced Features (Innovation & Competitive Edge)  
-### 11. Auto-Profiles for Websites  
-- Users can set **rules** to automatically enable/disable extensions **based on URL patterns**.  
-- Example: Enable **YouTube-related extensions** only when on YouTube.  
-
-### 12. Toggle Extensions When Leaving a Website  
-- Automatically **disable certain extensions** when leaving a website to save resources.  
-
-### 13. Export & Backup  
-- Ability to **export the list of installed extensions** to **text, HTML, or JSON**.  
-- Backup and restore extension groups in case of reinstallation.  
-
-### 14. Pin/Unpin Extensions in Chrome Toolbar  
-- If Chrome supports this in the future, allow pinning/unpinning directly from the manager.  
-
-### 15. Extension Usage Stats  
-- Show **how often** an extension is used to help users decide whether to keep or remove it.  
-
----
-
-## 🏆 Conclusion  
-By implementing these features, your **extension manager** will solve the biggest **pain points** from existing options while introducing powerful **new automation** and usability improvements.  
-
-Would you like **help with the UI concept** or **a feature prioritization plan**? 🚀  
-
+Application code lives under `app/`. See `CLAUDE.md` for build, test, and lint commands.
