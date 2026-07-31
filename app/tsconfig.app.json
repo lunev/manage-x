@@ -22,10 +22,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
-    "baseUrl": "./",
     "paths": {
-      "@/*": ["src/*"],
-      "@test-utils": ["test/test-utils.tsx"] 
+      "@/*": ["./src/*"],
+      "@test-utils": ["./test/test-utils.tsx"]
     },
     "types": ["vitest/globals", "@testing-library/jest-dom", "chrome"]
   },
