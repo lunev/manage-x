@@ -14,7 +14,6 @@ Most extensions run all the time, even on sites where you don't need them. Manag
 - **Dashboard** — one place to see all installed extensions (grouped by enabled/disabled) and manage your rules.
 - **Badge counter** — the toolbar badge shows how many extensions changed state on the current page.
 - **Export / Import** — back up your rules to a JSON file from the popup, and restore them from the Options page.
-- **Popup or side panel** — use ManageX as a popup or Chrome's side panel.
 - **Keyboard shortcut** — `Ctrl+Shift+E` (`Cmd+Shift+E` on Mac) opens ManageX instantly.
 - Extensions controlled by an active rule are locked in the dashboard (their toggle is disabled) to avoid conflicting manual changes, and are restored to their original state if the rule is removed.
 - Follows your OS's light/dark theme automatically.

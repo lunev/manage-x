@@ -9,7 +9,6 @@ Key features:
 • Badge counter — see at a glance how many extensions changed state on the current page.
 • Dashboard — one view of all your installed extensions and active rules.
 • Export & Import URL Rules — back up your rules to a JSON file and restore them anytime, from the menu in the top right.
-• Popup or side panel — use ManageX however fits your workflow.
 • Keyboard shortcut — open ManageX instantly with Ctrl+Shift+E (Cmd+Shift+E on Mac).
 
 ManageX runs entirely in your browser. Your rules and settings are stored locally using Chrome's storage APIs — nothing is sent to any external server.
