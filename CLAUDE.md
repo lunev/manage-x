@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-ManageX is a Chrome Extension (Manifest V3) for managing/toggling other extensions and grouping them into rules. Built with React 18 + TypeScript + Vite + Redux Toolkit (persisted via `redux-persist-webextension-storage`) + MUI + Tailwind + shadcn/ui (Radix primitives, style "new-york", see `components.json`).
+ManageX is a Chrome Extension (Manifest V3) for managing/toggling other extensions and grouping them into rules. Built with React 18 + TypeScript + Vite + Redux Toolkit (persisted via `redux-persist-webextension-storage`) + Tailwind + shadcn/ui (Radix primitives, style "new-york", see `components.json`). `@mui/material`/`@emotion/*` are listed in `package.json` but unused in `src/` — don't treat them as part of the actual stack.
 
 Three build entry points (see `app/vite.config.ts`): the popup/side panel (`index.html`), the options page (`options.html`), and the background service worker (`src/service-worker`).
 
