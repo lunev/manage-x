@@ -12,7 +12,7 @@ import {
 
 const Header: React.FC = () => {
   return (
-    <header className="px-4 py-3 flex items-center gap-1 text-xs border-b dark:border-gray-700 fade-in">
+    <header className="px-4 py-3 flex items-center gap-1 text-xs border-b shadow-sm fade-in">
       <div className="flex items-center flex-1 gap-2">
         <Logo width={18} height={18} />
         <Link to="/" className="text-sm font-medium cursor-pointer">

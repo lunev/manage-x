@@ -115,22 +115,27 @@ const GroupRules: React.FC = () => {
       </Link>
       <h1 className="mb-2 text-base font-semibold">Group Rules</h1>
       <div className="mb-3">
-        <label htmlFor="name" className="muted-heading mb-1 block">
+        <label htmlFor="name" className="muted-heading mb-0.5 block">
           Name
         </label>
         <Input className="w-full text-xs" name="name" id="name" value={formData.name} onChange={handleChange} />
-        {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
+        {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
       </div>
       <div className="mb-3">
-        <label className="muted-heading mb-1 block">
+        <label className="muted-heading mb-0.5 block">
           Extensions {formData.extensions.length > 0 && `(${formData.extensions.length})`}
         </label>
-        <ul className="flex flex-col gap-2 max-h-[130px] overflow-y-auto">
+        <ul className="flex flex-col gap-1 max-h-[130px] overflow-y-auto">
           {extensions.map((ext) => (
-            <li key={ext.id} className="flex items-center gap-2">
-              <Avatar className={`${!ext.enabled ? 'grayscale' : ''} w-4 h-4 text-xs text-white relative`}>
+            <li
+              key={ext.id}
+              className="flex items-center gap-2 rounded-md px-1 -mx-1 py-0.5 -my-0.5 hover:bg-muted/60 transition-colors"
+            >
+              <Avatar className={`${!ext.enabled ? 'grayscale' : ''} w-5 h-5 text-xs text-white relative`}>
                 <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
-                <AvatarFallback className="bg-green-500">{ext.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                <AvatarFallback className="bg-primary text-primary-foreground">
+                  {ext.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <label htmlFor={ext.id} className="flex-1 line-clamp-1 cursor-pointer">
                 {ext.name}
@@ -144,7 +149,7 @@ const GroupRules: React.FC = () => {
             </li>
           ))}
         </ul>
-        {errors.extensions && <p className="text-xs text-red-500 mt-1">{errors.extensions}</p>}
+        {errors.extensions && <p className="text-xs text-destructive mt-1">{errors.extensions}</p>}
       </div>
       <div className="mb-3">
         <label className="muted-heading mb-0.5 flex gap-1 items-center">
@@ -201,7 +206,7 @@ const GroupRules: React.FC = () => {
             />
           </TabsContent>
         </Tabs>
-        {errors.urlRules && <p className="text-xs text-red-500 mt-1">{errors.urlRules}</p>}
+        {errors.urlRules && <p className="text-xs text-destructive mt-1">{errors.urlRules}</p>}
       </div>
       <div className="flex gap-2">
         <div className="flex-1 flex gap-2">

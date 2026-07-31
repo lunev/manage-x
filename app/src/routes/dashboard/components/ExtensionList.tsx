@@ -12,10 +12,12 @@ const ExtensionItem: React.FC<{
   const hasRules = useExtensionHasRules(ext.id);
 
   return (
-    <div className="flex items-center gap-2">
-      <Avatar className={`${!ext.enabled ? 'grayscale' : ''} w-4 h-4 text-xs text-white relative`}>
+    <div className="flex items-center gap-2 rounded-md px-1 -mx-1 py-0.5 -my-0.5 hover:bg-muted/60 transition-colors">
+      <Avatar className={`${!ext.enabled ? 'grayscale' : ''} w-5 h-5 text-xs text-white relative`}>
         <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
-        <AvatarFallback className="bg-green-500">{ext.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+        <AvatarFallback className="bg-primary text-primary-foreground">
+          {ext.name.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
       </Avatar>
       <div className="flex-1 line-clamp-1">{ext.name}</div>
       <Tooltip>

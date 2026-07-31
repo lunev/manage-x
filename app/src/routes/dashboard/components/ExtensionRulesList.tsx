@@ -46,10 +46,15 @@ const ExtensionRulesList: React.FC = () => {
           {rules.map((rule: ExtensionRule) => {
             const extension = extensions.find((ext) => ext.id === rule.id);
             return (
-              <div key={rule.id} className="flex items-center gap-2">
-                <Avatar className={cn('w-4 h-4 text-xs text-white relative', { grayscale: !rule.active })}>
+              <div
+                key={rule.id}
+                className="flex items-center gap-2 rounded-md px-1 -mx-1 py-0.5 -my-0.5 hover:bg-muted/60 transition-colors"
+              >
+                <Avatar className={cn('w-5 h-5 text-xs text-white relative', { grayscale: !rule.active })}>
                   <AvatarImage src={extension?.icons?.at(-1)?.url} alt={extension?.name} />
-                  <AvatarFallback className="bg-green-500">{extension?.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                  <AvatarFallback className="bg-primary text-primary-foreground">
+                    {extension?.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
                 <Link to={`/extension-rules/${rule.id}/edit/`} className="flex-1 line-clamp-1">
                   {rule.name}
