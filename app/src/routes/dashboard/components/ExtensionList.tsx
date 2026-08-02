@@ -41,6 +41,14 @@ const ExtensionItem: React.FC<{
   );
 };
 
+const ExtensionSkeletonRow: React.FC = () => (
+  <div className="flex items-center gap-2 px-1 py-0.5" aria-hidden="true">
+    <div className="w-5 h-5 rounded-full bg-muted animate-pulse" />
+    <div className="flex-1 h-3 rounded bg-muted animate-pulse" />
+    <div className="w-9 h-5 rounded-full bg-muted animate-pulse" />
+  </div>
+);
+
 const ExtensionSection: React.FC<{
   title: string;
   extensions: chrome.management.ExtensionInfo[];
@@ -62,7 +70,7 @@ const ExtensionSection: React.FC<{
 };
 
 const ExtensionList: React.FC = () => {
-  const { extensions, toggleExtension } = useExtensions();
+  const { extensions, isLoading, toggleExtension } = useExtensions();
   const enabledExtensions = extensions.filter((ext) => ext.enabled);
   const disabledExtensions = extensions.filter((ext) => !ext.enabled);
 
@@ -70,6 +78,20 @@ const ExtensionList: React.FC = () => {
     toggleExtension(id, state);
     toggleDefaultExtensionState(id);
   };
+
+  if (isLoading) {
+    return (
+      <div className="fade-in flex flex-col gap-1" role="status" aria-busy="true" aria-label="Loading extensions">
+        <ExtensionSkeletonRow />
+        <ExtensionSkeletonRow />
+        <ExtensionSkeletonRow />
+      </div>
+    );
+  }
+
+  if (extensions.length === 0) {
+    return <p className="text-xs text-muted-foreground">No extensions installed</p>;
+  }
 
   return (
     <div className="fade-in flex flex-col gap-1">

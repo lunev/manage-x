@@ -48,8 +48,8 @@ Goal: Close the remaining UX gaps that hit real usage — missing search, missin
 
 - [x] Finding #9 – Add search to Group Rules extension picker (reuse existing `Command` UI)
   - Status: Completed (2026-08-02) | Priority: Medium | Effort: Small | Dependencies: None
-- [ ] Finding #10 – Add empty/loading states to extension and rule lists
-  - Status: Not Started | Priority: Medium | Effort: Small | Dependencies: None
+- [x] Finding #10 – Add empty/loading states to extension and rule lists
+  - Status: Completed (2026-08-02) | Priority: Medium | Effort: Small | Dependencies: None
 - [ ] Finding #14 – Document rule precedence in the existing help tooltip
   - Status: Not Started | Priority: Medium | Effort: Small | Dependencies: None
 - [ ] Finding #15 – Surface the `Ctrl/Cmd+Shift+E` keyboard shortcut in the UI

@@ -44,7 +44,7 @@ const ExtensionRulesList: React.FC = () => {
           </TooltipContent>
         </Tooltip>
       </h2>
-      {rules?.length > 0 && (
+      {rules?.length > 0 ? (
         <div className="mb-2 flex flex-col gap-1">
           {rules.map((rule: ExtensionRule) => {
             const extension = extensions.find((ext) => ext.id === rule.id);
@@ -71,6 +71,8 @@ const ExtensionRulesList: React.FC = () => {
             );
           })}
         </div>
+      ) : (
+        <p className="text-xs text-muted-foreground mb-2">No rules yet — create one below</p>
       )}
       {noAvailableExtensions ? (
         <Tooltip>

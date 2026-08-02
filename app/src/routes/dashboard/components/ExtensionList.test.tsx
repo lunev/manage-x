@@ -44,4 +44,33 @@ describe('ExtensionList', () => {
     fireEvent.focus(screen.getByRole('switch', { name: 'Toggle Enabled Ext' }));
     await waitFor(() => expect(screen.getAllByText('Controlled by rules').length).toBeGreaterThan(0));
   });
+
+  // Note: mockManagementGetAll resolves chrome.management.getAll synchronously, so isLoading
+  // is already false by the time this renders — the transient loading skeleton isn't
+  // observable through this mock. This test covers the settled empty state instead.
+  it('shows a message and no section headings when no extensions are installed', () => {
+    mockManagementGetAll([]);
+    render(<ExtensionList />);
+
+    expect(screen.getByText('No extensions installed')).toBeInTheDocument();
+    expect(screen.queryByText('Enabled')).not.toBeInTheDocument();
+    expect(screen.queryByText('Disabled')).not.toBeInTheDocument();
+  });
+
+  it('shows an accessible loading skeleton until chrome.management.getAll resolves, then replaces it with the list', async () => {
+    let resolveGetAll: ((result: chrome.management.ExtensionInfo[]) => void) | undefined;
+    vi.mocked(chrome.management.getAll).mockImplementation(((cb: (result: chrome.management.ExtensionInfo[]) => void) => {
+      resolveGetAll = cb;
+    }) as typeof chrome.management.getAll);
+
+    render(<ExtensionList />);
+
+    expect(screen.getByRole('status', { name: 'Loading extensions' })).toBeInTheDocument();
+    expect(screen.queryByText('Enabled Ext')).not.toBeInTheDocument();
+
+    resolveGetAll?.(mockExtensions as chrome.management.ExtensionInfo[]);
+
+    await waitFor(() => expect(screen.getByText('Enabled Ext')).toBeInTheDocument());
+    expect(screen.queryByRole('status', { name: 'Loading extensions' })).not.toBeInTheDocument();
+  });
 });

@@ -41,4 +41,22 @@ describe('GroupRulesList', () => {
     render(<GroupRulesList />);
     expect(screen.getByRole('button', { name: 'Add' })).toBeEnabled();
   });
+
+  it('shows a guidance message when there are no group rules yet', () => {
+    render(<GroupRulesList />);
+
+    expect(screen.getByText('No rules yet — create one below')).toBeInTheDocument();
+  });
+
+  it('does not show the guidance message when a group rule already exists', () => {
+    render(<GroupRulesList />, {
+      initialState: {
+        groupRules: {
+          entities: [{ id: 'grp1', name: 'My Group', extensions: ['ext1'], enabledUrls: 'example.com', disabledUrls: '', active: true }],
+        },
+      },
+    });
+
+    expect(screen.queryByText('No rules yet — create one below')).not.toBeInTheDocument();
+  });
 });
