@@ -90,7 +90,9 @@ The extension name sits in a sibling `<div>`, not a `<label htmlFor>` pointing a
 
 **Priority**: High
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Changed `app/index.html` line 8 from `<title>The Duplicator</title>` to `<title>ManageX – Extension Manager</title>`, matching `app/options.html` and `manifest.json`'s `default_title`. Reviewed by code-reviewer (approved, no findings) and ui-ux-product-reviewer (confirmed the fix fully resolves the finding).
 
 ---
 
