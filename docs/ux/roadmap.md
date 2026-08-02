@@ -25,8 +25,8 @@ Goal: Ship every trivial-effort fix from the audit's Quick Wins list plus the on
   - Status: Completed (2026-08-02) | Priority: Medium | Effort: Trivial | Dependencies: None
 - [x] Finding #5 – Add `aria-label` to icon-only controls (header menu, help icons)
   - Status: Completed (2026-08-02) | Priority: Medium | Effort: Trivial | Dependencies: None
-- [ ] Finding #7 – Swap Export/Import icons (currently backwards)
-  - Status: Not Started | Priority: Medium | Effort: Trivial | Dependencies: None
+- [x] Finding #7 – Swap Export/Import icons (currently backwards)
+  - Status: Completed (2026-08-02) | Priority: Medium | Effort: Trivial | Dependencies: None
 - [ ] Finding #13 – Fix badge color (`#ededed` → brand teal + explicit text color)
   - Status: Not Started | Priority: Low-Medium | Effort: Trivial | Dependencies: Finding #1 (needs corrected teal)
 - [ ] Finding #19 – Fix broken favicon path (`logo.png` → `icons/logo.png`)

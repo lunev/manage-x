@@ -25,10 +25,10 @@ const Header: React.FC = () => {
         </DropdownMenuTrigger>
         <DropdownMenuContent className="mr-4">
           <DropdownMenuItem onSelect={exportUrlRules}>
-            <UploadIcon /> Export URL Rules
+            <DownloadIcon /> Export URL Rules
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => chrome.runtime.openOptionsPage()}>
-            <DownloadIcon /> Import URL Rules
+            <UploadIcon /> Import URL Rules
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -171,7 +171,9 @@ This is the newest UI element (added in `df8fd65`, right before the teal rebrand
 
 **Priority**: Medium
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Swapped the icons in the header dropdown menu (`src/components/layout/header/Header.tsx`) so "Export URL Rules" uses `DownloadIcon` and "Import URL Rules" uses `UploadIcon`, matching the standard export=out-arrow / import=in-arrow convention. Trivial one-line swap; verified by ui-ux-product-reviewer.
 
 ---
 
