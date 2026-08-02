@@ -9,4 +9,5 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.12': ['Recolored the toolbar badge to match the brand and made its text easier to read.'],
   '2.0.13': ['Fixed a broken icon reference in the popup and options page.'],
   '2.0.14': ['Cleaned up unused internal styling code — no visible changes.'],
+  '2.0.15': ['Cleaned up internal button styling code — no visible changes.'],
 };
