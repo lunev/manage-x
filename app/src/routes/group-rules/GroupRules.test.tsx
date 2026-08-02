@@ -104,4 +104,15 @@ describe('GroupRules', () => {
     await waitFor(() => expect(screen.queryByText('Group Rules')).not.toBeInTheDocument());
     expect(chrome.management.setEnabled).not.toHaveBeenCalled();
   });
+
+  // Regression test for Finding #14: the URL rules help tooltip should document rule
+  // precedence (individual rules over group rules, disabled over enabled).
+  it('shows rule precedence guidance in the URL rules help tooltip', () => {
+    render(<GroupRules />, { route: '/group-rules/new' });
+
+    fireEvent.focus(screen.getByLabelText('Help'));
+
+    expect(screen.getAllByText(/always overrides matching group rules/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Disabled wins/).length).toBeGreaterThan(0);
+  });
 });

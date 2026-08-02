@@ -24,4 +24,7 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.22': [
     'The extension list now shows a loading placeholder instead of a blank tab while it loads, and clear "no extensions"/"no rules yet" messages instead of empty space.',
   ],
+  '2.0.23': [
+    'The URL Rules help tooltip now explains how individual and group rules interact — an individual rule always wins, and disabled URLs always win over enabled ones.',
+  ],
 };
