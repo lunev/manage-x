@@ -4,4 +4,5 @@ export const CHANGELOG: Record<string, string[]> = {
     'Refreshed the look — new accent color, small spacing and consistency polish.',
   ],
   '2.0.9': ['Improved text contrast and accessibility across the popup and options page.'],
+  '2.0.10': ['Added screen reader labels to the header menu and help icons.'],
 };

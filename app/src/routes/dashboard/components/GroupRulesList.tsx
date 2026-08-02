@@ -19,7 +19,7 @@ const GroupRulesList: React.FC = () => {
       <h2 className="muted-heading my-1 flex gap-1 items-center">
         <span>Group Rules</span>
         <Tooltip>
-          <TooltipTrigger>
+          <TooltipTrigger aria-label="Help">
             <QuestionMarkCircledIcon className="opacity-60" />
           </TooltipTrigger>
           <TooltipContent side="right" className="max-w-[240px] text-xs">

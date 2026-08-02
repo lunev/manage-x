@@ -120,7 +120,7 @@ const ExtensionRules: React.FC = () => {
           <span>URL Rules</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <QuestionMarkCircledIcon className="opacity-60" />
+              <QuestionMarkCircledIcon className="opacity-60" aria-label="Help" />
             </TooltipTrigger>
             <TooltipContent className="max-w-[340px] ml-5">
               <ul className="list-disc list-inside mt-1 space-y-1">
