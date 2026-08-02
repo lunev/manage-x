@@ -74,7 +74,9 @@ The extension name sits in a sibling `<div>`, not a `<label htmlFor>` pointing a
 
 **Priority**: High
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Added `aria-label={`Toggle ${name}`}` to the three `Switch` call sites — `ExtensionList.tsx` (extension name), `ExtensionRulesList.tsx` and `GroupRulesList.tsx` (rule name, which matches the visible link text in each row).
 
 ---
 
