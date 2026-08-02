@@ -315,7 +315,7 @@ This is a near-white gray, set without a corresponding `setBadgeTextColor` call,
 
 **Priority**: Low
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Skipped (2026-08-02) — explicitly descoped by the user; not planned.
 
 ---
 
@@ -333,7 +333,7 @@ No settings, no preferences, no theme toggle, no shortcut info, no "reset all ex
 
 **Why it matters**: Given the extension already tracks per-extension "default state" (`src/lib/utils.ts`), the Options page is an underused surface that should be the natural home for several already-built or easily-built capabilities.
 
-**Suggested Solution**: Expand the Options page to include: theme toggle, shortcut display/link, a full backup panel (Export + Import together, not split across surfaces), and a "restore all extensions to their default state" panic button.
+**Suggested Solution**: Expand the Options page to include: a full backup panel (Export + Import together, not split across surfaces), and a "restore all extensions to their default state" panic button. (Shortcut display/link already shipped via Finding #15. Theme toggle explicitly descoped — see Finding #16.)
 
 **Priority**: Low-Medium
 **Estimated Effort**: Medium
@@ -621,7 +621,7 @@ This is pixel-for-pixel identical in color to `default`, just with `uppercase` +
 **Value**: Gives users control over an already-implemented capability.
 
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Skipped (2026-08-02) — duplicate of Finding #16, explicitly descoped by the user; not planned.
 
 ---
 
