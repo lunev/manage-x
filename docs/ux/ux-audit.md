@@ -261,7 +261,9 @@ This is a near-white gray, set without a corresponding `setBadgeTextColor` call,
 
 **Priority**: Low-Medium
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: In `app/src/service-worker/utils/rulesManager.ts`, replaced `chrome.action.setBadgeBackgroundColor({ color: '#ededed' })` with `chrome.action.setBadgeBackgroundColor({ color: '#008085' })` plus a new `chrome.action.setBadgeTextColor({ color: '#ffffff' })` call. `#008085` is the exact resolved hex of `--primary` (`hsl(182, 100%, 26%)`, the post-Finding-#1 contrast-fixed teal used on every button/switch/tooltip), so the badge now matches the brand, and the white-on-teal pairing carries the same ~4.75:1 AA-passing contrast already verified in Finding #1. Verified by ui-ux-product-reviewer.
 
 ---
 

@@ -83,7 +83,8 @@ export const manageExtensions = async () => {
 
   // Set badge with affected count
   chrome.action.setBadgeText({ text: affectedCount > 0 ? String(affectedCount) : '' });
-  chrome.action.setBadgeBackgroundColor({ color: '#ededed' });
+  chrome.action.setBadgeBackgroundColor({ color: '#008085' });
+  chrome.action.setBadgeTextColor({ color: '#ffffff' });
 };
 
 export function setupRulesManager() {
