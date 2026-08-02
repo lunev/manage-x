@@ -20,7 +20,7 @@ const Header: React.FC = () => {
         </Link>
       </div>
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger aria-label="More actions">
           <DotsVerticalIcon />
         </DropdownMenuTrigger>
         <DropdownMenuContent className="mr-4">

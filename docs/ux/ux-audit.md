@@ -128,7 +128,9 @@ This is the newest UI element (added in `df8fd65`, right before the teal rebrand
 
 **Priority**: Medium
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Added `aria-label="More actions"` to the `DotsVerticalIcon` `DropdownMenuTrigger` in `Header.tsx`, and `aria-label="Help"` to all four `QuestionMarkCircledIcon` tooltip triggers (`ExtensionRulesList.tsx`, `GroupRulesList.tsx`, `ExtensionRules.tsx`, `GroupRules.tsx`). Label placement depends on whether the `TooltipTrigger` uses `asChild`: without it, Radix renders its own `<button>` wrapping the icon and the label goes on the `TooltipTrigger`; with `asChild` (Radix `Slot`), the trigger's interactive props merge onto the child, so the label goes directly on the `QuestionMarkCircledIcon`. Verified by ui-ux-product-reviewer for both patterns.
 
 ---
 
