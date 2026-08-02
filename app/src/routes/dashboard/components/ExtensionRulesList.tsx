@@ -19,10 +19,10 @@ const ExtensionRulesList: React.FC = () => {
 
   const handleToggleRule = async (rule: ExtensionRule) => {
     if (rule.active) {
+      // Restore the extension to its default state. If the default was never cached, assume
+      // enabled rather than leaving it stuck in whatever state this rule last left it in.
       const defaultState = await getDefaultExtensionState(rule.id);
-      if (defaultState) {
-        await chrome.management.setEnabled(rule.id, defaultState.enabled);
-      }
+      await chrome.management.setEnabled(rule.id, defaultState ? defaultState.enabled : true);
     }
 
     dispatch(toggleExtensionUrlRule({ id: rule.id }));

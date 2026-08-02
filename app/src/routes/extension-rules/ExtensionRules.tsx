@@ -78,11 +78,11 @@ const ExtensionRules: React.FC = () => {
   };
 
   const handleRemove = async (id: string) => {
-    // Restore the extension to its default state
+    // Restore the extension to its default state. If the default was never cached (e.g. the
+    // extension was installed after ManageX's last init pass), assume enabled rather than
+    // leaving it stuck in whatever state this rule last left it in.
     const defaultState = await getDefaultExtensionState(id);
-    if (defaultState) {
-      chrome.management.setEnabled(id, defaultState.enabled);
-    }
+    chrome.management.setEnabled(id, defaultState ? defaultState.enabled : true);
 
     dispatch(removeExtensionUrlRule({ id }));
     navigate('/');

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, fireEvent, mockManagementGetAll } from '@test-utils';
+import { Route, Routes } from 'react-router-dom';
+import { render, screen, fireEvent, waitFor, mockManagementGetAll, mockStorageLocalGet } from '@test-utils';
 import GroupRules from './GroupRules';
 
 const mockExtensions = [
@@ -10,6 +11,7 @@ const mockExtensions = [
 describe('GroupRules', () => {
   beforeEach(() => {
     mockManagementGetAll(mockExtensions);
+    mockStorageLocalGet({});
   });
 
   // Regression test for a v2.0.18 bug: selecting an extension in the picker threw
@@ -53,5 +55,53 @@ describe('GroupRules', () => {
     expect(screen.getByText('Name field is required')).toBeInTheDocument();
     expect(screen.getByText('At least one extension is required')).toBeInTheDocument();
     expect(screen.getByText('At least one URL is required')).toBeInTheDocument();
+  });
+
+  // Scenario: the extension was disabled by this group rule while the user was on the
+  // matching URL, and its default enabled/disabled state was never cached. Deleting the
+  // group should still restore it to enabled, not leave it stuck disabled.
+  it('restores every extension in the group to enabled on delete when no default state was ever cached', async () => {
+    render(<Routes><Route path="/group-rules/:id/edit" element={<GroupRules />} /></Routes>, {
+      route: '/group-rules/grp1/edit',
+      initialState: {
+        groupRules: {
+          entities: [
+            { id: 'grp1', name: 'Group A', extensions: ['ext1'], enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true },
+          ],
+        },
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    fireEvent.click(screen.getByRole('button', { name: /Confirm/ }));
+
+    await waitFor(() => expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', true));
+  });
+
+  // Scenario: the extension in the group being deleted is ALSO covered by another still-active
+  // rule (an individual ExtensionRule here). Deleting this group must not force it back to its
+  // "default" state and stomp the other rule's decision — it should leave that extension alone.
+  it('does not force an extension to its default state on group delete if another active rule still governs it', async () => {
+    mockStorageLocalGet({ defaultExtState: [{ id: 'ext1', enabled: true }] });
+
+    render(<Routes><Route path="/group-rules/:id/edit" element={<GroupRules />} /></Routes>, {
+      route: '/group-rules/grp1/edit',
+      initialState: {
+        groupRules: {
+          entities: [
+            { id: 'grp1', name: 'Group A', extensions: ['ext1'], enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true },
+          ],
+        },
+        extensionRules: {
+          entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true }],
+        },
+      },
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    fireEvent.click(screen.getByRole('button', { name: /Confirm/ }));
+
+    await waitFor(() => expect(screen.queryByText('Group Rules')).not.toBeInTheDocument());
+    expect(chrome.management.setEnabled).not.toHaveBeenCalled();
   });
 });
