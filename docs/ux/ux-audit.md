@@ -341,7 +341,8 @@ No settings, no preferences, no theme toggle, no shortcut info, no "reset all ex
 
 **Priority**: Low
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+**Implementation note**: Removed all `--chart-1`..`--chart-5` and `--sidebar-*` custom properties from both the `:root` and `.dark` theme blocks in `app/src/index.css`. Also removed the corresponding `chart`/`sidebar` entries from `theme.extend.colors` in `app/tailwind.config.js`, since they referenced those now-deleted variables via `hsl(var(--chart-1))` etc. — leaving them would have just created a fresh set of dangling references. Confirmed via repo-wide grep that nothing else referenced these tokens or their generated Tailwind utility classes, and verified a production build (`NODE_ENV=production npx vite build`) still compiles cleanly. Purely internal cleanup with no visible UI effect.
 
 ---
 
