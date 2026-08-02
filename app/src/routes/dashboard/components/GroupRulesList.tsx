@@ -57,7 +57,11 @@ const GroupRulesList: React.FC = () => {
                   </Tooltip>
                 </Link>
               </div>
-              <Switch checked={rule.active} onCheckedChange={() => dispatch(toggleGroupUrlRule({ id: rule.id }))} />
+              <Switch
+                checked={rule.active}
+                onCheckedChange={() => dispatch(toggleGroupUrlRule({ id: rule.id }))}
+                aria-label={`Toggle ${rule.name}`}
+              />
             </div>
           ))}
         </div>

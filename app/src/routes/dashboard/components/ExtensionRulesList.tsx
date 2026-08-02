@@ -59,7 +59,11 @@ const ExtensionRulesList: React.FC = () => {
                 <Link to={`/extension-rules/${rule.id}/edit/`} className="flex-1 line-clamp-1">
                   {rule.name}
                 </Link>
-                <Switch checked={rule.active} onCheckedChange={() => handleToggleRule(rule)} />
+                <Switch
+                  checked={rule.active}
+                  onCheckedChange={() => handleToggleRule(rule)}
+                  aria-label={`Toggle ${rule.name}`}
+                />
               </div>
             );
           })}

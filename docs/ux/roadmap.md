@@ -12,8 +12,8 @@ Goal: Ship every trivial-effort fix from the audit's Quick Wins list plus the on
 
 - [x] Finding #1 – Fix primary teal WCAG contrast failure (`--primary` in `src/index.css`)
   - Status: Completed (2026-08-02) | Priority: High | Effort: Trivial | Dependencies: None (blocks Finding #13)
-- [ ] Finding #2 – Add `aria-label` to every `Switch` (extension/rule toggles)
-  - Status: Not Started | Priority: High | Effort: Trivial | Dependencies: None
+- [x] Finding #2 – Add `aria-label` to every `Switch` (extension/rule toggles)
+  - Status: Completed (2026-08-02) | Priority: High | Effort: Trivial | Dependencies: None
 - [ ] Finding #3 – Fix leftover `<title>The Duplicator</title>` in `index.html`
   - Status: Not Started | Priority: High | Effort: Trivial | Dependencies: None
 

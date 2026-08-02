@@ -23,7 +23,12 @@ const ExtensionItem: React.FC<{
       <Tooltip>
         <TooltipTrigger asChild>
           <div>
-            <Switch checked={ext.enabled} onCheckedChange={() => toggle(ext.id, !ext.enabled)} disabled={hasRules} />
+            <Switch
+              checked={ext.enabled}
+              onCheckedChange={() => toggle(ext.id, !ext.enabled)}
+              disabled={hasRules}
+              aria-label={`Toggle ${ext.name}`}
+            />
           </div>
         </TooltipTrigger>
         {hasRules && (
