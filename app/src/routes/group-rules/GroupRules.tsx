@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import useExtensions from '@/hooks/useExtensions';
-import { ArrowLeftIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import { ArrowLeftIcon, CheckIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { GroupRule } from '@/types';
@@ -150,13 +149,12 @@ const GroupRules: React.FC = () => {
                       {ext.name}
                       <span className="sr-only">{isSelected ? ', selected' : ', not selected'}</span>
                     </span>
-                    {/* Visual indicator only — the row's onSelect above is the single source of truth for toggling */}
-                    <Checkbox
+                    <div
                       aria-hidden="true"
-                      className="mr-1 pointer-events-none"
-                      tabIndex={-1}
-                      checked={isSelected}
-                    />
+                      className={`mr-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border border-primary shadow ${isSelected ? 'bg-primary text-primary-foreground' : ''}`}
+                    >
+                      {isSelected && <CheckIcon className="h-3.5 w-3.5" />}
+                    </div>
                   </CommandItem>
                 );
               })}
