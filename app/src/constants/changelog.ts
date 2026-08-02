@@ -13,4 +13,5 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.16': ['The "Add" extension rule button now stays visible with a tooltip explaining why it\'s disabled once every extension already has a rule.'],
   '2.0.17': ['Popup and options page now respect your system\'s "reduce motion" setting instead of always fading in.'],
   '2.0.18': ['Added a search box to the extension picker when creating or editing a group rule.'],
+  '2.0.19': ['Fixed a crash when selecting an extension in the group rule editor.'],
 };
