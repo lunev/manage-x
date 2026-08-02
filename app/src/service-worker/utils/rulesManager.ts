@@ -59,6 +59,8 @@ export const manageExtensions = async () => {
     promises.push(
       (async () => {
         const defaultState = await getDefaultExtensionState(extId);
+        if (!defaultState) return;
+
         let newState: boolean;
 
         if (shouldDisable) {

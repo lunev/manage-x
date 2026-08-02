@@ -36,10 +36,16 @@ Run, in order, from `app/`:
 
 - `npx tsc -b`
 - `npx eslint .`
-- `npx vitest run` (expect "No test files found" — that's a known, documented state, not a failure)
+- `npx vitest run`
 - A production build to confirm it compiles: `NODE_ENV=production npx vite build` (**not** `npm run build`, which also runs `build-zip.js` — see the release-archive warning below)
 
 Stop and fix before proceeding if typecheck or lint report errors.
+
+## 4b. Test the change (required if the touched component has interactive Radix/cmdk elements)
+
+If the finding touched a component with interactive Radix or cmdk elements (`Command`, `Popover`, `DropdownMenu`, `Tooltip`, `Switch`, `Checkbox`, `Select`, etc.) — whether newly added or pre-existing in a file you edited — write or update a component test exercising the interactive path (not just a render-without-crashing smoke test), using `@test-utils` (see `CLAUDE.md`). This is not optional: v2.0.18 shipped a real infinite-render crash (React error #185) that typecheck, lint, and code review all missed because nothing actually rendered and interacted with the component. `npx vitest run` must pass with the new/updated test before continuing.
+
+If the finding only touches non-interactive presentational code (copy, color tokens, static layout), a test isn't required — say so explicitly in the final summary instead of skipping silently.
 
 ## 5. Code review (non-trivial tasks only)
 
@@ -78,7 +84,7 @@ Per `CLAUDE.md`'s standing instruction for completed `ux-audit.md` findings:
 - Reuse existing components, hooks, and patterns already in the codebase.
 - Preserve the existing architecture unless `extension-architect` explicitly recommends otherwise.
 - Never modify or regenerate files under `chrome-webstore/releases/` outside of the deliberate release step above.
-- Don't add tests for this work unless asked — no test files exist yet in this repo and that's a documented, intentional state.
+- Add or update a component test for any interactive Radix/cmdk surface you touch — see step 4b. Don't ship a release with a red or skipped test suite.
 
 ---
 

@@ -14,4 +14,7 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.17': ['Popup and options page now respect your system\'s "reduce motion" setting instead of always fading in.'],
   '2.0.18': ['Added a search box to the extension picker when creating or editing a group rule.'],
   '2.0.19': ['Fixed a crash when selecting an extension in the group rule editor.'],
+  '2.0.20': [
+    'Fixed rule toggling silently failing for extensions whose enabled/disabled state was never cached, including in the background automation that turns extensions on and off.',
+  ],
 };
