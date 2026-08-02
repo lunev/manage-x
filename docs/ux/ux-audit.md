@@ -229,7 +229,9 @@ This is the newest UI element (added in `df8fd65`, right before the teal rebrand
 
 **Priority**: Low-Medium
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: In `ExtensionRulesList.tsx`, the "Add" button is now always rendered instead of hard-hidden. Added `noAvailableExtensions = extensions.length === 0 || rules.length >= extensions.length`; when true, the button renders `disabled` and is wrapped in a `Tooltip`. Because the shared `Button` component applies `disabled:pointer-events-none`, a disabled native button never fires the hover/focus events Radix's `TooltipTrigger` needs — so the trigger is a focusable `<span tabIndex={0} aria-label="Add">` wrapping the disabled button, not the button itself. Tooltip copy is split by cause: "No other extensions installed yet" when there are zero installed extensions at all, versus the audit's literal suggested copy "All installed extensions already have a rule" when every installed extension already has a rule. `GroupRulesList.tsx` was left untouched — its Add button has no equivalent hard-hide condition. Reviewed by code-reviewer (two Medium findings — missing accessible name on the wrapper span, and inaccurate tooltip copy for the zero-extensions case — both fixed before shipping) and confirmed by ui-ux-product-reviewer.
 
 ---
 
