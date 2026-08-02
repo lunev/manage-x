@@ -355,7 +355,8 @@ No settings, no preferences, no theme toggle, no shortcut info, no "reset all ex
 
 **Priority**: Low
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+**Implementation note**: Changed `<link rel="icon" type="image" href="logo.png" />` to `href="icons/logo.png"` in `app/index.html` and `app/options.html` (line 6 of each), pointing at the existing `app/public/icons/logo.png` asset rather than adding a duplicate root-level copy. Verified via `NODE_ENV=production npx vite build` that `app/build/index.html`/`app/build/options.html` resolve correctly and `app/build/icons/logo.png` is present.
 
 ---
 

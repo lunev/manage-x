@@ -29,8 +29,8 @@ Goal: Ship every trivial-effort fix from the audit's Quick Wins list plus the on
   - Status: Completed (2026-08-02) | Priority: Medium | Effort: Trivial | Dependencies: None
 - [x] Finding #13 – Fix badge color (`#ededed` → brand teal + explicit text color)
   - Status: Completed (2026-08-02) | Priority: Low-Medium | Effort: Trivial | Dependencies: Finding #1 (needs corrected teal)
-- [ ] Finding #19 – Fix broken favicon path (`logo.png` → `icons/logo.png`)
-  - Status: Not Started | Priority: Low | Effort: Trivial | Dependencies: None
+- [x] Finding #19 – Fix broken favicon path (`logo.png` → `icons/logo.png`)
+  - Status: Completed (2026-08-02) | Priority: Low | Effort: Trivial | Dependencies: None
 - [ ] Finding #18 – Remove dead `--chart-*`/`--sidebar-*` CSS tokens
   - Status: Not Started | Priority: Low | Effort: Trivial | Dependencies: None
 - [ ] Finding #20 – Rename misleading `Button` `success` variant
