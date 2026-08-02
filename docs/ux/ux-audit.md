@@ -201,7 +201,9 @@ This is the newest UI element (added in `df8fd65`, right before the teal rebrand
 
 **Priority**: Medium
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Replaced the plain `<ul>/<li>` checkbox list in `app/src/routes/group-rules/GroupRules.tsx` with the shadcn `Command`/`CommandInput`/`CommandList`/`CommandEmpty`/`CommandGroup`/`CommandItem` primitives (same ones already used in `ExtensionsCombobox.tsx`), rendered inline with no `Popover` wrapper so the list stays always-visible and multi-select. The toggle logic still runs entirely through the existing, unchanged `handleSelect(ext.id)`, now wired via each `CommandItem`'s `onSelect`; the nested `Checkbox` is now a purely visual/`aria-hidden` indicator (`pointer-events-none`, `tabIndex={-1}`) so clicks always land on the row once, avoiding a double-toggle. `CommandItem`'s `value` is `` `${ext.name} ${ext.id}` `` (not just the name) to satisfy cmdk's unique-value requirement while keeping fuzzy search on the name. Screen-reader users get an `sr-only` "selected"/"not selected" suffix per row since the visual checkbox is no longer independently focusable. Also fixed a pre-existing bug in the shared `app/src/components/ui/command.tsx`: `CommandEmpty` didn't merge a caller-supplied `className` via `cn()`, silently discarding its default `py-6 text-center text-sm` styling — fixed so future consumers merge correctly instead of overwrite.
 
 ---
 

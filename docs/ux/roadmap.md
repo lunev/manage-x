@@ -46,8 +46,8 @@ Goal: Ship every trivial-effort fix from the audit's Quick Wins list plus the on
 
 Goal: Close the remaining UX gaps that hit real usage — missing search, missing empty/loading states, undiscoverable built features, and the Import/Export asymmetry — turning Options into a real settings surface.
 
-- [ ] Finding #9 – Add search to Group Rules extension picker (reuse existing `Command` UI)
-  - Status: Not Started | Priority: Medium | Effort: Small | Dependencies: None
+- [x] Finding #9 – Add search to Group Rules extension picker (reuse existing `Command` UI)
+  - Status: Completed (2026-08-02) | Priority: Medium | Effort: Small | Dependencies: None
 - [ ] Finding #10 – Add empty/loading states to extension and rule lists
   - Status: Not Started | Priority: Medium | Effort: Small | Dependencies: None
 - [ ] Finding #14 – Document rule precedence in the existing help tooltip
