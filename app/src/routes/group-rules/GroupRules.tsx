@@ -19,6 +19,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 const GroupRules: React.FC = () => {
   const { id } = useParams();
   const rules = useAppSelector((state) => state.groupRules.entities);
+  const extensionRules = useAppSelector((state) => state.extensionRules.entities);
   const editedGroupRule = rules.find((rule) => rule.id === id);
   const [formData, setFormData] = useState<GroupRule>(
     editedGroupRule
@@ -96,13 +97,22 @@ const GroupRules: React.FC = () => {
   };
 
   const handleRemove = async (id: string) => {
-    // Restore the extension to its default enabled/disabled state
+    // Restore each extension to its default enabled/disabled state — but only if no other
+    // active rule (an individual rule, or another active group) still governs it. Otherwise
+    // this would stomp that other rule's decision; leave the extension alone and let it keep
+    // governing.
     if (editedGroupRule?.extensions.length) {
       for (const extensionId of editedGroupRule.extensions) {
+        const stillGoverned =
+          extensionRules.some((rule) => rule.id === extensionId && rule.active) ||
+          rules.some((group) => group.id !== id && group.active && group.extensions.includes(extensionId));
+
+        if (stillGoverned) continue;
+
+        // If the default was never cached (e.g. the extension was installed after ManageX's
+        // last init pass), assume enabled rather than leaving it stuck disabled.
         const defaultState = await getDefaultExtensionState(extensionId);
-        if (defaultState) {
-          chrome.management.setEnabled(extensionId, defaultState.enabled);
-        }
+        chrome.management.setEnabled(extensionId, defaultState ? defaultState.enabled : true);
       }
     }
 

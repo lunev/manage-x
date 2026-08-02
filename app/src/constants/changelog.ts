@@ -17,4 +17,8 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.20': [
     'Fixed rule toggling silently failing for extensions whose enabled/disabled state was never cached, including in the background automation that turns extensions on and off.',
   ],
+  '2.0.21': [
+    'Deleting or turning off a rule now always restores the extension to enabled if its original state was never recorded, instead of possibly leaving it disabled.',
+    'Deleting a group rule no longer overrides another still-active rule covering the same extension.',
+  ],
 };

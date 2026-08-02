@@ -59,7 +59,10 @@ export const manageExtensions = async () => {
     promises.push(
       (async () => {
         const defaultState = await getDefaultExtensionState(extId);
-        if (!defaultState) return;
+        // If the default was never cached (e.g. the extension was installed after ManageX's
+        // last init pass), assume enabled rather than leaving it stuck in whatever state a
+        // rule last left it in.
+        const defaultEnabled = defaultState ? defaultState.enabled : true;
 
         let newState: boolean;
 
@@ -68,10 +71,10 @@ export const manageExtensions = async () => {
         } else if (shouldEnable) {
           newState = true;
         } else {
-          newState = defaultState.enabled;
+          newState = defaultEnabled;
         }
 
-        if (newState !== defaultState.enabled) {
+        if (newState !== defaultEnabled) {
           affectedCount++;
           markProgrammaticToggle(extId);
         }

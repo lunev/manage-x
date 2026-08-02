@@ -27,10 +27,11 @@ describe('ExtensionRulesList', () => {
     await waitFor(() => expect(screen.getByRole('switch', { name: 'Toggle Ext One' })).toHaveAttribute('aria-checked', 'false'));
   });
 
-  // Regression test: getDefaultExtensionState resolves to undefined when an extension's
-  // default state was never cached (e.g. installed after ManageX last ran its init pass).
-  // Toggling a rule off must not crash in that case, and should still update rule state.
-  it('toggles a rule off without crashing when no default state was ever cached', async () => {
+  // getDefaultExtensionState resolves to undefined when an extension's default state was
+  // never cached (e.g. installed after ManageX last ran its init pass). Toggling a rule off
+  // must not crash in that case, and should still restore the extension — assuming enabled,
+  // not leaving it stuck disabled just because the default is unknown.
+  it('restores the extension to enabled when toggling a rule off with no default state ever cached', async () => {
     render(<ExtensionRulesList />, {
       initialState: {
         extensionRules: {
@@ -42,7 +43,7 @@ describe('ExtensionRulesList', () => {
     expect(() => fireEvent.click(screen.getByRole('switch', { name: 'Toggle Ext One' }))).not.toThrow();
 
     await waitFor(() => expect(screen.getByRole('switch', { name: 'Toggle Ext One' })).toHaveAttribute('aria-checked', 'false'));
-    expect(chrome.management.setEnabled).not.toHaveBeenCalled();
+    expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', true);
   });
 
   // Regression test for Finding #11: the Add button used to hard-hide once every
