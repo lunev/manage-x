@@ -630,6 +630,17 @@ This is pixel-for-pixel identical in color to `default`, just with `uppercase` +
 
 ---
 
+### Feature 23: Notice about other installed extensions with `management` permission
+
+**Description**: `chrome.management.getAll()` (already called by `useExtensions`) returns a `permissions` array per extension. On load, check installed extensions other than ManageX itself for ones that declare the `management` permission — these can also call `chrome.management.setEnabled()`, and could silently fight with or override ManageX's own rule automation. If any are found, show a dismissible info notice (popup and/or Options page) naming them and explaining they may affect ManageX's behavior.
+
+**Value**: Surfaces a real, currently invisible risk to trust in the automation — if an extension unexpectedly stays enabled/disabled against what a rule says, today the user has no way to know a different extension manager might be the actual cause. Directly supports the "Trust and transparency" pillar.
+
+**Estimated Effort**: Small
+**Status**: Not Started
+
+---
+
 ## Quick Wins
 
 Items implementable in under one day, cross-referenced to their corresponding Finding (or Feature Backlog entry where noted):

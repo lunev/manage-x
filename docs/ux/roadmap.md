@@ -91,6 +91,8 @@ Goal: Execute the audit's "Trust and transparency" pillar — make the rules eng
   - Status: Not Started | Priority: Low | Effort: Small | Dependencies: None
 - [ ] Feature #18 – Last-edited timestamp per rule
   - Status: Not Started | Priority: Low | Effort: Small | Dependencies: None
+- [ ] Feature #23 – Notice about other installed extensions with `management` permission
+  - Status: Not Started | Priority: Medium (value) | Effort: Small | Dependencies: None
 
 ---
 
