@@ -299,7 +299,9 @@ This is a near-white gray, set without a corresponding `setBadgeTextColor` call,
 
 **Priority**: Low
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Added a new `KeyboardShortcut` component (`app/src/options/components/KeyboardShortcut.tsx`), mounted below `ImportRules` in `app/src/options/OptionsApp.tsx`. It fetches the live binding via `chrome.commands.getAll()` rather than hardcoding the manifest's `suggested_key`, so the displayed shortcut stays accurate if the user rebinds or clears it via `chrome://extensions/shortcuts` — a stronger approach than the audit's literal suggestion of just mentioning the static value. Renders one of three states: loading (nothing, avoiding a flash), set (the shortcut in a `<kbd>` plus a "Change shortcut" link), or unset (explanatory copy plus a "Set up a shortcut" link) — both link variants open `chrome://extensions/shortcuts` via `chrome.tabs.create` (no new permission needed; `tabs` was already declared). Followed the existing `ImportRules.tsx` sibling pattern (`.muted-heading`, spacing rhythm, `Button variant="link"`). Deliberately scoped to the Options page only, not the popup, per the audit's primary suggestion and to avoid overlapping with the larger, separately-tracked Finding #17 Options-page revamp. Reviewed by code-reviewer (no High/Critical; one Medium — initial state conflated "loading" with "unset," which could momentarily misinform screen-reader users — fixed by modeling an explicit loading/set/unset union type before shipping; a couple of Low suggestions, e.g. `chrome.runtime.lastError`/rejection handling and `aria-hidden` on the decorative icon, the icon one also fixed, the error-handling one left as non-blocking polish) and confirmed by ui-ux-product-reviewer.
 
 ---
 

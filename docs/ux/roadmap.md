@@ -52,8 +52,8 @@ Goal: Close the remaining UX gaps that hit real usage — missing search, missin
   - Status: Completed (2026-08-02) | Priority: Medium | Effort: Small | Dependencies: None
 - [x] Finding #14 – Document rule precedence in the existing help tooltip
   - Status: Completed (2026-08-02) | Priority: Medium | Effort: Small | Dependencies: None
-- [ ] Finding #15 – Surface the `Ctrl/Cmd+Shift+E` keyboard shortcut in the UI
-  - Status: Not Started | Priority: Low | Effort: Small | Dependencies: None
+- [x] Finding #15 – Surface the `Ctrl/Cmd+Shift+E` keyboard shortcut in the UI
+  - Status: Completed (2026-08-02) | Priority: Low | Effort: Small | Dependencies: None
 - [ ] Finding #16 – Expose manual light/dark/system theme toggle (dupe: Feature #21)
   - Status: Not Started | Priority: Low | Effort: Small | Dependencies: None
 - [ ] Finding #17 – Expand Options page (theme toggle, shortcut info, backup panel, reset-to-default)
