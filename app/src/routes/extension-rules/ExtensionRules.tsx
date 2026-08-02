@@ -138,6 +138,11 @@ const ExtensionRules: React.FC = () => {
                 <li>
                   Supports <code>localhost</code> and IPs like <code>localhost:3000</code> or <code>192.168.1.*</code>.
                 </li>
+                <li>
+                  An active individual rule always overrides matching group rules entirely, regardless of whether its
+                  own patterns match the current page; if a URL matches both an Enabled and Disabled pattern,
+                  Disabled wins.
+                </li>
               </ul>
             </TooltipContent>
           </Tooltip>

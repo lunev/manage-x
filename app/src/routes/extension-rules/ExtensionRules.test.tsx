@@ -60,4 +60,15 @@ describe('ExtensionRules', () => {
 
     await waitFor(() => expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', true));
   });
+
+  // Regression test for Finding #14: the URL rules help tooltip should document rule
+  // precedence (individual rules over group rules, disabled over enabled).
+  it('shows rule precedence guidance in the URL rules help tooltip', () => {
+    render(<ExtensionRules />, { route: '/extension-rules/new' });
+
+    fireEvent.focus(screen.getByLabelText('Help'));
+
+    expect(screen.getAllByText(/always overrides matching group rules/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Disabled wins/).length).toBeGreaterThan(0);
+  });
 });

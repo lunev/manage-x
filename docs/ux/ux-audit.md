@@ -283,7 +283,9 @@ This is a near-white gray, set without a corresponding `setBadgeTextColor` call,
 
 **Priority**: Medium
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Added a 5th bullet to the existing "URL Rules" help tooltip in `app/src/routes/extension-rules/ExtensionRules.tsx` and `app/src/routes/group-rules/GroupRules.tsx` (kept byte-identical between both files, matching the pre-existing convention): "An active individual rule always overrides matching group rules entirely, regardless of whether its own patterns match the current page; if a URL matches both an Enabled and Disabled pattern, Disabled wins." Verified the wording against the actual logic in `rulesManager.ts`/`useExtensionHasRules.ts` and tightened it beyond the audit's literal suggested wording to call out the counterintuitive case (the individual rule wins even if its own patterns don't match the current page). Added one regression test to each of `ExtensionRules.test.tsx` and `GroupRules.test.tsx` asserting the tooltip surfaces this text. No changes to the precedence logic itself — documentation only, per the audit's "at minimum" scope; the fuller shadowed/conflicting-rule warning remains tracked as Feature #4.
 
 ---
 
