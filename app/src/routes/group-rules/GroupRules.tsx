@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { GroupRule } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
@@ -125,30 +126,43 @@ const GroupRules: React.FC = () => {
         <label className="muted-heading mb-0.5 block">
           Extensions {formData.extensions.length > 0 && `(${formData.extensions.length})`}
         </label>
-        <ul className="flex flex-col gap-1 max-h-[130px] overflow-y-auto">
-          {extensions.map((ext) => (
-            <li
-              key={ext.id}
-              className="flex items-center gap-2 rounded-md px-1 -mx-1 py-0.5 -my-0.5 hover:bg-muted/60 transition-colors"
-            >
-              <Avatar className={`${!ext.enabled ? 'grayscale' : ''} w-5 h-5 text-xs text-white relative`}>
-                <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
-                <AvatarFallback className="bg-primary text-primary-foreground">
-                  {ext.name.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <label htmlFor={ext.id} className="flex-1 line-clamp-1 cursor-pointer">
-                {ext.name}
-              </label>
-              <Checkbox
-                id={ext.id}
-                className="mr-4"
-                checked={formData.extensions.includes(ext.id)}
-                onCheckedChange={() => handleSelect(ext.id)}
-              />
-            </li>
-          ))}
-        </ul>
+        <Command className="rounded-md border">
+          <CommandInput aria-label="Search extensions" placeholder="Search extensions..." className="h-8 text-xs" />
+          <CommandList className="max-h-[100px]">
+            <CommandEmpty className="text-xs">No extensions found.</CommandEmpty>
+            <CommandGroup>
+              {extensions.map((ext) => {
+                const isSelected = formData.extensions.includes(ext.id);
+                return (
+                  <CommandItem
+                    key={ext.id}
+                    value={`${ext.name} ${ext.id}`}
+                    onSelect={() => handleSelect(ext.id)}
+                    className="text-xs gap-2"
+                  >
+                    <Avatar className={`${!ext.enabled ? 'grayscale' : ''} w-5 h-5 text-xs text-white relative`}>
+                      <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {ext.name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="flex-1 line-clamp-1">
+                      {ext.name}
+                      <span className="sr-only">{isSelected ? ', selected' : ', not selected'}</span>
+                    </span>
+                    {/* Visual indicator only — the row's onSelect above is the single source of truth for toggling */}
+                    <Checkbox
+                      aria-hidden="true"
+                      className="mr-1 pointer-events-none"
+                      tabIndex={-1}
+                      checked={isSelected}
+                    />
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
         {errors.extensions && <p className="text-xs text-destructive mt-1">{errors.extensions}</p>}
       </div>
       <div className="mb-3">
