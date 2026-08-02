@@ -15,6 +15,7 @@ const ExtensionRulesList: React.FC = () => {
   const { extensions } = useExtensions();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const noAvailableExtensions = extensions.length === 0 || rules.length >= extensions.length;
 
   const handleToggleRule = async (rule: ExtensionRule) => {
     if (rule.active) {
@@ -69,7 +70,26 @@ const ExtensionRulesList: React.FC = () => {
           })}
         </div>
       )}
-      {rules.length < extensions.length && (
+      {noAvailableExtensions ? (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {/* Wrapper span (not the disabled Button itself) is the Tooltip trigger: the Button's
+                disabled:pointer-events-none style would otherwise block the hover/focus events
+                Radix needs to open the tooltip. aria-label keeps the control's name announced,
+                since a disabled child doesn't guarantee a name-from-content on a generic span. */}
+            <span tabIndex={0} className="inline-block" aria-label="Add">
+              <Button size="xs" variant="cta" disabled>
+                Add
+              </Button>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="max-w-[240px] text-xs">
+            {extensions.length === 0
+              ? 'No other extensions installed yet'
+              : 'All installed extensions already have a rule'}
+          </TooltipContent>
+        </Tooltip>
+      ) : (
         <Button size="xs" variant="cta" onClick={() => navigate('/extension-rules/new/')}>
           Add
         </Button>
