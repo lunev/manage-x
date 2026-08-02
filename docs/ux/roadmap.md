@@ -19,8 +19,8 @@ Goal: Ship every trivial-effort fix from the audit's Quick Wins list plus the on
 
 ### Medium Priority
 
-- [ ] Finding #4 – Re-theme Update Notice off hardcoded `green-*` onto `primary` tokens
-  - Status: Not Started | Priority: Medium-High | Effort: Trivial | Dependencies: None
+- [x] Finding #4 – Re-theme Update Notice off hardcoded `green-*` onto `primary` tokens
+  - Status: Completed (2026-08-02) | Priority: Medium-High | Effort: Trivial | Dependencies: None
 - [ ] Finding #6 – Fix `.muted-heading` contrast (10px/40% opacity)
   - Status: Not Started | Priority: Medium | Effort: Trivial | Dependencies: None
 - [ ] Finding #5 – Add `aria-label` to icon-only controls (header menu, help icons)

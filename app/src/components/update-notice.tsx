@@ -9,11 +9,11 @@ const UpdateNotice: React.FC = () => {
   if (!notice) return null;
 
   return (
-    <Alert className="relative mb-3 px-3 py-2 fade-in border-green-200 bg-green-50 text-green-900 dark:border-green-900 dark:bg-green-950 dark:text-green-300">
+    <Alert className="relative mb-3 px-3 py-2 fade-in border-primary/20 bg-primary/10 text-primary">
       <Button
         variant="ghost"
         size="icon"
-        className="absolute right-1 top-1 h-5 w-5 text-green-900 hover:bg-green-100 hover:text-green-900 dark:text-green-300 dark:hover:bg-green-900 dark:hover:text-green-300"
+        className="absolute right-1 top-1 h-5 w-5 text-primary hover:bg-primary/10 hover:text-primary"
         onClick={dismiss}
         aria-label="Dismiss"
       >
