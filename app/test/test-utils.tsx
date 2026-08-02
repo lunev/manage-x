@@ -4,6 +4,7 @@ import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter, MemoryRouterProps } from 'react-router-dom';
 import { PreloadedState } from './mockStore'; // Ensure you export this from your mockStore file
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 interface CustomRenderOptions extends Omit<RenderOptions, 'queries'> {
   route?: string;
@@ -24,7 +25,7 @@ const customRender = (
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[route]} {...routerProps}>
-        {ui}
+        <TooltipProvider delayDuration={0}>{ui}</TooltipProvider>
       </MemoryRouter>
     </Provider>,
     options,
@@ -33,3 +34,4 @@ const customRender = (
 // ignore-next-line
 export * from '@testing-library/react';
 export { customRender as render };
+export { mockManagementGetAll, mockStorageLocalGet } from './mockChrome';

@@ -20,7 +20,9 @@ const ExtensionRulesList: React.FC = () => {
   const handleToggleRule = async (rule: ExtensionRule) => {
     if (rule.active) {
       const defaultState = await getDefaultExtensionState(rule.id);
-      await chrome.management.setEnabled(rule.id, defaultState.enabled);
+      if (defaultState) {
+        await chrome.management.setEnabled(rule.id, defaultState.enabled);
+      }
     }
 
     dispatch(toggleExtensionUrlRule({ id: rule.id }));

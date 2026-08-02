@@ -80,7 +80,9 @@ const ExtensionRules: React.FC = () => {
   const handleRemove = async (id: string) => {
     // Restore the extension to its default state
     const defaultState = await getDefaultExtensionState(id);
-    chrome.management.setEnabled(id, defaultState.enabled);
+    if (defaultState) {
+      chrome.management.setEnabled(id, defaultState.enabled);
+    }
 
     dispatch(removeExtensionUrlRule({ id }));
     navigate('/');

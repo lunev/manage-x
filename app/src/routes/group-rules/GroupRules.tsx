@@ -100,7 +100,9 @@ const GroupRules: React.FC = () => {
     if (editedGroupRule?.extensions.length) {
       for (const extensionId of editedGroupRule.extensions) {
         const defaultState = await getDefaultExtensionState(extensionId);
-        chrome.management.setEnabled(extensionId, defaultState.enabled);
+        if (defaultState) {
+          chrome.management.setEnabled(extensionId, defaultState.enabled);
+        }
       }
     }
 
