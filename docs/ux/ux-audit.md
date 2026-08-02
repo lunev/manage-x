@@ -148,7 +148,9 @@ This is the newest UI element (added in `df8fd65`, right before the teal rebrand
 
 **Priority**: Medium
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Swapped `opacity-40` for `text-muted-foreground` in `.muted-heading` (`src/index.css`), with no added opacity — not `opacity-70` as literally suggested. Computed the actual ratios: `--muted-foreground` already clears AA at full strength (~4.83:1 light, ~7.7:1 dark), while layering `opacity-70` on top would blend it back toward the background and drop it to ~2.74:1, reintroducing a failure. Full-opacity `text-muted-foreground` is also how the token is used everywhere else in the codebase (`tabs.tsx`, `dialog.tsx`, `command.tsx`) — never diluted with an opacity modifier. Verified by ui-ux-product-reviewer.
 
 ---
 

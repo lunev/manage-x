@@ -23,7 +23,7 @@ main {
 }
 
 .muted-heading {
-  @apply opacity-40 text-xxs uppercase;
+  @apply text-muted-foreground text-xxs uppercase;
 }
 
 @keyframes fadeIn {
