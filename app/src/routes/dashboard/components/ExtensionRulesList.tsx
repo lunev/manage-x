@@ -70,7 +70,7 @@ const ExtensionRulesList: React.FC = () => {
         </div>
       )}
       {rules.length < extensions.length && (
-        <Button size="xs" variant="success" onClick={() => navigate('/extension-rules/new/')}>
+        <Button size="xs" variant="cta" onClick={() => navigate('/extension-rules/new/')}>
           Add
         </Button>
       )}

@@ -66,7 +66,7 @@ const GroupRulesList: React.FC = () => {
           ))}
         </div>
       )}
-      <Button size="xs" variant="success" onClick={() => navigate('/group-rules/new/')}>
+      <Button size="xs" variant="cta" onClick={() => navigate('/group-rules/new/')}>
         Add
       </Button>
     </>

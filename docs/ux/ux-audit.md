@@ -375,7 +375,8 @@ This is pixel-for-pixel identical in color to `default`, just with `uppercase` +
 
 **Priority**: Low
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+**Implementation note**: Renamed the `success` variant key to `cta` in `app/src/components/ui/button.tsx` (no styling change — same `bg-primary`, uppercase, `min-w-[80px]` appearance), and updated both call sites in `app/src/routes/dashboard/components/ExtensionRulesList.tsx` and `app/src/routes/dashboard/components/GroupRulesList.tsx` from `variant="success"` to `variant="cta"`. Matches the audit's suggested alternative name.
 
 ---
 

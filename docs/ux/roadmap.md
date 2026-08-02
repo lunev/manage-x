@@ -33,8 +33,8 @@ Goal: Ship every trivial-effort fix from the audit's Quick Wins list plus the on
   - Status: Completed (2026-08-02) | Priority: Low | Effort: Trivial | Dependencies: None
 - [x] Finding #18 – Remove dead `--chart-*`/`--sidebar-*` CSS tokens
   - Status: Completed (2026-08-02) | Priority: Low | Effort: Trivial | Dependencies: None
-- [ ] Finding #20 – Rename misleading `Button` `success` variant
-  - Status: Not Started | Priority: Low | Effort: Trivial | Dependencies: None
+- [x] Finding #20 – Rename misleading `Button` `success` variant
+  - Status: Completed (2026-08-02) | Priority: Low | Effort: Trivial | Dependencies: None
 - [ ] Finding #11 – Replace hard-hidden "Add" button with disabled state + tooltip
   - Status: Not Started | Priority: Low-Medium | Effort: Small | Dependencies: None
 - [ ] Feature #17 – Respect `prefers-reduced-motion` for `.fade-in`
