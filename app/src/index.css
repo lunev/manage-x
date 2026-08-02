@@ -41,6 +41,13 @@ main {
   animation: fadeIn 1s forwards;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
+    opacity: 1;
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

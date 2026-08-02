@@ -37,8 +37,8 @@ Goal: Ship every trivial-effort fix from the audit's Quick Wins list plus the on
   - Status: Completed (2026-08-02) | Priority: Low | Effort: Trivial | Dependencies: None
 - [x] Finding #11 – Replace hard-hidden "Add" button with disabled state + tooltip
   - Status: Completed (2026-08-02) | Priority: Low-Medium | Effort: Small | Dependencies: None
-- [ ] Feature #17 – Respect `prefers-reduced-motion` for `.fade-in`
-  - Status: Not Started | Priority: Low | Effort: Small | Dependencies: None
+- [x] Feature #17 – Respect `prefers-reduced-motion` for `.fade-in`
+  - Status: Completed (2026-08-02) | Priority: Low | Effort: Small | Dependencies: None
 
 ---
 

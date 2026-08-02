@@ -567,7 +567,9 @@ This is pixel-for-pixel identical in color to `default`, just with `uppercase` +
 **Value**: Accessibility for users with vestibular sensitivity.
 
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Added a `@media (prefers-reduced-motion: reduce)` block immediately after the existing `.fade-in` rule in `app/src/index.css`, overriding `animation: none; opacity: 1` so reduced-motion users see the element immediately at full opacity instead of the 1s fade. The base `.fade-in` rule and `@keyframes fadeIn` are untouched, so default behavior is unchanged. No component changes were needed — none of the `.fade-in` consumers (`Header.tsx`, `Main.tsx`, `Rules.tsx`, `ExtensionList.tsx`, `update-notice.tsx`) rely on animation-lifecycle events.
 
 ---
 
