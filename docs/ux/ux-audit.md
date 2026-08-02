@@ -110,7 +110,9 @@ This is the newest UI element (added in `df8fd65`, right before the teal rebrand
 
 **Priority**: Medium-High
 **Estimated Effort**: Trivial
-**Status**: Not Started
+**Status**: Completed (2026-08-02)
+
+**Implementation note**: Replaced hardcoded `green-*` classes in `update-notice.tsx` (alert wrapper and dismiss button) with `border-primary/20 bg-primary/10 text-primary` / `text-primary hover:bg-primary/10 hover:text-primary`. No explicit `dark:` overrides needed since `--primary` already has separate light/dark values in `src/index.css`, matching the existing `destructive` alert variant pattern. Verified by ui-ux-product-reviewer against the `ImportRules.tsx` reference pattern.
 
 ---
 
