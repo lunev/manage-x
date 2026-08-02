@@ -6,4 +6,5 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.9': ['Improved text contrast and accessibility across the popup and options page.'],
   '2.0.10': ['Added screen reader labels to the header menu and help icons.'],
   '2.0.11': ['Fixed swapped Export/Import icons in the header menu.'],
+  '2.0.12': ['Recolored the toolbar badge to match the brand and made its text easier to read.'],
 };
