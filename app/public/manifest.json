@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ManageX – Extension Manager",
   "description": "Automatically enable or disable Chrome extensions based on the website you're visiting.",
-  "version": "2.0.23",
+  "version": "2.0.24",
   "action": {
     "default_popup": "index.html",
     "default_icon": "icons/logo.png",

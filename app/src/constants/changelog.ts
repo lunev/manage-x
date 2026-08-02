@@ -27,4 +27,7 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.23': [
     'The URL Rules help tooltip now explains how individual and group rules interact — an individual rule always wins, and disabled URLs always win over enabled ones.',
   ],
+  '2.0.24': [
+    'The options page now shows your keyboard shortcut for opening ManageX, with a link to set or change it.',
+  ],
 };
