@@ -54,6 +54,7 @@ Full UX, accessibility, and product review of the ManageX Chrome Extension (Mani
 **Priority**: High
 **Estimated Effort**: Trivial
 **Status**: Completed (2026-08-02)
+**Commit**: b484215 (v2.0.5)
 
 **Implementation note**: Darkened `--primary` from `182 100% 36%` to `182 100% 26%` in `src/index.css` (light theme), which resolves to `hsl(0,128,133)` / ~4.75:1 contrast against white `--primary-foreground` — clears the 4.5:1 AA threshold. Also switched `--ring` in both light and dark themes to `var(--primary)` instead of a separately hardcoded value, so the focus ring stays in sync with the corrected primary going forward. Since `Button`, `Switch`, and `TooltipContent` all consume the `bg-primary`/`text-primary-foreground`/`ring-ring` theme tokens rather than hardcoded colors, the fix propagates automatically to every affected component.
 
