@@ -21,4 +21,7 @@ export const CHANGELOG: Record<string, string[]> = {
     'Deleting or turning off a rule now always restores the extension to enabled if its original state was never recorded, instead of possibly leaving it disabled.',
     'Deleting a group rule no longer overrides another still-active rule covering the same extension.',
   ],
+  '2.0.22': [
+    'The extension list now shows a loading placeholder instead of a blank tab while it loads, and clear "no extensions"/"no rules yet" messages instead of empty space.',
+  ],
 };

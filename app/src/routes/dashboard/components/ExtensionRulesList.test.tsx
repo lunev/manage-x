@@ -78,4 +78,22 @@ describe('ExtensionRulesList', () => {
 
     expect(screen.getByRole('button', { name: 'Add' })).toBeEnabled();
   });
+
+  it('shows a guidance message when there are no rules yet', () => {
+    render(<ExtensionRulesList />);
+
+    expect(screen.getByText('No rules yet — create one below')).toBeInTheDocument();
+  });
+
+  it('does not show the guidance message when a rule already exists', () => {
+    render(<ExtensionRulesList />, {
+      initialState: {
+        extensionRules: {
+          entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: 'example.com', disabledUrls: '', active: true }],
+        },
+      },
+    });
+
+    expect(screen.queryByText('No rules yet — create one below')).not.toBeInTheDocument();
+  });
 });
