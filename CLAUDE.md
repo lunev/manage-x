@@ -34,3 +34,11 @@ Run from `app/` (`cd app && ...`):
 - Commit style is short, lowercase, low-ceremony (e.g. "fix migrate func", "add badge count") — no conventional-commit prefixes.
 - `tsconfig.app.json` is strict (`strict`, `noUnusedLocals`, `noUnusedParameters`, `noFallthroughCasesInSwitch`, `noUncheckedSideEffectImports` all on). Path alias `@/*` → `./src/*`.
 - Under jsdom (Vitest), `chrome.*` APIs aren't available — they're stubbed in `test/mock-extension-apis.ts`.
+
+## Whenever you complete a finding from docs/ux/ux-audit.md:
+
+- change Status to Completed
+- add the completion date
+- add the pull request or commit reference if available
+- append a short implementation note describing what was changed
+- create a new chrome extension release, commit and push
