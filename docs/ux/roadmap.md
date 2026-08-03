@@ -73,8 +73,8 @@ Goal: Close the remaining UX gaps that hit real usage — missing search, missin
 
 Goal: Execute the audit's "Trust and transparency" pillar — make the rules engine's automation visible and understandable instead of a black box, which the audit calls the product's single highest-leverage differentiator.
 
-- [ ] Feature #3 – "Active on this page" card showing which rules affect the current tab
-  - Status: Not Started | Priority: High (value) | Effort: Small | Dependencies: None
+- [x] Feature #3 – "Active on this page" card showing which rules affect the current tab
+  - Status: Completed (2026-08-03) | Priority: High (value) | Effort: Small | Dependencies: None
 - [ ] Feature #13 – Non-blocking toast when the rules engine auto-toggles an extension
   - Status: Not Started | Priority: High (value) | Effort: Small | Dependencies: None
 - [ ] Feature #5 – URL "dry run" tester for rule forms

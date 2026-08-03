@@ -38,4 +38,7 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.26': [
     'Fixed the extension list not refreshing when a rule (or a manual toggle on chrome://extensions/) changed an extension\'s state while the popup was already open.',
   ],
+  '2.0.27': [
+    'The Extensions tab now shows a "Rules affecting this page" card when any rule is currently enabling or disabling an extension on the page you\'re viewing.',
+  ],
 };
