@@ -71,8 +71,20 @@ Goal: Close the remaining UX gaps that hit real usage — missing search, missin
 
 ## Sprint 3
 
-Goal: Execute the audit's "Trust and transparency" pillar — make the rules engine's automation visible and understandable instead of a black box, which the audit calls the product's single highest-leverage differentiator.
+Goal: Execute the audit's "Trust and transparency" pillar — make the rules engine's automation visible and understandable instead of a black box, which the audit calls the product's single highest-leverage differentiator. Reordered (2026-08-03) to move a user-prioritized batch — including two experimental UI ideas — to the top, ahead of the rest of the sprint.
 
+- [ ] Experimental Feature #1 – Extensions tab grid/icon view (drop the Enabled/Disabled headings; show all extensions as a grid of icons — color for enabled, gray for disabled; clicking an icon toggles the extension instead of using the switch; icon order stays fixed regardless of state, so toggling never reorders/jumps an icon)
+  - Status: Not Started | Priority: Medium (experimental — needs UX discussion) | Effort: Medium | Dependencies: None
+- [ ] Experimental Feature #2 – Pin/favorite extensions (implementation approach undecided, needs discussion; supersedes Feature #11 below)
+  - Status: Not Started | Priority: Low (experimental — needs discussion) | Effort: Small | Dependencies: None
+- [ ] Feature #23 – Notice about other installed extensions with `management` permission
+  - Status: Not Started | Priority: Medium (value) | Effort: Small | Dependencies: None
+- [ ] Feature #2 – Bulk actions (create group from selection)
+  - Status: Not Started | Priority: Medium | Effort: Medium | Dependencies: None
+- [ ] Feature #18 – Last-edited timestamp per rule
+  - Status: Not Started | Priority: Low | Effort: Small | Dependencies: None
+- [ ] Feature #12 – `chrome.contextMenus` integration for one-click rule creation
+  - Status: Not Started | Priority: Low | Effort: Medium | Dependencies: None
 - [ ] Feature #3 – "Active on this page" card showing which rules affect the current tab
   - Status: Not Started | Priority: High (value) | Effort: Small | Dependencies: None
 - [ ] Feature #13 – Non-blocking toast when the rules engine auto-toggles an extension
@@ -87,12 +99,8 @@ Goal: Execute the audit's "Trust and transparency" pillar — make the rules eng
   - Status: Not Started | Priority: Medium | Effort: Small | Dependencies: None
 - [ ] Feature #20 – Live favicon preview while typing a URL rule
   - Status: Not Started | Priority: Low | Effort: Small | Dependencies: None
-- [ ] Feature #11 – Pin/favorite extensions
-  - Status: Not Started | Priority: Low | Effort: Small | Dependencies: None
-- [ ] Feature #18 – Last-edited timestamp per rule
-  - Status: Not Started | Priority: Low | Effort: Small | Dependencies: None
-- [ ] Feature #23 – Notice about other installed extensions with `management` permission
-  - Status: Not Started | Priority: Medium (value) | Effort: Small | Dependencies: None
+
+Note: Feature #11 (Pin/favorite extensions) is no longer tracked separately — merged into Experimental Feature #2 above (see `docs/ux/ux-audit.md`).
 
 ---
 
@@ -104,10 +112,6 @@ Goal: "Power-user velocity" and growth-loop pillars — larger investments once 
   - Status: Not Started | Priority: Medium | Effort: Medium | Dependencies: None
 - [ ] Feature #19 – Keyboard-first list navigation (arrows, Space, `/` to search)
   - Status: Not Started | Priority: Medium | Effort: Medium | Dependencies: Feature #15
-- [ ] Feature #2 – Bulk actions (multi-select, disable all, create group from selection)
-  - Status: Not Started | Priority: Medium | Effort: Medium | Dependencies: None
-- [ ] Feature #12 – `chrome.contextMenus` integration for one-click rule creation
-  - Status: Not Started | Priority: Low | Effort: Medium | Dependencies: None
 - [ ] Feature #8 – Time/schedule-based rules
   - Status: Not Started | Priority: Low | Effort: Medium | Dependencies: None
 - [ ] Feature #7 – Rule/profile bundles ("Work", "Streaming")
