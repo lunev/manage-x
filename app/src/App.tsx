@@ -4,6 +4,7 @@ import RootLayout from '@/routes/root/Root';
 import Dashboard from '@/routes/dashboard/Dashboard';
 import ExtensionRules from '@/routes/extension-rules/ExtensionRules';
 import GroupRules from '@/routes/group-rules/GroupRules';
+import ImportRulesPage from '@/routes/import-rules/ImportRules';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
             <Route path="/group-rules/new" element={<GroupRules />} />
             <Route path="/group-rules/:id/edit" element={<GroupRules />} />
+            <Route path="/import/" element={<ImportRulesPage />} />
           </Route>
         </Routes>
       </HashRouter>

@@ -30,4 +30,9 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.24': [
     'The options page now shows your keyboard shortcut for opening ManageX, with a link to set or change it.',
   ],
+  '2.0.25': [
+    'Importing URL rules now happens instantly from the popup menu instead of opening a new tab, and the options page now offers Export too.',
+    'Importing a rules file now checks that it\'s actually well-formed and shows a clear error instead of silently accepting corrupted or hand-edited data.',
+    'If the popup\'s file picker for importing doesn\'t work on your system, the Import screen now links to the options page as a fallback. The options page no longer shows the keyboard shortcut info.',
+  ],
 };
