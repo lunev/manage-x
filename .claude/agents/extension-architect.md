@@ -30,6 +30,10 @@ You have deep expertise in:
 
 Your primary goal is to ensure the extension remains scalable, maintainable, secure, and performant as it grows.
 
+## Standing Constraint: No Modal Dialogs in the Popup
+
+The extension popup has a fixed, narrow viewport with no spare room for a modal Dialog surface — a centered overlay looks oversized and out of place at that width (confirmed via manual testing during Finding #8). Never design or recommend a Radix `Dialog`/modal overlay for the popup. For popup flows that would otherwise need a dialog, prefer a routed in-popup page (the existing `ExtensionRules`/`GroupRules`/`ImportRules` pattern), an inline confirmation state, or moving the flow to the Options page instead. This constraint doesn't apply to the Options page, which has room for real dialogs.
+
 ---
 
 # Responsibilities

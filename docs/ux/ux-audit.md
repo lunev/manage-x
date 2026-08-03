@@ -253,7 +253,7 @@ This is the newest UI element (added in `df8fd65`, right before the teal rebrand
 
 **Priority**: Low
 **Estimated Effort**: Medium
-**Status**: Not Started
+**Status**: Skipped (2026-08-03) — explicitly descoped by the user; the popup has no room for a modal Dialog surface. A standing "no Modal Dialog in the extension popup" constraint was added to the extension-architect, frontend-implementer, ui-ux-product-reviewer, and ux-finding-implementer agent definitions so this doesn't get re-suggested.
 
 ---
 
@@ -341,7 +341,7 @@ No settings, no preferences, no theme toggle, no shortcut info, no "reset all ex
 
 **Priority**: Low-Medium
 **Estimated Effort**: Medium
-**Status**: Not Started
+**Status**: Skipped (2026-08-03) — explicitly descoped by the user; reset-to-default extracted to stand-alone Feature #16, backup panel remains out of scope for now.
 
 ---
 
@@ -458,7 +458,7 @@ This is pixel-for-pixel identical in color to `default`, just with `uppercase` +
 **Value**: Safer, more standard, more familiar deletion pattern.
 
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Skipped (2026-08-03) — explicitly descoped by the user, deferred alongside Finding #12.
 
 ---
 
@@ -568,7 +568,7 @@ This is pixel-for-pixel identical in color to `default`, just with `uppercase` +
 **Value**: Recovery/trust — gives users an explicit undo/reset lever.
 
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Skipped (2026-08-03) — implemented in v2.0.26, then reverted and descoped by explicit user decision before shipping; not planned.
 
 ---
 

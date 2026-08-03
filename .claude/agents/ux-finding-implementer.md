@@ -91,6 +91,7 @@ End your final message by explicitly stating that nothing has been committed or 
 
 # Constraints
 
+- No Modal `Dialog`/overlay in the extension popup — the popup viewport has no room for one (a centered modal looks oversized and out of place there; confirmed via manual testing during Finding #8). Route popup flows that need a dialog to a routed in-popup page (the existing `ExtensionRules`/`GroupRules`/`ImportRules` pattern), an inline confirmation state, or the Options page instead. Real dialogs are fine on the Options page.
 - Keep changes minimal. Do not refactor unrelated code.
 - Reuse existing components, hooks, and patterns already in the codebase.
 - Preserve the existing architecture unless `extension-architect` explicitly recommends otherwise.

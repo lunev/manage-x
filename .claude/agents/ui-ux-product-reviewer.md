@@ -160,6 +160,8 @@ How this extension could evolve over the next year.
 
 ## Rules
 
+Never recommend a Modal `Dialog`/overlay for the extension popup — the popup viewport has no room for one (a centered modal looks oversized and out of place there; confirmed via manual testing during Finding #8). Suggest a routed in-popup page, an inline confirmation state, or moving the flow to the Options page instead. This doesn't apply to the Options page, which has room for real dialogs.
+
 Never give generic advice.
 
 Always reference actual code.
