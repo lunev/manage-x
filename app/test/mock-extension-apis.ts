@@ -43,6 +43,18 @@ global.chrome = {
     update: vi
       .fn()
       .mockImplementation((props) => Promise.resolve({ ...props })),
+    onUpdated: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
+    onActivated: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
+    onCreated: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
   },
   runtime: {
     id: 'test-extension-id',
@@ -51,6 +63,7 @@ global.chrome = {
     },
     openOptionsPage: vi.fn(),
     lastError: undefined,
+    getManifest: vi.fn().mockReturnValue({ version: '0.0.0' }),
   },
   management: {
     getAll: vi.fn().mockImplementation((cb?: (result: unknown[]) => void) => {
@@ -67,6 +80,20 @@ global.chrome = {
       }
       return Promise.resolve();
     }),
+    onEnabled: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
+    onDisabled: {
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+    },
+    onInstalled: {
+      addListener: vi.fn(),
+    },
+    onUninstalled: {
+      addListener: vi.fn(),
+    },
   },
   action: {
     setBadgeText: vi.fn(),
