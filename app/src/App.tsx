@@ -1,5 +1,6 @@
 import { HashRouter, Route, Routes } from 'react-router-dom';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { Toaster } from '@/components/ui/toaster';
 import RootLayout from '@/routes/root/Root';
 import Dashboard from '@/routes/dashboard/Dashboard';
 import ExtensionRules from '@/routes/extension-rules/ExtensionRules';
@@ -21,6 +22,7 @@ function App() {
           </Route>
         </Routes>
       </HashRouter>
+      <Toaster />
     </TooltipProvider>
   );
 }

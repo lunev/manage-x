@@ -101,7 +101,7 @@ describe('GroupRules', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
     fireEvent.click(screen.getByRole('button', { name: /Confirm/ }));
 
-    await waitFor(() => expect(screen.queryByText('Group Rules')).not.toBeInTheDocument());
+    await waitFor(() => expect(screen.queryByText('Extension Groups')).not.toBeInTheDocument());
     expect(chrome.management.setEnabled).not.toHaveBeenCalled();
   });
 
@@ -112,7 +112,7 @@ describe('GroupRules', () => {
 
     fireEvent.focus(screen.getByLabelText('Help'));
 
-    expect(screen.getAllByText(/always overrides matching group rules/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/always overrides matching extension groups/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Disabled wins/).length).toBeGreaterThan(0);
   });
 });

@@ -15,7 +15,7 @@
 }
 
 body {
-  min-width: 400px;
+  min-width: 440px;
 }
 
 main {
@@ -24,6 +24,12 @@ main {
 
 .muted-heading {
   @apply text-muted-foreground text-xxs uppercase;
+}
+
+.bg-gradient-soft {
+  background-image:
+    linear-gradient(rgb(0 0 0 / 0.01), rgb(0 0 0 / 0.02)),
+    linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--muted)) 100%);
 }
 
 @keyframes fadeIn {

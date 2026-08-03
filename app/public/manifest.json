@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ManageX – Extension Manager",
   "description": "Automatically enable or disable Chrome extensions based on the website you're visiting.",
-  "version": "2.0.26",
+  "version": "2.0.27",
   "action": {
     "default_popup": "index.html",
     "default_icon": "icons/logo.png",
@@ -19,16 +19,6 @@
     "type": "module"
   },
   "permissions": ["storage", "management", "tabs"],
-  "commands": {
-    "_execute_action": {
-      "suggested_key": {
-        "windows": "Ctrl+Shift+E",
-        "mac": "Command+Shift+E",
-        "chromeos": "Ctrl+Shift+E",
-        "linux": "Ctrl+Shift+E"
-      }
-    }
-  },
   "options_ui": {
     "page": "options.html"
   }

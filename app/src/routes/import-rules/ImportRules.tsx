@@ -4,7 +4,7 @@ import ImportRulesForm from '@/components/import-rules';
 import { Button } from '@/components/ui/button';
 
 const ImportRulesPage: React.FC = () => (
-  <div>
+  <div className="fade-in rounded-xl bg-card p-4 shadow-soft">
     <Link to="/" className="mb-3 flex gap-1 uppercase text-xxs">
       <ArrowLeftIcon /> Back to dashboard
     </Link>
