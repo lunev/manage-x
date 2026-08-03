@@ -513,7 +513,7 @@ This is pixel-for-pixel identical in color to `default`, just with `uppercase` +
 **Value**: Faster access to frequently-toggled tools.
 
 **Estimated Effort**: Small
-**Status**: Not Started
+**Status**: Merged (2026-08-03) — folded into Experimental Feature 2 (see Experimental Ideas below); same idea, but the implementation approach isn't decided yet and needs discussion, so it's tracked there instead of as standalone scope.
 
 ---
 
@@ -648,6 +648,32 @@ This is pixel-for-pixel identical in color to `default`, just with `uppercase` +
 
 **Estimated Effort**: Small
 **Status**: Not Started
+
+---
+
+## Experimental Ideas
+
+Speculative feature ideas flagged by the user for prioritization discussion, but whose implementation approach isn't settled yet — treat these as exploratory rather than committed scope until a design decision is made.
+
+### Experimental Feature 1: Extensions tab grid/icon view
+
+**Description**: Replace the current Enabled/Disabled list view on the Extensions tab with a grid of extension icons only, dropping the section headings entirely. Enabled extensions render as full-color icons; disabled extensions render as grayscale icons. Clicking an icon toggles the extension's enabled state, replacing the current `Switch` toggle for this view. Icon order is fixed and independent of enabled/disabled state — toggling an extension recolors its icon in place and must never reorder or move any icon in the grid.
+
+**Value**: A denser, more glanceable way to browse and toggle many extensions at once; icon color communicates state without reading labels or scanning list rows, and a stable grid position means users build spatial muscle memory instead of hunting for an icon that moved after a click.
+
+**Estimated Effort**: Medium
+**Status**: Not Started — experimental, needs UX discussion before implementation. Open questions: keyboard/accessible toggle path once the affordance becomes purely visual, click-target sizing, and whether this replaces the list view outright or ships as an alternative.
+
+---
+
+### Experimental Feature 2: Pin/favorite extensions
+
+**Description**: Let users pin frequently-toggled extensions so they surface first on the Extensions tab. Supersedes Feature 11 (Pin/favorite extensions) — same idea, but the implementation approach (pin affordance, persistence, interaction with a possible grid view per Experimental Feature 1) isn't decided yet and needs discussion.
+
+**Value**: Faster access to frequently-toggled extensions.
+
+**Estimated Effort**: Small
+**Status**: Not Started — experimental, needs discussion before implementation.
 
 ---
 
