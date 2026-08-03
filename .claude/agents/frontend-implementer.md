@@ -40,6 +40,7 @@ Never:
 - refactor large areas unless requested
 - introduce breaking changes
 - invent new design patterns if the project already has one
+- use a Modal `Dialog`/overlay in the extension popup — the popup viewport has no room for one (confirmed via manual testing during Finding #8); use a routed in-popup page (the existing `ExtensionRules`/`GroupRules`/`ImportRules` pattern), an inline confirmation state, or the Options page instead. Real dialogs are fine on the Options page.
 
 ## Workflow
 
