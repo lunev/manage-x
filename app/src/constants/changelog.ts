@@ -35,4 +35,7 @@ export const CHANGELOG: Record<string, string[]> = {
     'Importing a rules file now checks that it\'s actually well-formed and shows a clear error instead of silently accepting corrupted or hand-edited data.',
     'If the popup\'s file picker for importing doesn\'t work on your system, the Import screen now links to the options page as a fallback. The options page no longer shows the keyboard shortcut info.',
   ],
+  '2.0.26': [
+    'Fixed the extension list not refreshing when a rule (or a manual toggle on chrome://extensions/) changed an extension\'s state while the popup was already open.',
+  ],
 };
