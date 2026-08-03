@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import {
   addExtensionUrlRule,
@@ -25,6 +25,12 @@ const ExtensionRules: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  // Supports deep-linking into a fresh rule with the extension already chosen (e.g. the
+  // "open rule" arrow on the Extensions grid) via /extension-rules/new/?ext=<id>, instead of
+  // making the user re-pick an extension they already had highlighted.
+  const [searchParams] = useSearchParams();
+  const preselectedExtensionId = searchParams.get('ext');
+
   const [formData, setFormData] = useState<ExtensionRule>(
     editedExtensionRule
       ? editedExtensionRule
@@ -37,6 +43,15 @@ const ExtensionRules: React.FC = () => {
         },
   );
 
+  // Derived rather than synced into formData via an effect: the extension list loads
+  // asynchronously (chrome.management.getAll), so it may not be ready on the first render
+  // that reads preselectedExtensionId. Falls back to formData.id/name once the user has
+  // actually made (or changed) a selection via the combobox.
+  const preselectedExtension =
+    !editedExtensionRule && !formData.id ? extensions.find((ext) => ext.id === preselectedExtensionId) : undefined;
+  const effectiveId = formData.id || preselectedExtension?.id || '';
+  const effectiveName = formData.name || preselectedExtension?.name || '';
+
   const [errors, setErrors] = useState<{
     id?: string;
     urlRules?: string;
@@ -45,7 +60,7 @@ const ExtensionRules: React.FC = () => {
   const validateForm = () => {
     const newErrors: typeof errors = {};
 
-    if (!formData.id.trim()) {
+    if (!effectiveId.trim()) {
       newErrors.id = 'Please select an extension';
     }
 
@@ -93,16 +108,18 @@ const ExtensionRules: React.FC = () => {
 
     if (!validateForm()) return;
 
+    const ruleToSave: ExtensionRule = { ...formData, id: effectiveId, name: effectiveName };
+
     if (editedExtensionRule) {
-      dispatch(updateExtensionUrlRule(formData));
+      dispatch(updateExtensionUrlRule(ruleToSave));
     } else {
-      dispatch(addExtensionUrlRule(formData));
+      dispatch(addExtensionUrlRule(ruleToSave));
     }
     navigate('/');
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="fade-in rounded-xl bg-card p-4 shadow-soft">
       <Link to="/" className="mb-3 flex gap-1 uppercase text-xxs">
         <ArrowLeftIcon /> Back to dashboard
       </Link>
@@ -110,7 +127,7 @@ const ExtensionRules: React.FC = () => {
       <div className="mb-3">
         <label className="muted-heading mb-0.5 block">Extension</label>
         <ExtensionsCombobox
-          editedExtensionId={editedExtensionRule?.id}
+          editedExtensionId={editedExtensionRule?.id ?? preselectedExtensionId ?? undefined}
           extensions={extensions}
           extensionRules={extensionRules}
           onSelect={handleSelectExtension}
@@ -139,8 +156,8 @@ const ExtensionRules: React.FC = () => {
                   Supports <code>localhost</code> and IPs like <code>localhost:3000</code> or <code>192.168.1.*</code>.
                 </li>
                 <li>
-                  An active individual rule always overrides matching group rules entirely, regardless of whether its
-                  own patterns match the current page; if a URL matches both an Enabled and Disabled pattern,
+                  An active individual rule always overrides matching extension groups entirely, regardless of whether
+                  its own patterns match the current page; if a URL matches both an Enabled and Disabled pattern,
                   Disabled wins.
                 </li>
               </ul>

@@ -61,6 +61,32 @@ describe('ExtensionRules', () => {
     await waitFor(() => expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', true));
   });
 
+  // Regression coverage for the "open rule" arrow on the Extensions grid, which links to
+  // /extension-rules/new/?ext=<id> so the user doesn't have to re-pick an extension they
+  // already had highlighted.
+  it('preselects the extension from the ?ext= query param on the new-rule route', () => {
+    render(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
+
+    expect(screen.getByRole('combobox')).toHaveTextContent('Ext One');
+    expect(screen.queryByText('Please select an extension')).not.toBeInTheDocument();
+  });
+
+  it('submits successfully with the preselected extension without the combobox ever being touched', async () => {
+    render(
+      <Routes>
+        <Route path="/" element={<div>Dashboard placeholder</div>} />
+        <Route path="/extension-rules/new" element={<ExtensionRules />} />
+      </Routes>,
+      { route: '/extension-rules/new?ext=ext1' },
+    );
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'example.com' } });
+    fireEvent.click(screen.getByRole('button', { name: /save/i }));
+
+    expect(screen.queryByText('Please select an extension')).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText('Dashboard placeholder')).toBeInTheDocument());
+  });
+
   // Regression test for Finding #14: the URL rules help tooltip should document rule
   // precedence (individual rules over group rules, disabled over enabled).
   it('shows rule precedence guidance in the URL rules help tooltip', () => {
@@ -68,7 +94,7 @@ describe('ExtensionRules', () => {
 
     fireEvent.focus(screen.getByLabelText('Help'));
 
-    expect(screen.getAllByText(/always overrides matching group rules/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/always overrides matching extension groups/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Disabled wins/).length).toBeGreaterThan(0);
   });
 });

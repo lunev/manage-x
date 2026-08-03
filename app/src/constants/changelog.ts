@@ -10,7 +10,9 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.13': ['Fixed a broken icon reference in the popup and options page.'],
   '2.0.14': ['Cleaned up unused internal styling code — no visible changes.'],
   '2.0.15': ['Cleaned up internal button styling code — no visible changes.'],
-  '2.0.16': ['The "Add" extension rule button now stays visible with a tooltip explaining why it\'s disabled once every extension already has a rule.'],
+  '2.0.16': [
+    'The "Add" extension rule button now stays visible with a tooltip explaining why it\'s disabled once every extension already has a rule.',
+  ],
   '2.0.17': ['Popup and options page now respect your system\'s "reduce motion" setting instead of always fading in.'],
   '2.0.18': ['Added a search box to the extension picker when creating or editing a group rule.'],
   '2.0.19': ['Fixed a crash when selecting an extension in the group rule editor.'],
@@ -27,15 +29,16 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.23': [
     'The URL Rules help tooltip now explains how individual and group rules interact — an individual rule always wins, and disabled URLs always win over enabled ones.',
   ],
-  '2.0.24': [
-    'The options page now shows your keyboard shortcut for opening ManageX, with a link to set or change it.',
-  ],
+  '2.0.24': ['The options page now shows your keyboard shortcut for opening ManageX, with a link to set or change it.'],
   '2.0.25': [
     'Importing URL rules now happens instantly from the popup menu instead of opening a new tab, and the options page now offers Export too.',
-    'Importing a rules file now checks that it\'s actually well-formed and shows a clear error instead of silently accepting corrupted or hand-edited data.',
-    'If the popup\'s file picker for importing doesn\'t work on your system, the Import screen now links to the options page as a fallback. The options page no longer shows the keyboard shortcut info.',
+    "Importing a rules file now checks that it's actually well-formed and shows a clear error instead of silently accepting corrupted or hand-edited data.",
+    "If the popup's file picker for importing doesn't work on your system, the Import screen now links to the options page as a fallback. The options page no longer shows the keyboard shortcut info.",
   ],
   '2.0.26': [
-    'Fixed the extension list not refreshing when a rule (or a manual toggle on chrome://extensions/) changed an extension\'s state while the popup was already open.',
+    "Fixed the extension list not refreshing when a rule (or a manual toggle on chrome://extensions/) changed an extension's state while the popup was already open.",
+  ],
+  '2.0.27': [
+    'Extensions and Extension Groups are now icon grids — click an icon to open its rule, double-click to toggle it directly. A tooltip explains when a rule is controlling an icon.',
   ],
 };

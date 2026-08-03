@@ -121,11 +121,11 @@ const GroupRules: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="fade-in rounded-xl bg-card p-4 shadow-soft">
       <Link to="/" className="mb-3 flex gap-1 uppercase text-xxs">
         <ArrowLeftIcon /> Back to dashboard
       </Link>
-      <h1 className="mb-2 text-base font-semibold">Group Rules</h1>
+      <h1 className="mb-2 text-base font-semibold">Extension Groups</h1>
       <div className="mb-3">
         <label htmlFor="name" className="muted-heading mb-0.5 block">
           Name
@@ -197,8 +197,8 @@ const GroupRules: React.FC = () => {
                   Supports <code>localhost</code> and IPs like <code>localhost:3000</code> or <code>192.168.1.*</code>.
                 </li>
                 <li>
-                  An active individual rule always overrides matching group rules entirely, regardless of whether its
-                  own patterns match the current page; if a URL matches both an Enabled and Disabled pattern,
+                  An active individual rule always overrides matching extension groups entirely, regardless of whether
+                  its own patterns match the current page; if a URL matches both an Enabled and Disabled pattern,
                   Disabled wins.
                 </li>
               </ul>
@@ -216,7 +216,7 @@ const GroupRules: React.FC = () => {
           </TabsList>
           <TabsContent value="enabled">
             <Textarea
-              rows={6}
+              rows={4}
               className="text-xs"
               name="enabledUrls"
               value={formData.enabledUrls}
@@ -226,7 +226,7 @@ const GroupRules: React.FC = () => {
           </TabsContent>
           <TabsContent value="disabled">
             <Textarea
-              rows={6}
+              rows={4}
               className="text-xs"
               name="disabledUrls"
               value={formData.disabledUrls}
