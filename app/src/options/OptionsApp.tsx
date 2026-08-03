@@ -1,11 +1,13 @@
-import ImportRules from './components/ImportRules';
-import KeyboardShortcut from './components/KeyboardShortcut';
+import ExportRules from './components/ExportRules';
+import ImportRules from '@/components/import-rules';
 
 const OptionsApp = () => {
   return (
     <div className="px-6 pb-6">
-      <ImportRules />
-      <KeyboardShortcut />
+      <ExportRules />
+      <div className="mt-6">
+        <ImportRules />
+      </div>
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
+import { Route, Routes } from 'react-router-dom';
 import { render, screen, fireEvent } from '@test-utils';
 import Header from './Header';
 
@@ -27,12 +28,18 @@ describe('Header', () => {
     expect(exportUrlRules).toHaveBeenCalled();
   });
 
-  it('opens the options page when the Import item is selected', () => {
-    render(<Header />);
+  it('navigates to the import page when the Import item is selected', () => {
+    render(
+      <Routes>
+        <Route path="/" element={<Header />} />
+        <Route path="/import/" element={<div>Import page</div>} />
+      </Routes>,
+    );
 
     fireEvent.pointerDown(screen.getByRole('button', { name: 'More actions' }));
     fireEvent.click(screen.getByRole('menuitem', { name: 'Import URL Rules' }));
 
-    expect(chrome.runtime.openOptionsPage).toHaveBeenCalled();
+    expect(screen.getByText('Import page')).toBeInTheDocument();
+    expect(chrome.runtime.openOptionsPage).not.toHaveBeenCalled();
   });
 });

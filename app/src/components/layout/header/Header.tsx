@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
 import { DotsVerticalIcon, DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
 import { exportUrlRules } from '@/lib/export';
@@ -11,6 +11,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <header className="px-4 py-3 flex items-center gap-1 text-xs border-b shadow-sm fade-in">
       <div className="flex items-center flex-1 gap-2">
@@ -27,7 +29,7 @@ const Header: React.FC = () => {
           <DropdownMenuItem onSelect={exportUrlRules}>
             <DownloadIcon /> Export URL Rules
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => chrome.runtime.openOptionsPage()}>
+          <DropdownMenuItem onSelect={() => navigate('/import/')}>
             <UploadIcon /> Import URL Rules
           </DropdownMenuItem>
         </DropdownMenuContent>

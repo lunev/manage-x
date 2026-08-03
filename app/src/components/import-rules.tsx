@@ -7,8 +7,14 @@ import { Button } from '@/components/ui/button';
 import { AlertCircleIcon, CheckCircle2Icon } from 'lucide-react';
 import { mergeExtensionRules } from '@/features/extension-rules/extension-rules-slice';
 import { mergeGroupRules } from '@/features/group-rules/group-rules-slice';
+import { parseImportedRulesFile } from '@/lib/importValidation';
 
-const ImportRules: React.FC = () => {
+interface ImportRulesProps {
+  /** Set to false when a surrounding container (e.g. a Dialog's own title) already provides the heading. */
+  showHeading?: boolean;
+}
+
+const ImportRules: React.FC<ImportRulesProps> = ({ showHeading = true }) => {
   const [importedData, setImportedData] = useState<ExportedData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -25,11 +31,7 @@ const ImportRules: React.FC = () => {
         const text = e.target?.result;
         if (typeof text !== 'string') throw new Error('File read error');
 
-        const data: ExportedData = JSON.parse(text);
-
-        if (!Array.isArray(data.extensionRules) || !Array.isArray(data.groupRules)) {
-          throw new Error('Invalid data structure');
-        }
+        const data = parseImportedRulesFile(text);
 
         setImportedData(data);
         setError(null);
@@ -56,27 +58,27 @@ const ImportRules: React.FC = () => {
 
   return (
     <>
-      <h2 className="mb-1 muted-heading">Import URL Rules</h2>
+      {showHeading && <h2 className="mb-1 muted-heading">Import URL Rules</h2>}
       <div className="flex gap-2">
-        <Input ref={inputRef} type="file" accept="application/json" onChange={handleFileChange} />
-        <Button onClick={handleImport} disabled={!importedData}>
+        <Input ref={inputRef} type="file" accept="application/json" className="h-7 text-xs" onChange={handleFileChange} />
+        <Button size="xs" variant="cta" onClick={handleImport} disabled={!importedData}>
           Import
         </Button>
       </div>
       {error && (
-        <Alert className="mt-4" variant="destructive">
-          <AlertCircleIcon />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>
+        <Alert className="mt-3 px-3 py-2 text-xs" variant="destructive">
+          <AlertCircleIcon className="h-4 w-4" />
+          <AlertTitle className="text-xs">Error</AlertTitle>
+          <AlertDescription className="text-xs">
             <p>{error}</p>
           </AlertDescription>
         </Alert>
       )}
       {message && (
-        <Alert className="mt-4 text-primary border-primary">
-          <CheckCircle2Icon className="h-5 w-5 stroke-primary" />
-          <AlertTitle className="font-bold">Success!</AlertTitle>
-          <AlertDescription>{message}</AlertDescription>
+        <Alert className="mt-3 px-3 py-2 text-xs text-primary border-primary">
+          <CheckCircle2Icon className="h-4 w-4 stroke-primary" />
+          <AlertTitle className="text-xs font-bold">Success!</AlertTitle>
+          <AlertDescription className="text-xs">{message}</AlertDescription>
         </Alert>
       )}
     </>

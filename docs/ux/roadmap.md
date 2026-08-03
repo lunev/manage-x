@@ -52,14 +52,14 @@ Goal: Close the remaining UX gaps that hit real usage — missing search, missin
   - Status: Completed (2026-08-02) | Priority: Medium | Effort: Small | Dependencies: None
 - [x] Finding #14 – Document rule precedence in the existing help tooltip
   - Status: Completed (2026-08-02) | Priority: Medium | Effort: Small | Dependencies: None
-- [x] Finding #15 – Surface the `Ctrl/Cmd+Shift+E` keyboard shortcut in the UI
-  - Status: Completed (2026-08-02) | Priority: Low | Effort: Small | Dependencies: None
+- [x] ~~Finding #15 – Surface the `Ctrl/Cmd+Shift+E` keyboard shortcut in the UI~~
+  - Status: Reverted (2026-08-03) — shipped in v2.0.24, then explicitly dropped by the user during Finding #8 follow-up work to keep the Options page minimal; see Finding #8's implementation note | Priority: Low | Effort: Small | Dependencies: None
 - [ ] ~~Finding #16 – Expose manual light/dark/system theme toggle (dupe: Feature #21)~~
   - Status: Skipped (2026-08-02) — explicitly descoped by the user; not planned | Priority: Low | Effort: Small | Dependencies: None
-- [ ] Finding #17 – Expand Options page (backup panel, reset-to-default — shortcut info shipped via Finding #15, theme toggle descoped via Finding #16)
+- [ ] Finding #17 – Expand Options page (backup panel, reset-to-default — theme toggle descoped via Finding #16; shortcut info reverted, see Finding #15)
   - Status: Not Started | Priority: Low-Medium | Effort: Medium | Dependencies: Finding #8
-- [ ] Finding #8 – Fix Import/Export surface asymmetry (bring Import into popup, or mirror Export into Options)
-  - Status: Not Started | Priority: Medium | Effort: Medium | Dependencies: None
+- [x] Finding #8 – Fix Import/Export surface asymmetry (bring Import into popup, or mirror Export into Options)
+  - Status: Completed (2026-08-02) | Priority: Medium | Effort: Medium | Dependencies: None
 - [ ] Finding #12 – Replace bespoke delete countdown with a real `Dialog` confirmation
   - Status: Not Started | Priority: Low | Effort: Medium | Dependencies: None
 - [ ] Feature #6 – Post-delete "Undo" toast (complements/can replace Finding #12's approach)
