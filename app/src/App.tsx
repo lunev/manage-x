@@ -6,6 +6,7 @@ import Dashboard from '@/routes/dashboard/Dashboard';
 import ExtensionRules from '@/routes/extension-rules/ExtensionRules';
 import GroupRules from '@/routes/group-rules/GroupRules';
 import ImportRulesPage from '@/routes/import-rules/ImportRules';
+import Faq from '@/routes/faq/Faq';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/group-rules/new" element={<GroupRules />} />
             <Route path="/group-rules/:id/edit" element={<GroupRules />} />
             <Route path="/import/" element={<ImportRulesPage />} />
+            <Route path="/faq/" element={<Faq />} />
           </Route>
         </Routes>
       </HashRouter>

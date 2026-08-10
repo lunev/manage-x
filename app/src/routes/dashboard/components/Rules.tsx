@@ -1,6 +1,6 @@
 import GroupRulesList from './GroupRulesList';
 
-const Rules: React.FC = () => {
+const Rules = () => {
   return (
     <div className="fade-in">
       <GroupRulesList />

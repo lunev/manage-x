@@ -10,7 +10,7 @@ export type GoverningRule = {
   action: 'enabled' | 'disabled';
 } | null;
 
-function matchAction(tabUrl: string, enabledUrls: string, disabledUrls: string): 'enabled' | 'disabled' | null {
+export function matchAction(tabUrl: string, enabledUrls: string, disabledUrls: string): 'enabled' | 'disabled' | null {
   const enabledPatterns = enabledUrls
     .split('\n')
     .map((s) => s.trim())
@@ -25,21 +25,27 @@ function matchAction(tabUrl: string, enabledUrls: string, disabledUrls: string):
   return null;
 }
 
-// Same URL-matching precedence as useExtensionHasRules (an active Extension Rule for this
-// extension wins over any active Group Rule containing it), but reports which rule is
-// actually responsible instead of a plain boolean, so the UI can explain why an extension
-// is locked instead of just that it is.
-export function useGoverningRule(extId: string): GoverningRule {
+export function useCurrentTabUrl(): string | null {
   const [tabUrl, setTabUrl] = useState<string | null>(null);
-
-  const extensionRules = useAppSelector((state) => state.extensionRules.entities);
-  const groupRules = useAppSelector((state) => state.groupRules.entities);
 
   useEffect(() => {
     getCurrentTabParams().then((tab) => {
       setTabUrl(tab?.url ?? null);
     });
   }, []);
+
+  return tabUrl;
+}
+
+// Same URL-matching precedence as useExtensionHasRules (an active Extension Rule for this
+// extension wins over any active Group Rule containing it), but reports which rule is
+// actually responsible instead of a plain boolean, so the UI can explain why an extension
+// is locked instead of just that it is.
+export function useGoverningRule(extId: string): GoverningRule {
+  const tabUrl = useCurrentTabUrl();
+
+  const extensionRules = useAppSelector((state) => state.extensionRules.entities);
+  const groupRules = useAppSelector((state) => state.groupRules.entities);
 
   if (!tabUrl) {
     return null;

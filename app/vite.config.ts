@@ -8,6 +8,11 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: 'build',
+    // Disable modulepreload link injection: it's meant to cut network latency on regular
+    // websites, but the extension's JS is already local. In a Chrome extension the preload
+    // and the actual import() get tagged to different script "worlds", so Chrome logs a
+    // harmless "cross-world extension resource mismatch" warning for these links otherwise.
+    modulePreload: false,
     rollupOptions: {
       input: {
         main: './index.html',

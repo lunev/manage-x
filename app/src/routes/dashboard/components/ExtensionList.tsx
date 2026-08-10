@@ -5,10 +5,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
-const ExtensionItem: React.FC<{
+type ExtensionItemProps = {
   ext: chrome.management.ExtensionInfo;
   toggle: (id: string, newState: boolean) => void;
-}> = ({ ext, toggle }) => {
+};
+
+const ExtensionItem = ({ ext, toggle }: ExtensionItemProps) => {
   const hasRules = useExtensionHasRules(ext.id);
 
   return (

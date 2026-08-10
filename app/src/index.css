@@ -11,11 +11,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  min-width: fit-content;
+  width: 440px;
 }
 
 body {
-  min-width: 440px;
+  width: 440px;
 }
 
 main {

@@ -3,21 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { toggleGroupUrlRule } from '@/features/group-rules/group-rules-slice';
 import useExtensions from '@/hooks/useExtensions';
+import { matchAction, useCurrentTabUrl } from '@/hooks/useGoverningRule';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { GroupRule } from '@/types';
+import RuleBadge from './RuleBadge';
 
-// Same click/double-click split as the Extensions grid: a single click can't fire the "open"
-// navigation immediately, since the browser needs this much time with no second click to tell
-// it apart from the start of a double click.
+// Same click/double-click split as the Extensions grid: a single click can't fire the toggle
+// immediately, since the browser needs this much time with no second click to tell it apart
+// from the start of a double click (which opens the group's rule editor instead).
 const CLICK_DELAY_MS = 250;
 
 // A group's avatar is filled with the icons of the extensions it contains, rather than a
 // generic initial letter — up to 4 in a mosaic (a single extension fills the whole circle; a
 // 5th+ extension collapses into a "+N" cell instead of shrinking icons further).
-const GroupAvatarFill: React.FC<{ icons: chrome.management.ExtensionInfo[] }> = ({ icons }) => {
+type GroupAvatarFillProps = {
+  icons: chrome.management.ExtensionInfo[];
+};
+
+const GroupAvatarFill = ({ icons }: GroupAvatarFillProps) => {
   if (icons.length === 0) return null;
 
   if (icons.length === 1) {
@@ -55,18 +61,21 @@ const GroupRuleTile: React.FC<{ rule: GroupRule; extensions: chrome.management.E
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const clickTimer = useRef<ReturnType<typeof setTimeout>>();
+  const tabUrl = useCurrentTabUrl();
+  const isGoverningTab =
+    rule.active && tabUrl != null && matchAction(tabUrl, rule.enabledUrls, rule.disabledUrls) !== null;
   const groupExtensions = rule.extensions
     .map((id) => extensions.find((ext) => ext.id === id))
     .filter((ext): ext is chrome.management.ExtensionInfo => !!ext);
 
   const handleClick = () => {
     clearTimeout(clickTimer.current);
-    clickTimer.current = setTimeout(() => navigate(`/group-rules/${rule.id}/edit/`), CLICK_DELAY_MS);
+    clickTimer.current = setTimeout(() => dispatch(toggleGroupUrlRule({ id: rule.id })), CLICK_DELAY_MS);
   };
 
   const handleDoubleClick = () => {
     clearTimeout(clickTimer.current);
-    dispatch(toggleGroupUrlRule({ id: rule.id }));
+    navigate(`/group-rules/${rule.id}/edit/`);
   };
 
   return (
@@ -77,21 +86,24 @@ const GroupRuleTile: React.FC<{ rule: GroupRule; extensions: chrome.management.E
           variant="ghost"
           onClick={handleClick}
           onDoubleClick={handleDoubleClick}
-          aria-label={`Open group rule for ${rule.name}, currently ${rule.active ? 'active' : 'inactive'}`}
+          aria-label={`Open group rule for ${rule.name}, currently ${rule.active ? 'active' : 'inactive'}${isGoverningTab ? ', controlling extensions on this page' : ''}`}
           size="icon"
           className="rounded-full"
         >
-          <Avatar
-            className={`${!rule.active ? 'grayscale opacity-60' : 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm'} size-6 text-[10px] text-white relative transition-all duration-150`}
-          >
-            {groupExtensions.length > 0 ? (
-              <GroupAvatarFill icons={groupExtensions} />
-            ) : (
-              <AvatarFallback className="bg-primary text-primary-foreground rounded-md">
-                {rule.name.slice(0, 1).toUpperCase()}
-              </AvatarFallback>
-            )}
-          </Avatar>
+          <span className="relative inline-flex">
+            <Avatar
+              className={`${!rule.active ? 'grayscale opacity-60' : 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm'} size-6 text-[10px] text-white transition-all duration-150`}
+            >
+              {groupExtensions.length > 0 ? (
+                <GroupAvatarFill icons={groupExtensions} />
+              ) : (
+                <AvatarFallback className="bg-primary text-primary-foreground rounded-md">
+                  {rule.name.slice(0, 1).toUpperCase()}
+                </AvatarFallback>
+              )}
+            </Avatar>
+            {isGoverningTab && <RuleBadge colorClassName="bg-[#e6001e]" />}
+          </span>
         </Button>
       </TooltipTrigger>
       <TooltipContent side="top" align="center" className="max-w-56 text-left">

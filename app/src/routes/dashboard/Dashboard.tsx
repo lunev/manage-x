@@ -4,7 +4,7 @@ import ExtensionGrid from './components/ExtensionGrid';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Cross2Icon, MagnifyingGlassIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
   const [extensionsSearchOpen, setExtensionsSearchOpen] = useState(false);
   const [extensionsSearchQuery, setExtensionsSearchQuery] = useState('');
 
@@ -25,9 +25,9 @@ const Dashboard: React.FC = () => {
               </TooltipTrigger>
               <TooltipContent side="right" className="max-w-[240px] text-xs">
                 <p>
-                  Click an icon to open its rule. Double-click to toggle it enabled or disabled directly — color means
-                  enabled, gray means disabled. An icon controlled by an active rule can&apos;t be toggled manually;
-                  double-clicking it explains why instead.
+                  Click an icon to toggle it enabled or disabled directly — color means enabled, gray means disabled.
+                  Double-click to open its rule. An icon controlled by an active rule can&apos;t be toggled manually;
+                  clicking it explains why instead.
                 </p>
               </TooltipContent>
             </Tooltip>
@@ -80,8 +80,8 @@ const Dashboard: React.FC = () => {
             </TooltipTrigger>
             <TooltipContent side="right" className="max-w-[240px] text-xs">
               <p>
-                Extension Groups let you control multiple extensions at once. Click a group to open it, or double-click
-                to toggle it active — color means active, gray means inactive.
+                Extension Groups let you control multiple extensions at once. Click a group to toggle it active, or
+                double-click to open it — color means active, gray means inactive.
               </p>
             </TooltipContent>
           </Tooltip>

@@ -14,8 +14,12 @@ import ExtensionsCombobox from './components/ExtensionsCombobox';
 import { Button } from '@/components/ui/button';
 import { ExtensionRule } from '@/types';
 import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
-import { getDefaultExtensionState } from '@/lib/utils';
+import { getDefaultExtensionState, getUrlHost, mergeUrlStrings } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import CurrentPageDot from '@/components/ui/current-page-dot';
+import CurrentPageDomainButton from '@/components/ui/current-page-domain-button';
+import { matchAction, useCurrentTabUrl } from '@/hooks/useGoverningRule';
 
 const ExtensionRules: React.FC = () => {
   const { id } = useParams();
@@ -30,6 +34,9 @@ const ExtensionRules: React.FC = () => {
   // making the user re-pick an extension they already had highlighted.
   const [searchParams] = useSearchParams();
   const preselectedExtensionId = searchParams.get('ext');
+  // Deep-links to whichever URL Rules tab a caller says is relevant (e.g. the "can't toggle"
+  // tooltip links here with ?tab=enabled/disabled to open on the list actually blocking it).
+  const initialUrlTab = searchParams.get('tab') === 'enabled' ? 'enabled' : 'disabled';
 
   const [formData, setFormData] = useState<ExtensionRule>(
     editedExtensionRule
@@ -51,10 +58,27 @@ const ExtensionRules: React.FC = () => {
     !editedExtensionRule && !formData.id ? extensions.find((ext) => ext.id === preselectedExtensionId) : undefined;
   const effectiveId = formData.id || preselectedExtension?.id || '';
   const effectiveName = formData.name || preselectedExtension?.name || '';
+  const effectiveExtension = extensions.find((ext) => ext.id === effectiveId);
+
+  const tabUrl = useCurrentTabUrl();
+  const currentPageAction =
+    formData.active && tabUrl ? matchAction(tabUrl, formData.enabledUrls, formData.disabledUrls) : null;
+  const currentDomain = tabUrl ? getUrlHost(tabUrl) : null;
+  const isDomainInEnabled = currentDomain
+    ? formData.enabledUrls
+        .split('\n')
+        .map((s) => s.trim())
+        .includes(currentDomain)
+    : false;
+  const isDomainInDisabled = currentDomain
+    ? formData.disabledUrls
+        .split('\n')
+        .map((s) => s.trim())
+        .includes(currentDomain)
+    : false;
 
   const [errors, setErrors] = useState<{
     id?: string;
-    urlRules?: string;
   }>({});
 
   const validateForm = () => {
@@ -62,13 +86,6 @@ const ExtensionRules: React.FC = () => {
 
     if (!effectiveId.trim()) {
       newErrors.id = 'Please select an extension';
-    }
-
-    const hasEnabledUrls = formData.enabledUrls.trim().length > 0;
-    const hasDisabledUrls = formData.disabledUrls.trim().length > 0;
-
-    if (!hasEnabledUrls && !hasDisabledUrls) {
-      newErrors.urlRules = 'At least one URL is required';
     }
 
     setErrors(newErrors);
@@ -87,9 +104,23 @@ const ExtensionRules: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
-    if ((name === 'enabledUrls' && value.trim()) || (name === 'disabledUrls' && value.trim())) {
-      setErrors((prev) => ({ ...prev, urlRules: undefined }));
-    }
+  };
+
+  const handleAddDomain = (field: 'enabledUrls' | 'disabledUrls') => {
+    if (!currentDomain) return;
+    setFormData((prev) => ({ ...prev, [field]: mergeUrlStrings(prev[field], currentDomain) }));
+  };
+
+  const handleRemoveDomain = (field: 'enabledUrls' | 'disabledUrls') => {
+    if (!currentDomain) return;
+    setFormData((prev) => ({
+      ...prev,
+      [field]: prev[field]
+        .split('\n')
+        .map((s) => s.trim())
+        .filter((line) => line && line !== currentDomain)
+        .join('\n'),
+    }));
   };
 
   const handleRemove = async (id: string) => {
@@ -123,17 +154,34 @@ const ExtensionRules: React.FC = () => {
       <Link to="/" className="mb-3 flex gap-1 uppercase text-xxs">
         <ArrowLeftIcon /> Back to dashboard
       </Link>
-      <h1 className="mb-2 text-base font-semibold">Extension Rules</h1>
-      <div className="mb-3">
-        <label className="muted-heading mb-0.5 block">Extension</label>
-        <ExtensionsCombobox
-          editedExtensionId={editedExtensionRule?.id ?? preselectedExtensionId ?? undefined}
-          extensions={extensions}
-          extensionRules={extensionRules}
-          onSelect={handleSelectExtension}
-        />
-        {errors.id && <p className="text-xs text-destructive mt-1">{errors.id}</p>}
-      </div>
+      {effectiveId ? (
+        <div className="mb-4 flex items-center gap-3">
+          <Avatar className="size-10 shrink-0 text-sm text-white">
+            <AvatarImage src={effectiveExtension?.icons?.at(-1)?.url} alt={effectiveName} />
+            <AvatarFallback className="bg-primary text-primary-foreground">
+              {effectiveName.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <h1 className="truncate text-base font-semibold leading-tight">{effectiveName}</h1>
+            <p className="muted-heading">{editedExtensionRule ? 'Edit rule' : 'Add rule'}</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <h1 className="mb-2 text-base font-semibold">Extension Rules</h1>
+          <div className="mb-3">
+            <label className="muted-heading mb-0.5 block">Extension</label>
+            <ExtensionsCombobox
+              editedExtensionId={editedExtensionRule?.id ?? preselectedExtensionId ?? undefined}
+              extensions={extensions}
+              extensionRules={extensionRules}
+              onSelect={handleSelectExtension}
+            />
+            {errors.id && <p className="text-xs text-destructive mt-1">{errors.id}</p>}
+          </div>
+        </>
+      )}
       <div className="mb-3">
         <label className="muted-heading mb-0.5 flex gap-1 items-center">
           <span>URL Rules</span>
@@ -164,10 +212,16 @@ const ExtensionRules: React.FC = () => {
             </TooltipContent>
           </Tooltip>
         </label>
-        <Tabs defaultValue="disabled">
+        <Tabs defaultValue={initialUrlTab}>
           <TabsList>
-            <TabsTrigger value="enabled">Enabled URLs</TabsTrigger>
-            <TabsTrigger value="disabled">Disabled URLs</TabsTrigger>
+            <TabsTrigger value="enabled">
+              Enabled URLs
+              {currentPageAction === 'enabled' && <CurrentPageDot />}
+            </TabsTrigger>
+            <TabsTrigger value="disabled">
+              Disabled URLs
+              {currentPageAction === 'disabled' && <CurrentPageDot />}
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="enabled">
             <Textarea
@@ -178,6 +232,14 @@ const ExtensionRules: React.FC = () => {
               onChange={handleChange}
               placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
             />
+            {currentDomain && (
+              <CurrentPageDomainButton
+                domain={currentDomain}
+                isAdded={isDomainInEnabled}
+                onAdd={() => handleAddDomain('enabledUrls')}
+                onRemove={() => handleRemoveDomain('enabledUrls')}
+              />
+            )}
           </TabsContent>
           <TabsContent value="disabled">
             <Textarea
@@ -188,9 +250,16 @@ const ExtensionRules: React.FC = () => {
               onChange={handleChange}
               placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
             />
+            {currentDomain && (
+              <CurrentPageDomainButton
+                domain={currentDomain}
+                isAdded={isDomainInDisabled}
+                onAdd={() => handleAddDomain('disabledUrls')}
+                onRemove={() => handleRemoveDomain('disabledUrls')}
+              />
+            )}
           </TabsContent>
         </Tabs>
-        {errors.urlRules && <p className="text-xs text-destructive mt-1">{errors.urlRules}</p>}
       </div>
       <div className="flex gap-2">
         <div className="flex-1 flex gap-2">
