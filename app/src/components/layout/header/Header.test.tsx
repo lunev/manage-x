@@ -10,13 +10,13 @@ vi.mock('@/lib/export', () => ({
 import { exportUrlRules } from '@/lib/export';
 
 describe('Header', () => {
-  it('opens the actions menu and lists Export before Import', () => {
+  it('opens the actions menu and lists Export, Import, then FAQ in order', () => {
     render(<Header />);
 
     fireEvent.pointerDown(screen.getByRole('button', { name: 'More actions' }));
 
     const items = screen.getAllByRole('menuitem').map((item) => item.textContent?.trim());
-    expect(items).toEqual(['Export URL Rules', 'Import URL Rules']);
+    expect(items).toEqual(['Export URL Rules', 'Import URL Rules', 'FAQ']);
   });
 
   it('exports URL rules when the Export item is selected', () => {
@@ -41,5 +41,19 @@ describe('Header', () => {
 
     expect(screen.getByText('Import page')).toBeInTheDocument();
     expect(chrome.runtime.openOptionsPage).not.toHaveBeenCalled();
+  });
+
+  it('navigates to the FAQ page when the FAQ item is selected', () => {
+    render(
+      <Routes>
+        <Route path="/" element={<Header />} />
+        <Route path="/faq/" element={<div>FAQ page</div>} />
+      </Routes>,
+    );
+
+    fireEvent.pointerDown(screen.getByRole('button', { name: 'More actions' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'FAQ' }));
+
+    expect(screen.getByText('FAQ page')).toBeInTheDocument();
   });
 });

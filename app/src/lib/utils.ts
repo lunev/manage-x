@@ -185,6 +185,17 @@ export const clearPendingUpdateVersion = async () => {
   await chrome.storage.local.remove(STORAGE_KEYS.pendingUpdateVersion);
 };
 
+// Host (with port, when non-default) of a tab URL, for prefilling URL Rules with the page
+// the user actually has open — e.g. "example.com" or "localhost:3000". Returns null for
+// URLs a host can't be extracted from (e.g. "about:blank").
+export const getUrlHost = (url: string): string | null => {
+  try {
+    return new URL(url).host || null;
+  } catch {
+    return null;
+  }
+};
+
 // Helper to merge URLs
 export const mergeUrlStrings = (oldStr: string, newStr: string): string => {
   const oldUrls = oldStr

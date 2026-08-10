@@ -14,7 +14,7 @@ interface ImportRulesProps {
   showHeading?: boolean;
 }
 
-const ImportRules: React.FC<ImportRulesProps> = ({ showHeading = true }) => {
+const ImportRules = ({ showHeading = true }: ImportRulesProps) => {
   const [importedData, setImportedData] = useState<ExportedData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -60,7 +60,13 @@ const ImportRules: React.FC<ImportRulesProps> = ({ showHeading = true }) => {
     <>
       {showHeading && <h2 className="mb-1 muted-heading">Import URL Rules</h2>}
       <div className="flex gap-2">
-        <Input ref={inputRef} type="file" accept="application/json" className="h-7 text-xs" onChange={handleFileChange} />
+        <Input
+          ref={inputRef}
+          type="file"
+          accept="application/json"
+          className="h-7 text-xs"
+          onChange={handleFileChange}
+        />
         <Button size="xs" variant="cta" onClick={handleImport} disabled={!importedData}>
           Import
         </Button>

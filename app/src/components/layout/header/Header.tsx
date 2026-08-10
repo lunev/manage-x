@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
-import { DotsVerticalIcon, DownloadIcon, UploadIcon } from '@radix-ui/react-icons';
+import { DotsVerticalIcon, DownloadIcon, QuestionMarkCircledIcon, UploadIcon } from '@radix-ui/react-icons';
 import { exportUrlRules } from '@/lib/export';
 import Logo from '@/components/ui/logo';
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const Header: React.FC = () => {
+const Header = () => {
   const navigate = useNavigate();
 
   return (
@@ -24,12 +24,7 @@ const Header: React.FC = () => {
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="size-9 rounded-full hover:bg-accent"
-            aria-label="More actions"
-          >
+          <Button size="icon" variant="ghost" className="size-9 rounded-full hover:bg-accent" aria-label="More actions">
             <DotsVerticalIcon className="size-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -39,6 +34,9 @@ const Header: React.FC = () => {
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => navigate('/import/')}>
             <UploadIcon /> Import URL Rules
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => navigate('/faq/')}>
+            <QuestionMarkCircledIcon /> FAQ
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

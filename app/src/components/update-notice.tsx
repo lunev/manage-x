@@ -3,7 +3,7 @@ import { useUpdateNotice } from '@/hooks/useUpdateNotice';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
-const UpdateNotice: React.FC = () => {
+const UpdateNotice = () => {
   const { notice, dismiss } = useUpdateNotice();
 
   if (!notice) return null;

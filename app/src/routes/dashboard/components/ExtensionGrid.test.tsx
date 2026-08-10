@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, mockManagementGetAll } from '@test-utils';
+import { render, screen, fireEvent, waitFor, within, mockManagementGetAll } from '@test-utils';
 import ExtensionGrid from './ExtensionGrid';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -73,22 +73,14 @@ describe('ExtensionGrid', () => {
     });
   });
 
-  describe('single click', () => {
-    beforeEach(() => {
-      vi.useFakeTimers({ shouldAdvanceTime: true });
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('navigates to create a new rule, preselecting the extension, once the double-click window passes', () => {
+  describe('double click', () => {
+    it('navigates to create a new rule, preselecting the extension', () => {
       render(<ExtensionGrid />);
 
-      fireEvent.click(screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }));
-      expect(mockNavigate).not.toHaveBeenCalled();
+      fireEvent.doubleClick(
+        screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }),
+      );
 
-      vi.advanceTimersByTime(250);
       expect(mockNavigate).toHaveBeenCalledWith('/extension-rules/new/?ext=ext1');
       expect(chrome.management.setEnabled).not.toHaveBeenCalled();
     });
@@ -104,13 +96,35 @@ describe('ExtensionGrid', () => {
         },
       });
 
-      fireEvent.click(screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }));
-      vi.advanceTimersByTime(250);
+      fireEvent.doubleClick(
+        screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }),
+      );
 
       expect(mockNavigate).toHaveBeenCalledWith('/extension-rules/ext1/edit/');
     });
+  });
 
-    it('does not navigate if a second click arrives before the delay elapses (start of a double click)', () => {
+  describe('click (toggle after a short delay)', () => {
+    beforeEach(() => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('toggles the extension via chrome.management.setEnabled once the double-click window passes', () => {
+      render(<ExtensionGrid />);
+
+      fireEvent.click(screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }));
+      expect(chrome.management.setEnabled).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(250);
+      expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', false, expect.any(Function));
+      expect(mockNavigate).not.toHaveBeenCalled();
+    });
+
+    it('cancels the pending toggle and navigates instead if a second click arrives before the delay elapses (a double click)', () => {
       render(<ExtensionGrid />);
       const tile = screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' });
 
@@ -119,18 +133,8 @@ describe('ExtensionGrid', () => {
       fireEvent.doubleClick(tile);
       vi.advanceTimersByTime(250);
 
-      expect(mockNavigate).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('double click', () => {
-    it('toggles the extension via chrome.management.setEnabled', () => {
-      render(<ExtensionGrid />);
-
-      fireEvent.doubleClick(screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }));
-
-      expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', false, expect.any(Function));
-      expect(mockNavigate).not.toHaveBeenCalled();
+      expect(chrome.management.setEnabled).not.toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalledWith('/extension-rules/new/?ext=ext1');
     });
 
     it('does not reorder tiles in the DOM after toggling one', () => {
@@ -139,7 +143,8 @@ describe('ExtensionGrid', () => {
       const getOrder = () => screen.getAllByRole('button').map((btn) => btn.getAttribute('aria-label'));
 
       const before = getOrder();
-      fireEvent.doubleClick(screen.getByRole('button', { name: 'Open extension rule for Beta Ext, currently disabled' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Open extension rule for Beta Ext, currently disabled' }));
+      vi.advanceTimersByTime(250);
       const after = getOrder();
 
       expect(after.map((label) => label?.split(',')[0])).toEqual(before.map((label) => label?.split(',')[0]));
@@ -164,7 +169,8 @@ describe('ExtensionGrid', () => {
       const getOrder = () => screen.getAllByRole('button').map((btn) => btn.getAttribute('aria-label')?.split(',')[0]);
 
       const before = getOrder();
-      fireEvent.doubleClick(screen.getByRole('button', { name: 'Open extension rule for Beta Ext, currently disabled' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Open extension rule for Beta Ext, currently disabled' }));
+      vi.advanceTimersByTime(250);
 
       await waitFor(() =>
         expect(
@@ -191,14 +197,18 @@ describe('ExtensionGrid', () => {
         },
       );
 
-      const tile = await screen.findByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' });
-      fireEvent.doubleClick(tile);
+      const tile = await screen.findByRole('button', {
+        name: 'Open extension rule for Alpha Ext, currently enabled, controlled by rule "Work Hours Only"',
+      });
+      fireEvent.click(tile);
+      vi.advanceTimersByTime(250);
+      vi.useRealTimers();
 
       expect(chrome.management.setEnabled).not.toHaveBeenCalled();
       expect(await screen.findByText("Can't toggle Alpha Ext")).toBeInTheDocument();
       expect(
         screen.getByText(
-          'The Extension Rule "Work Hours Only" is keeping it enabled on this page. Turn off or edit that rule to toggle it manually.',
+          'The Extension Rule "Work Hours Only" is keeping it enabled on this page. Edit that rule to toggle it manually.',
         ),
       ).toBeInTheDocument();
     });
@@ -227,12 +237,20 @@ describe('ExtensionGrid', () => {
         },
       );
 
-      const tile = await screen.findByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' });
-      fireEvent.doubleClick(tile);
+      const tile = await screen.findByRole('button', {
+        name: 'Open extension rule for Alpha Ext, currently enabled, controlled by rule "Streaming Sites"',
+      });
+      fireEvent.click(tile);
+      vi.advanceTimersByTime(250);
+      vi.useRealTimers();
 
       expect(chrome.management.setEnabled).not.toHaveBeenCalled();
-      expect(await screen.findByText("Can't toggle Alpha Ext")).toBeInTheDocument();
-      expect(screen.getByText(/The Extension Group "Streaming Sites" is keeping it disabled/)).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          'The Extension Group "Streaming Sites" is keeping it disabled on this page. Turn off or edit that rule to toggle it manually.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Can't toggle Alpha Ext")).toBeInTheDocument();
     });
   });
 
@@ -256,13 +274,22 @@ describe('ExtensionGrid', () => {
         },
       });
 
-      fireEvent.focus(screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }));
+      const tile = await screen.findByRole('button', {
+        name: 'Open extension rule for Alpha Ext, currently enabled, controlled by rule "Work Hours Only"',
+      });
+      fireEvent.focus(tile);
 
       const tooltip = await screen.findByRole('tooltip');
       expect(tooltip).toHaveTextContent('Extension Rule');
       expect(tooltip).toHaveTextContent('Work Hours Only');
       expect(tooltip).toHaveTextContent('enabled');
-      expect(tooltip).toHaveTextContent('Turn off or edit that rule to toggle it manually.');
+      expect(tooltip).toHaveTextContent('edit that rule to toggle it manually.');
+      expect(tooltip).not.toHaveTextContent('Turn off or');
+      expect(within(tooltip).getByText('enabled')).toHaveClass('font-semibold');
+      expect(within(tooltip).getByRole('link', { name: 'edit that rule' })).toHaveAttribute(
+        'href',
+        '/extension-rules/ext1/edit/?tab=enabled',
+      );
     });
 
     it('names the governing Extension Group when no Extension Rule applies', async () => {
@@ -283,12 +310,78 @@ describe('ExtensionGrid', () => {
         },
       });
 
-      fireEvent.focus(screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }));
+      const tile = await screen.findByRole('button', {
+        name: 'Open extension rule for Alpha Ext, currently enabled, controlled by rule "Streaming Sites"',
+      });
+      fireEvent.focus(tile);
 
       const tooltip = await screen.findByRole('tooltip');
       expect(tooltip).toHaveTextContent('Extension Group');
       expect(tooltip).toHaveTextContent('Streaming Sites');
       expect(tooltip).toHaveTextContent('disabled');
+      expect(tooltip).toHaveTextContent('turn off or edit that rule to toggle it manually.');
+      expect(within(tooltip).getByText('disabled')).toHaveClass('font-semibold');
+      expect(within(tooltip).getByRole('link', { name: 'edit that rule' })).toHaveAttribute(
+        'href',
+        '/group-rules/grp1/edit/?tab=disabled',
+      );
+    });
+  });
+
+  describe('rule badge', () => {
+    it('shows no badge when the extension is not governed by any rule', () => {
+      render(<ExtensionGrid />);
+
+      expect(screen.queryByTestId('rule-badge')).not.toBeInTheDocument();
+    });
+
+    it('shows a primary-colored badge on the tile when an active Extension Rule governs it on this page', async () => {
+      render(<ExtensionGrid />, {
+        initialState: {
+          extensionRules: {
+            entities: [
+              { id: 'ext1', name: 'Work Hours Only', enabledUrls: 'example.com', disabledUrls: '', active: true },
+            ],
+          },
+        },
+      });
+
+      expect(await screen.findByTestId('rule-badge')).toHaveClass('bg-primary');
+    });
+
+    it('shows a red badge on the tile when an active Extension Group governs it on this page', async () => {
+      render(<ExtensionGrid />, {
+        initialState: {
+          groupRules: {
+            entities: [
+              {
+                id: 'grp1',
+                name: 'Streaming Sites',
+                extensions: ['ext1'],
+                enabledUrls: '',
+                disabledUrls: 'example.com',
+                active: true,
+              },
+            ],
+          },
+        },
+      });
+
+      expect(await screen.findByTestId('rule-badge')).toHaveClass('bg-[#e6001e]');
+    });
+
+    it('shows no badge when the matching rule is inactive', () => {
+      render(<ExtensionGrid />, {
+        initialState: {
+          extensionRules: {
+            entities: [
+              { id: 'ext1', name: 'Work Hours Only', enabledUrls: 'example.com', disabledUrls: '', active: false },
+            ],
+          },
+        },
+      });
+
+      expect(screen.queryByTestId('rule-badge')).not.toBeInTheDocument();
     });
   });
 

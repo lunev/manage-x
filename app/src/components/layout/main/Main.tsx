@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import UpdateNotice from '@/components/update-notice';
 
-const Main: React.FC<{ children: ReactNode }> = ({ children }) => {
+const Main = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
 
   return (

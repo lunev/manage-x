@@ -1,22 +1,24 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import useExtensions from '@/hooks/useExtensions';
-import { ArrowLeftIcon, CheckIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import { ArrowLeftIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { GroupRule } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { addGroupUrlRule, removeGroupUrlRule, updateGroupUrlRule } from '@/features/group-rules/group-rules-slice';
 import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
-import { getDefaultExtensionState } from '@/lib/utils';
+import { getDefaultExtensionState, getUrlHost, mergeUrlStrings } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import CurrentPageDot from '@/components/ui/current-page-dot';
+import CurrentPageDomainButton from '@/components/ui/current-page-domain-button';
+import { matchAction, useCurrentTabUrl } from '@/hooks/useGoverningRule';
 
-const GroupRules: React.FC = () => {
+const GroupRules = () => {
   const { id } = useParams();
   const rules = useAppSelector((state) => state.groupRules.entities);
   const extensionRules = useAppSelector((state) => state.extensionRules.entities);
@@ -36,11 +38,38 @@ const GroupRules: React.FC = () => {
   const { extensions } = useExtensions();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [extensionSearch, setExtensionSearch] = useState('');
+
+  // Deep-links to whichever URL Rules tab a caller says is relevant (e.g. the "can't toggle"
+  // tooltip links here with ?tab=enabled/disabled to open on the list actually blocking it).
+  const [searchParams] = useSearchParams();
+  const initialUrlTab = searchParams.get('tab') === 'enabled' ? 'enabled' : 'disabled';
+
+  const tabUrl = useCurrentTabUrl();
+  const currentPageAction =
+    formData.active && tabUrl ? matchAction(tabUrl, formData.enabledUrls, formData.disabledUrls) : null;
+  const currentDomain = tabUrl ? getUrlHost(tabUrl) : null;
+  const isDomainInEnabled = currentDomain
+    ? formData.enabledUrls
+        .split('\n')
+        .map((s) => s.trim())
+        .includes(currentDomain)
+    : false;
+  const isDomainInDisabled = currentDomain
+    ? formData.disabledUrls
+        .split('\n')
+        .map((s) => s.trim())
+        .includes(currentDomain)
+    : false;
+
+  const trimmedExtensionSearch = extensionSearch.trim().toLowerCase();
+  const filteredExtensions = trimmedExtensionSearch
+    ? extensions.filter((ext) => ext.name.toLowerCase().includes(trimmedExtensionSearch))
+    : extensions;
 
   const [errors, setErrors] = useState<{
     name?: string;
     extensions?: string;
-    urlRules?: string;
   }>({});
 
   const validateForm = () => {
@@ -52,13 +81,6 @@ const GroupRules: React.FC = () => {
 
     if (!formData.extensions.length) {
       newErrors.extensions = 'At least one extension is required';
-    }
-
-    const hasEnabledUrls = formData.enabledUrls.trim().length > 0;
-    const hasDisabledUrls = formData.disabledUrls.trim().length > 0;
-
-    if (!hasEnabledUrls && !hasDisabledUrls) {
-      newErrors.urlRules = 'At least one URL is required';
     }
 
     setErrors(newErrors);
@@ -82,9 +104,6 @@ const GroupRules: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
-    if ((name === 'enabledUrls' && value.trim()) || (name === 'disabledUrls' && value.trim())) {
-      setErrors((prev) => ({ ...prev, urlRules: undefined }));
-    }
   };
 
   const handleSelect = (id: string) => {
@@ -94,6 +113,23 @@ const GroupRules: React.FC = () => {
 
     setFormData((prev) => ({ ...prev, extensions: updatedExtensions }));
     setErrors((prev) => ({ ...prev, extensions: undefined }));
+  };
+
+  const handleAddDomain = (field: 'enabledUrls' | 'disabledUrls') => {
+    if (!currentDomain) return;
+    setFormData((prev) => ({ ...prev, [field]: mergeUrlStrings(prev[field], currentDomain) }));
+  };
+
+  const handleRemoveDomain = (field: 'enabledUrls' | 'disabledUrls') => {
+    if (!currentDomain) return;
+    setFormData((prev) => ({
+      ...prev,
+      [field]: prev[field]
+        .split('\n')
+        .map((s) => s.trim())
+        .filter((line) => line && line !== currentDomain)
+        .join('\n'),
+    }));
   };
 
   const handleRemove = async (id: string) => {
@@ -137,42 +173,48 @@ const GroupRules: React.FC = () => {
         <label className="muted-heading mb-0.5 block">
           Extensions {formData.extensions.length > 0 && `(${formData.extensions.length})`}
         </label>
-        <Command className="rounded-md border">
-          <CommandInput aria-label="Search extensions" placeholder="Search extensions..." className="h-8 text-xs" />
-          <CommandList className="max-h-[100px]">
-            <CommandEmpty className="text-xs">No extensions found.</CommandEmpty>
-            <CommandGroup>
-              {extensions.map((ext) => {
-                const isSelected = formData.extensions.includes(ext.id);
-                return (
-                  <CommandItem
-                    key={ext.id}
-                    value={`${ext.name} ${ext.id}`}
-                    onSelect={() => handleSelect(ext.id)}
-                    className="text-xs gap-2"
+        <Input
+          className="mb-2 h-8 text-xs"
+          aria-label="Search extensions"
+          placeholder="Search extensions..."
+          value={extensionSearch}
+          onChange={(e) => setExtensionSearch(e.target.value)}
+        />
+        <div className="grid max-h-[160px] grid-cols-9 gap-2 overflow-y-auto rounded-md border p-2">
+          {filteredExtensions.length === 0 && (
+            <p className="col-span-9 py-2 text-center text-xs text-muted-foreground">No extensions found.</p>
+          )}
+          {filteredExtensions.map((ext) => {
+            const isSelected = formData.extensions.includes(ext.id);
+            return (
+              <Tooltip key={ext.id}>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => handleSelect(ext.id)}
+                    aria-pressed={isSelected}
+                    aria-label={`${ext.name}, ${isSelected ? 'selected' : 'not selected'}`}
+                    size="icon"
+                    className="rounded-full"
                   >
-                    <Avatar className={`${!ext.enabled ? 'grayscale' : ''} w-5 h-5 text-xs text-white relative`}>
+                    <Avatar
+                      className={`${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm' : 'grayscale opacity-50'} size-6 text-[10px] text-white transition-all duration-150`}
+                    >
                       <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
-                      <AvatarFallback className="bg-primary text-primary-foreground">
+                      <AvatarFallback className="bg-primary text-primary-foreground rounded-md">
                         {ext.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="flex-1 line-clamp-1">
-                      {ext.name}
-                      <span className="sr-only">{isSelected ? ', selected' : ', not selected'}</span>
-                    </span>
-                    <div
-                      aria-hidden="true"
-                      className={`mr-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm border border-primary shadow ${isSelected ? 'bg-primary text-primary-foreground' : ''}`}
-                    >
-                      {isSelected && <CheckIcon className="h-3.5 w-3.5" />}
-                    </div>
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-          </CommandList>
-        </Command>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" align="center">
+                  {ext.name}
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </div>
         {errors.extensions && <p className="text-xs text-destructive mt-1">{errors.extensions}</p>}
       </div>
       <div className="mb-3">
@@ -205,13 +247,15 @@ const GroupRules: React.FC = () => {
             </TooltipContent>
           </Tooltip>
         </label>
-        <Tabs defaultValue="disabled" className="w-full">
+        <Tabs defaultValue={initialUrlTab} className="w-full">
           <TabsList className="w-full">
             <TabsTrigger value="enabled" className="flex-1 text-xs">
               Enabled URLs
+              {currentPageAction === 'enabled' && <CurrentPageDot />}
             </TabsTrigger>
             <TabsTrigger value="disabled" className="flex-1 text-xs">
               Disabled URLs
+              {currentPageAction === 'disabled' && <CurrentPageDot />}
             </TabsTrigger>
           </TabsList>
           <TabsContent value="enabled">
@@ -223,6 +267,14 @@ const GroupRules: React.FC = () => {
               onChange={handleChange}
               placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
             />
+            {currentDomain && (
+              <CurrentPageDomainButton
+                domain={currentDomain}
+                isAdded={isDomainInEnabled}
+                onAdd={() => handleAddDomain('enabledUrls')}
+                onRemove={() => handleRemoveDomain('enabledUrls')}
+              />
+            )}
           </TabsContent>
           <TabsContent value="disabled">
             <Textarea
@@ -233,9 +285,16 @@ const GroupRules: React.FC = () => {
               onChange={handleChange}
               placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
             />
+            {currentDomain && (
+              <CurrentPageDomainButton
+                domain={currentDomain}
+                isAdded={isDomainInDisabled}
+                onAdd={() => handleAddDomain('disabledUrls')}
+                onRemove={() => handleRemoveDomain('disabledUrls')}
+              />
+            )}
           </TabsContent>
         </Tabs>
-        {errors.urlRules && <p className="text-xs text-destructive mt-1">{errors.urlRules}</p>}
       </div>
       <div className="flex gap-2">
         <div className="flex-1 flex gap-2">

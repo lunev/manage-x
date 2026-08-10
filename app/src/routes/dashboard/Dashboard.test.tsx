@@ -53,7 +53,7 @@ describe('Dashboard', () => {
     fireEvent.focus(screen.getAllByLabelText('Help')[0]);
 
     const tooltip = await screen.findByRole('tooltip');
-    expect(tooltip).toHaveTextContent('Click an icon to open its rule.');
+    expect(tooltip).toHaveTextContent('Click an icon to toggle it enabled or disabled directly');
   });
 
   it('shows the Extension Groups help tooltip', async () => {

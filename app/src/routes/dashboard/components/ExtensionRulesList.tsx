@@ -10,7 +10,7 @@ import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { ExtensionRule } from '@/types';
 import { cn, getDefaultExtensionState } from '@/lib/utils';
 
-const ExtensionRulesList: React.FC = () => {
+const ExtensionRulesList = () => {
   const rules = useAppSelector((state) => state.extensionRules.entities);
   const { extensions } = useExtensions();
   const navigate = useNavigate();
