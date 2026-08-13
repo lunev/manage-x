@@ -1,10 +1,10 @@
 ---
 name: release-extension
-description: Build and package a new release of this Chrome extension — bumps the app's package.json version to match its manifest.json, records the release in whatever changelog surfaces this repo has (README and/or an in-extension "What's New" banner), runs the production build, and confirms the release zip was created. Only invoke when the user explicitly asks to release, build a release, or cut a new version.
+description: Build and package a new release of this Chrome extension — bumps the app's package.json version to match its manifest.json, records the release in whatever changelog surfaces this repo has (README and/or an in-extension "What's New" banner), runs the release build, and confirms the release zip was created. Only invoke when the user explicitly asks to release, build a release, or cut a new version.
 disable-model-invocation: true
 ---
 
-Release flow for this Chrome MV3 extension. This skill is written to be copy/paste portable across repos with the same shape (an `app/` package containing the extension source, a `manifest.json` as the version source of truth, and release zips built alongside it) — if a step below doesn't match this repo exactly, check that repo's CLAUDE.md and adapt the paths rather than skipping the step.
+Release flow for this Chrome MV3 extension. This skill is written to be copy/paste portable across repos with the same shape (an `app/` package containing the extension source, a `manifest.json` as the version source of truth, a `scripts/release.js` that zips the build, and release zips built alongside it) — if a step below doesn't match this repo exactly, check that repo's CLAUDE.md and adapt the paths rather than skipping the step.
 
 1. Find the extension's manifest (typically `app/public/manifest.json`) and read its `version` field — this is the source of truth for the release version. If the user asked to bump the version (e.g. "release 2.1.0"), update the manifest's `version` first.
 2. Update the app's `package.json` `version` field to match the manifest's `version` exactly. These are maintained independently and must be kept in sync manually.
@@ -15,6 +15,6 @@ Release flow for this Chrome MV3 extension. This skill is written to be copy/pas
    - Find the component/hook that consumes it and respect any real constraint it implies — these banners usually render inside a small popup with limited height, so keep entries short, concrete, and few (prefer 1–3 items even if the README has a longer list; pick the most important if more changed). Each entry should be specific enough that the user understands what changed (not a vague "various improvements"), but no longer than it needs to be.
    - If the changes for this version are internal-only, leave this data source as it was after the last release that had real user-visible changes, so the banner never shows an empty or pointless update.
    - If no such data source exists in this repo, skip this step.
-6. Run the production build (typically `npm run build` from inside `app/`). Confirm it runs a typecheck, a production bundler build, and a zip step that packages the build output into a release zip (check the build script, e.g. `build-zip.js`, for the exact output path if unsure — commonly `chrome-webstore/releases/<name>-v<version>.zip` at the repo root).
+6. Run `npm run release` from inside `app/` (typically `npm run build && node scripts/release.js`). This runs a typecheck, a production bundler build, then `scripts/release.js`, which zips the build output into a release zip (check the script for the exact output path if unsure — commonly `chrome-webstore/releases/<name>-v<version>.zip` at the repo root). Plain `npm run build` does not zip — don't confuse the two.
 7. Confirm the new release zip exists at its expected path and report the path back to the user.
 8. The resulting zip (plus the version bump and any changelog changes) is meant to be committed to git if this repo tracks its release zips — stage and mention the changed files, but don't commit or push without the user's explicit go-ahead.
