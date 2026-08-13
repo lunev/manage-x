@@ -50,7 +50,8 @@ Load it unpacked in Chrome: `chrome://extensions` → enable Developer mode → 
 | Command (run from `app/`) | Purpose |
 | --- | --- |
 | `npm run dev` | Watch-mode build for local development |
-| `npm run build` | Typecheck, production build, and zip for the Chrome Web Store |
+| `npm run build` | Typecheck and production build |
+| `npm run release` | Build, then zip into `chrome-webstore/releases/` for the Chrome Web Store |
 | `npm test` | Run tests (watch mode); `npm run test:coverage` for a coverage report |
 | `npx eslint .` / `npx prettier --write <files>` | Lint / format |
 
