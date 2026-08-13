@@ -12,7 +12,7 @@ Three build entry points (see `app/vite.config.ts`): the popup (`index.html`), t
 
 - `app/` — all application code and build tooling (self-contained npm package: `package.json`, `node_modules`, `src/`, `public/`, `test/`, `vite.config.ts`, `tsconfig*.json`, `eslint.config.js`, etc.). Run all npm commands from inside `app/`.
 - `design/` — design/marketing source assets (`psd/`, `png/`, `store-screenshots/`). Not code, not built.
-- `chrome-webstore/` — Chrome Web Store assets: `releases/` (zip archives), `description.md` (listing copy), `testing-instructions.md` (reviewer notes). Committed to the repo at the top level (see gotcha below).
+- `chrome-webstore/` — Chrome Web Store assets: `releases/` (zip archives), `description.txt` (listing copy), `testing-instructions.txt` (reviewer notes). Committed to the repo at the top level (see gotcha below).
 
 ## Commands
 
