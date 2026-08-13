@@ -21,6 +21,7 @@ Run from `app/` (`cd app && ...`):
 - `npm run dev` — Vite dev server with HMR, for the popup/options UI only — the background service worker won't run under it.
 - `npm run watch` — watch-mode full-extension build (`vite build --mode development --watch`). Use this instead of `dev` when the service worker needs to run.
 - `npm run build` — `tsc -b && vite build` (typecheck, production build). Does not zip.
+- **When iterating on changes you want to see live, start `npm run watch` (or `npm run dev` for popup/options-only UI work) in the background for the session** — don't rely on a one-off `npm run build` at the end, since its output goes stale the moment you make another edit.
 - `npm run release` — `npm run build`, then `scripts/release.js` zips `app/build/` into `chrome-webstore/releases/<name>-v<version>.zip` at the repo root. This script is copy/paste-portable across the other extension repos in this account (the-duplicator, parents-reminder, 0hours) — keep it in sync if you improve it.
 - `npm test` — run Vitest once
 - `npm run test:coverage` — Vitest with coverage (thresholds: 80% statements/functions, 70% branches, 85% lines, scoped to `src/**/*.{ts,tsx}`)
