@@ -42,14 +42,16 @@ Manifest V3 extension (popup + options page + background service worker) built w
 ```sh
 cd app
 npm install
-npm run dev   # watch-mode build — no HMR; reload the unpacked extension at chrome://extensions after each rebuild
+npm run dev     # Vite dev server for the popup/options UI only
+npm run watch   # watch-mode build — no HMR; use this instead of `dev` when the service worker needs to run
 ```
 
 Load it unpacked in Chrome: `chrome://extensions` → enable Developer mode → **Load unpacked** → select `app/build`.
 
 | Command (run from `app/`) | Purpose |
 | --- | --- |
-| `npm run dev` | Watch-mode build for local development |
+| `npm run dev` | Vite dev server for the popup/options UI only |
+| `npm run watch` | Watch-mode full-extension build — use when the service worker needs to run |
 | `npm run build` | Typecheck and production build |
 | `npm run release` | Build, then zip into `chrome-webstore/releases/` for the Chrome Web Store |
 | `npm test` | Run tests (watch mode); `npm run test:coverage` for a coverage report |
