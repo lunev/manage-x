@@ -44,9 +44,13 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.28': [
     'Clicking an extension or group icon now toggles it directly; double-click to open its rule instead (this was reversed before).',
     'Extension and group icons now show a small colored dot when a rule is currently controlling them on the open page — the app color for an individual rule, red for a group rule.',
-    'The extension rule editor now shows the extension\'s icon and name once it\'s known, instead of a picker you could no longer actually change.',
-    'The Enabled/Disabled URL tabs highlight whichever one currently matches the page you have open, with a button to add or remove that page\'s domain from the list.',
-    'The group rule editor\'s extension picker is now an icon grid like the Extensions list, instead of a checkbox list.',
+    "The extension rule editor now shows the extension's icon and name once it's known, instead of a picker you could no longer actually change.",
+    "The Enabled/Disabled URL tabs highlight whichever one currently matches the page you have open, with a button to add or remove that page's domain from the list.",
+    "The group rule editor's extension picker is now an icon grid like the Extensions list, instead of a checkbox list.",
     'You can now save an extension or group rule with no Enabled/Disabled URLs at all.',
+  ],
+  '2.0.29': [
+    'The active URL Rules tab is now clearly highlighted.',
+    'Importing URL Rules now happens as soon as you pick a file.',
   ],
 };
