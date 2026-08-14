@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import useExtensions from '@/hooks/useExtensions';
-import { ArrowLeftIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import useTypewriter from '@/hooks/useTypewriter';
+import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import CurrentPageDot from '@/components/ui/current-page-dot';
 import CurrentPageDomainButton from '@/components/ui/current-page-domain-button';
 import { matchAction, useCurrentTabUrl } from '@/hooks/useGoverningRule';
+import { useSetHeaderIdentity } from '@/components/layout/header/HeaderIdentityContext';
+
+const NAME_TYPING_PLACEHOLDERS = ['Work tools', 'Social media', 'Dev extensions', 'Ad blockers', 'Shopping'];
 
 const GroupRules = () => {
   const { id } = useParams();
@@ -38,7 +42,10 @@ const GroupRules = () => {
   const { extensions } = useExtensions();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const animatedNamePlaceholder = useTypewriter(NAME_TYPING_PLACEHOLDERS);
   const [extensionSearch, setExtensionSearch] = useState('');
+
+  useSetHeaderIdentity({ heading: editedGroupRule ? 'Edit group rule' : 'Add group rule', avatar: false });
 
   // Deep-links to whichever URL Rules tab a caller says is relevant (e.g. the "can't toggle"
   // tooltip links here with ?tab=enabled/disabled to open on the list actually blocking it).
@@ -158,67 +165,72 @@ const GroupRules = () => {
 
   return (
     <form onSubmit={handleSubmit} className="fade-in rounded-xl bg-card p-4 shadow-soft">
-      <Link to="/" className="mb-3 flex gap-1 uppercase text-xxs">
-        <ArrowLeftIcon /> Back to dashboard
-      </Link>
-      <h1 className="mb-2 text-base font-semibold">Extension Groups</h1>
       <div className="mb-3">
-        <label htmlFor="name" className="muted-heading mb-0.5 block">
+        <label htmlFor="name" className="muted-heading mb-1 block">
           Name
         </label>
-        <Input className="w-full text-xs" name="name" id="name" value={formData.name} onChange={handleChange} />
+        <Input
+          className="w-full text-xs"
+          name="name"
+          id="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder={animatedNamePlaceholder}
+        />
         {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
       </div>
       <div className="mb-3">
-        <label className="muted-heading mb-0.5 block">
+        <label className="muted-heading mb-1 block">
           Extensions {formData.extensions.length > 0 && `(${formData.extensions.length})`}
         </label>
-        <Input
-          className="mb-2 h-8 text-xs"
-          aria-label="Search extensions"
-          placeholder="Search extensions..."
-          value={extensionSearch}
-          onChange={(e) => setExtensionSearch(e.target.value)}
-        />
-        <div className="grid max-h-[160px] grid-cols-9 gap-2 overflow-y-auto rounded-md border p-2">
-          {filteredExtensions.length === 0 && (
-            <p className="col-span-9 py-2 text-center text-xs text-muted-foreground">No extensions found.</p>
-          )}
-          {filteredExtensions.map((ext) => {
-            const isSelected = formData.extensions.includes(ext.id);
-            return (
-              <Tooltip key={ext.id}>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => handleSelect(ext.id)}
-                    aria-pressed={isSelected}
-                    aria-label={`${ext.name}, ${isSelected ? 'selected' : 'not selected'}`}
-                    size="icon"
-                    className="rounded-full"
-                  >
-                    <Avatar
-                      className={`${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm' : 'grayscale opacity-50'} size-6 text-[10px] text-white transition-all duration-150`}
+        <div className="rounded-md border overflow-hidden">
+          <Input
+            className="h-8 rounded-none border-0 border-b shadow-none text-xs focus-visible:ring-0"
+            aria-label="Search extensions"
+            placeholder="Search extensions..."
+            value={extensionSearch}
+            onChange={(e) => setExtensionSearch(e.target.value)}
+          />
+          <div className="grid max-h-[160px] grid-cols-9 gap-2 overflow-y-auto p-2">
+            {filteredExtensions.length === 0 && (
+              <p className="col-span-9 py-2 text-center text-xs text-muted-foreground">No extensions found.</p>
+            )}
+            {filteredExtensions.map((ext) => {
+              const isSelected = formData.extensions.includes(ext.id);
+              return (
+                <Tooltip key={ext.id}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => handleSelect(ext.id)}
+                      aria-pressed={isSelected}
+                      aria-label={`${ext.name}, ${isSelected ? 'selected' : 'not selected'}`}
+                      size="icon"
+                      className="rounded-full"
                     >
-                      <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
-                      <AvatarFallback className="bg-primary text-primary-foreground rounded-md">
-                        {ext.name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="top" align="center">
-                  {ext.name}
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
+                      <Avatar
+                        className={`${isSelected ? 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm' : ''} size-6 text-[10px] text-white transition-all duration-150`}
+                      >
+                        <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
+                        <AvatarFallback className="bg-primary text-primary-foreground rounded-md">
+                          {ext.name.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" align="center">
+                    {ext.name}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </div>
         </div>
         {errors.extensions && <p className="text-xs text-destructive mt-1">{errors.extensions}</p>}
       </div>
       <div className="mb-3">
-        <label className="muted-heading mb-0.5 flex gap-1 items-center">
+        <label className="muted-heading mb-1 flex gap-1 items-center">
           <span>URL Rules</span>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -247,54 +259,60 @@ const GroupRules = () => {
             </TooltipContent>
           </Tooltip>
         </label>
-        <Tabs defaultValue={initialUrlTab} className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger value="enabled" className="flex-1 text-xs">
-              Enabled URLs
-              {currentPageAction === 'enabled' && <CurrentPageDot />}
-            </TabsTrigger>
-            <TabsTrigger value="disabled" className="flex-1 text-xs">
-              Disabled URLs
-              {currentPageAction === 'disabled' && <CurrentPageDot />}
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="enabled">
-            <Textarea
-              rows={4}
-              className="text-xs"
-              name="enabledUrls"
-              value={formData.enabledUrls}
-              onChange={handleChange}
-              placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
-            />
-            {currentDomain && (
-              <CurrentPageDomainButton
-                domain={currentDomain}
-                isAdded={isDomainInEnabled}
-                onAdd={() => handleAddDomain('enabledUrls')}
-                onRemove={() => handleRemoveDomain('enabledUrls')}
+        <div className="rounded-md border overflow-hidden">
+          <Tabs defaultValue={initialUrlTab} className="w-full">
+            <TabsList className="w-full">
+              <TabsTrigger value="enabled" className="flex-1 text-xs">
+                Enabled URLs
+                {currentPageAction === 'enabled' && <CurrentPageDot />}
+              </TabsTrigger>
+              <TabsTrigger value="disabled" className="flex-1 text-xs">
+                Disabled URLs
+                {currentPageAction === 'disabled' && <CurrentPageDot />}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="enabled">
+              <Textarea
+                rows={4}
+                className="rounded-none border-0 shadow-none text-xs"
+                name="enabledUrls"
+                value={formData.enabledUrls}
+                onChange={handleChange}
+                placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
               />
-            )}
-          </TabsContent>
-          <TabsContent value="disabled">
-            <Textarea
-              rows={4}
-              className="text-xs"
-              name="disabledUrls"
-              value={formData.disabledUrls}
-              onChange={handleChange}
-              placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
-            />
-            {currentDomain && (
-              <CurrentPageDomainButton
-                domain={currentDomain}
-                isAdded={isDomainInDisabled}
-                onAdd={() => handleAddDomain('disabledUrls')}
-                onRemove={() => handleRemoveDomain('disabledUrls')}
+              {currentDomain && (
+                <div className="px-2 pb-2">
+                  <CurrentPageDomainButton
+                    domain={currentDomain}
+                    isAdded={isDomainInEnabled}
+                    onAdd={() => handleAddDomain('enabledUrls')}
+                    onRemove={() => handleRemoveDomain('enabledUrls')}
+                  />
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="disabled">
+              <Textarea
+                rows={4}
+                className="rounded-none border-0 shadow-none text-xs"
+                name="disabledUrls"
+                value={formData.disabledUrls}
+                onChange={handleChange}
+                placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
               />
-            )}
-          </TabsContent>
-        </Tabs>
+              {currentDomain && (
+                <div className="px-2 pb-2">
+                  <CurrentPageDomainButton
+                    domain={currentDomain}
+                    isAdded={isDomainInDisabled}
+                    onAdd={() => handleAddDomain('disabledUrls')}
+                    onRemove={() => handleRemoveDomain('disabledUrls')}
+                  />
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
       <div className="flex gap-2">
         <div className="flex-1 flex gap-2">

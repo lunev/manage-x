@@ -1,13 +1,21 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@test-utils';
 import Faq from './Faq';
+import Header from '@/components/layout/header/Header';
+import { HeaderIdentityProvider } from '@/components/layout/header/HeaderIdentityContext';
 
 describe('Faq', () => {
-  it('renders a Back to dashboard link and the FAQ heading', () => {
-    render(<Faq />);
+  it('renders the FAQ heading in the header, with no avatar', () => {
+    render(
+      <HeaderIdentityProvider>
+        <Header />
+        <Faq />
+      </HeaderIdentityProvider>,
+      { route: '/faq/' },
+    );
 
-    expect(screen.getByRole('link', { name: /Back to dashboard/i })).toHaveAttribute('href', '/');
     expect(screen.getByRole('heading', { name: 'FAQ' })).toBeInTheDocument();
+    expect(document.querySelector('header')?.querySelectorAll('img').length).toBe(0);
   });
 
   it('lists every question collapsed by default, expandable on click', () => {

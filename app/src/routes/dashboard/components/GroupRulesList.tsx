@@ -9,50 +9,13 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { GroupRule } from '@/types';
+import ExtensionIconMosaic from '@/components/ui/extension-icon-mosaic';
 import RuleBadge from './RuleBadge';
 
 // Same click/double-click split as the Extensions grid: a single click can't fire the toggle
 // immediately, since the browser needs this much time with no second click to tell it apart
 // from the start of a double click (which opens the group's rule editor instead).
 const CLICK_DELAY_MS = 250;
-
-// A group's avatar is filled with the icons of the extensions it contains, rather than a
-// generic initial letter — up to 4 in a mosaic (a single extension fills the whole circle; a
-// 5th+ extension collapses into a "+N" cell instead of shrinking icons further).
-type GroupAvatarFillProps = {
-  icons: chrome.management.ExtensionInfo[];
-};
-
-const GroupAvatarFill = ({ icons }: GroupAvatarFillProps) => {
-  if (icons.length === 0) return null;
-
-  if (icons.length === 1) {
-    const url = icons[0].icons?.at(-1)?.url;
-    return url ? (
-      <img src={url} alt="" className="h-full w-full object-cover" />
-    ) : (
-      <AvatarFallback className="bg-primary text-primary-foreground rounded-md">
-        {icons[0].name.slice(0, 1).toUpperCase()}
-      </AvatarFallback>
-    );
-  }
-
-  const overflow = icons.length > 4 ? icons.length - 3 : 0;
-  const displayIcons = overflow > 0 ? icons.slice(0, 3) : icons.slice(0, 4);
-
-  return (
-    <div className="grid h-full w-full grid-cols-2 grid-rows-2 gap-px">
-      {displayIcons.map((ext) => (
-        <img key={ext.id} src={ext.icons?.at(-1)?.url} alt="" className="h-full w-full object-cover" />
-      ))}
-      {overflow > 0 && (
-        <span className="flex items-center justify-center bg-muted text-[7px] font-medium text-muted-foreground">
-          +{overflow}
-        </span>
-      )}
-    </div>
-  );
-};
 
 const GroupRuleTile: React.FC<{ rule: GroupRule; extensions: chrome.management.ExtensionInfo[] }> = ({
   rule,
@@ -95,7 +58,7 @@ const GroupRuleTile: React.FC<{ rule: GroupRule; extensions: chrome.management.E
               className={`${!rule.active ? 'grayscale opacity-60' : 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm'} size-6 text-[10px] text-white transition-all duration-150`}
             >
               {groupExtensions.length > 0 ? (
-                <GroupAvatarFill icons={groupExtensions} />
+                <ExtensionIconMosaic icons={groupExtensions} />
               ) : (
                 <AvatarFallback className="bg-primary text-primary-foreground rounded-md">
                   {rule.name.slice(0, 1).toUpperCase()}

@@ -2,8 +2,21 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Route, Routes } from 'react-router-dom';
 import { render, screen, fireEvent, waitFor, within, mockManagementGetAll, mockStorageLocalGet } from '@test-utils';
 import ExtensionRules from './ExtensionRules';
+import Header from '@/components/layout/header/Header';
+import { HeaderIdentityProvider } from '@/components/layout/header/HeaderIdentityContext';
 
 const mockExtensions = [{ id: 'ext1', name: 'Ext One', enabled: true, icons: [{ url: 'a.png' }] }];
+
+// The identity header (avatar + name + Add/Edit rule label) now renders in the shared Header
+// once an extension is selected, so tests asserting on it need Header mounted alongside.
+const renderWithHeader = (ui: React.ReactElement, options?: Parameters<typeof render>[1]) =>
+  render(
+    <HeaderIdentityProvider>
+      <Header />
+      {ui}
+    </HeaderIdentityProvider>,
+    options,
+  );
 
 describe('ExtensionRules', () => {
   beforeEach(() => {
@@ -12,7 +25,7 @@ describe('ExtensionRules', () => {
   });
 
   it('selects an extension from the combobox and swaps to its identity header', () => {
-    render(<ExtensionRules />, { route: '/extension-rules/new' });
+    renderWithHeader(<ExtensionRules />, { route: '/extension-rules/new' });
 
     fireEvent.click(screen.getByRole('combobox'));
     expect(() => fireEvent.click(screen.getByText('Ext One'))).not.toThrow();
@@ -56,11 +69,9 @@ describe('ExtensionRules', () => {
     expect(screen.queryByText('Please select an extension')).not.toBeInTheDocument();
   });
 
-  // Scenario: the extension was disabled by this rule while the user was on the matching
-  // URL, and its default enabled/disabled state was never cached (e.g. installed after
-  // ManageX's last init pass). Deleting the rule should still restore it to enabled —
-  // "unknown default" must not mean "leave it disabled forever".
-  it('restores the extension to enabled on delete even when no default state was ever cached', async () => {
+  // Regression coverage: the edit page's Delete button was removed (see docs/roadmap.md),
+  // so editing an existing rule should no longer offer a way to delete it from here.
+  it('does not show a Delete button on the edit page', () => {
     render(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
       route: '/extension-rules/ext1/edit',
       initialState: {
@@ -70,17 +81,14 @@ describe('ExtensionRules', () => {
       },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
-    fireEvent.click(screen.getByRole('button', { name: /Confirm/ }));
-
-    await waitFor(() => expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', true));
+    expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
   });
 
   // Regression coverage for the "open rule" arrow on the Extensions grid, which links to
   // /extension-rules/new/?ext=<id> so the user doesn't have to re-pick an extension they
   // already had highlighted.
   it('preselects the extension from the ?ext= query param on the new-rule route, showing its identity header instead of the combobox', () => {
-    render(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
+    renderWithHeader(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
 
     expect(screen.getByRole('heading', { name: 'Ext One' })).toBeInTheDocument();
     expect(screen.getByText('Add rule')).toBeInTheDocument();
@@ -89,7 +97,7 @@ describe('ExtensionRules', () => {
   });
 
   it('shows an "Edit rule" identity header instead of the combobox when editing an existing rule', () => {
-    render(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
+    renderWithHeader(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
       route: '/extension-rules/ext1/edit',
       initialState: {
         extensionRules: {
@@ -240,7 +248,7 @@ describe('ExtensionRules', () => {
 
     it('shows no add/remove-domain button when the open tab has no usable host', async () => {
       vi.mocked(chrome.tabs.query).mockResolvedValue([{ url: 'about:blank' }] as chrome.tabs.Tab[]);
-      render(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
+      renderWithHeader(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
 
       await screen.findByRole('heading', { name: 'Ext One' });
       expect(screen.queryByRole('button', { name: /^(Add|Remove) /i })).not.toBeInTheDocument();
