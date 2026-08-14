@@ -67,6 +67,16 @@ Google Chrome on Windows and Mac.
 
 All notable user-facing changes are listed here. Internal work like dependency upgrades, refactors, and build tooling is left out.
 
+### 2.0.29 - 2026-08-14
+- The extension and group rule edit pages now show the rule's icon and name in the shared header, matching the rest of the popup, instead of a separate block on the page itself.
+- Removed the Delete button from the individual Extension Rule edit page — clearing both its Enabled/Disabled URL fields already leaves an equivalent empty rule.
+- Importing URL Rules now uses a dropzone and imports the file automatically as soon as you select it, instead of a separate Import button.
+- The extension search box and the Enabled/Disabled URL tabs now blend into the panel below them instead of floating as separate boxes.
+- Group rule extension icons are now shown in full color, with a border highlighting the ones you've selected, matching the dashboard.
+- The active Enabled/Disabled URL tab is now clearly accented so it's obvious which one you're editing.
+- The group rule Name field now cycles example names through its placeholder while empty.
+- Refreshed dark mode's colors (background, cards, inputs) for better contrast and a more polished look.
+
 ### 2.0.28 - 2026-08-10
 - Clicking an extension or group icon now toggles it directly; double-click opens its rule instead (this was reversed before).
 - Extension and group icons now show a small colored dot when a rule is currently controlling them on the open page — the app color for an individual rule, red for a group rule.
