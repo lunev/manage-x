@@ -27,15 +27,25 @@ export const manageExtensions = async () => {
     let enabledPatterns: string[] = [];
     let disabledPatterns: string[] = [];
 
-    if (rule?.active) {
-      enabledPatterns = rule.enabledUrls
-        .split('\n')
-        .map((s) => s.trim())
-        .filter(Boolean);
-      disabledPatterns = rule.disabledUrls
-        .split('\n')
-        .map((s) => s.trim())
-        .filter(Boolean);
+    const ruleEnabledPatterns = rule?.active
+      ? rule.enabledUrls
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+    const ruleDisabledPatterns = rule?.active
+      ? rule.disabledUrls
+          .split('\n')
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
+
+    // A rule with no patterns at all can never match anything itself, so it shouldn't take
+    // precedence over a Group Rule either — otherwise a patternless individual rule would
+    // silently and permanently block every group governing this extension.
+    if (rule?.active && (ruleEnabledPatterns.length > 0 || ruleDisabledPatterns.length > 0)) {
+      enabledPatterns = ruleEnabledPatterns;
+      disabledPatterns = ruleDisabledPatterns;
     } else if (groupMatches.length > 0) {
       for (const group of groupMatches) {
         enabledPatterns.push(

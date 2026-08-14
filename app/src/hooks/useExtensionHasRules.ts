@@ -9,7 +9,11 @@ export function useExtensionHasRules(extId: string) {
   const extensionRules = useAppSelector((state) => state.extensionRules.entities);
   const groupRules = useAppSelector((state) => state.groupRules.entities);
 
-  const extensionRule = extensionRules.find((rule) => rule.id === extId && rule.active);
+  // A rule with no URLs saved at all can never match anything itself, so it shouldn't take
+  // precedence over a Group Rule either — see the identical fix/comment in useGoverningRule.ts.
+  const extensionRule = extensionRules.find(
+    (rule) => rule.id === extId && rule.active && (rule.enabledUrls.trim() !== '' || rule.disabledUrls.trim() !== ''),
+  );
 
   useEffect(() => {
     getCurrentTabParams().then((tab) => {

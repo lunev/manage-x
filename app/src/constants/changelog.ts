@@ -53,4 +53,8 @@ export const CHANGELOG: Record<string, string[]> = {
     'The active URL Rules tab is now clearly highlighted.',
     'Importing URL Rules now happens as soon as you pick a file.',
   ],
+  '2.0.30': [
+    'The Extension Rule edit page has its Delete button back, so you can remove a rule once created.',
+    'Fixed an Extension Rule saved with no URLs permanently blocking an Extension Group from controlling that extension.',
+  ],
 };

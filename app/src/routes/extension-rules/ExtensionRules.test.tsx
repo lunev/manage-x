@@ -69,19 +69,97 @@ describe('ExtensionRules', () => {
     expect(screen.queryByText('Please select an extension')).not.toBeInTheDocument();
   });
 
-  // Regression coverage: the edit page's Delete button was removed (see docs/roadmap.md),
-  // so editing an existing rule should no longer offer a way to delete it from here.
-  it('does not show a Delete button on the edit page', () => {
-    render(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
-      route: '/extension-rules/ext1/edit',
-      initialState: {
-        extensionRules: {
-          entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true }],
-        },
-      },
-    });
+  it('does not show a Delete button when creating a new rule', () => {
+    render(<ExtensionRules />, { route: '/extension-rules/new' });
 
     expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
+  });
+
+  // Regression coverage: v2.0.29 dropped the edit page's only Delete button, leaving no UI
+  // path to remove or deactivate an individual Extension Rule once created (double-click on
+  // an Extensions tile is the only way in). Restored so a rule can be undone.
+  it('shows a Delete button on the edit page and removes the rule on confirm', async () => {
+    render(
+      <Routes>
+        <Route path="/" element={<div>Dashboard placeholder</div>} />
+        <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+      </Routes>,
+      {
+        route: '/extension-rules/ext1/edit',
+        initialState: {
+          extensionRules: {
+            entities: [
+              { id: 'ext1', name: 'Ext One', enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true },
+            ],
+          },
+        },
+      },
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    fireEvent.click(screen.getByRole('button', { name: /Confirm/ }));
+
+    await waitFor(() => expect(screen.getByText('Dashboard placeholder')).toBeInTheDocument());
+  });
+
+  // Scenario: the extension was disabled by this rule while the user was on the matching
+  // URL, and its default enabled/disabled state was never cached. Deleting the rule should
+  // still restore it to enabled, not leave it stuck disabled.
+  it('restores the extension to enabled on delete when no default state was ever cached', async () => {
+    render(
+      <Routes>
+        <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+      </Routes>,
+      {
+        route: '/extension-rules/ext1/edit',
+        initialState: {
+          extensionRules: {
+            entities: [
+              { id: 'ext1', name: 'Ext One', enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true },
+            ],
+          },
+        },
+      },
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    fireEvent.click(screen.getByRole('button', { name: /Confirm/ }));
+
+    await waitFor(() => expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', true));
+  });
+
+  // Scenario: the extension being deleted is ALSO covered by an active Group Rule. Deleting
+  // this individual rule must not force it back to its "default" state and stomp the
+  // group's decision — it should leave that extension alone for the group to keep governing.
+  it('does not force the extension to its default state on delete if an active group rule still governs it', async () => {
+    mockStorageLocalGet({ defaultExtState: [{ id: 'ext1', enabled: true }] });
+
+    render(
+      <Routes>
+        <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+      </Routes>,
+      {
+        route: '/extension-rules/ext1/edit',
+        initialState: {
+          extensionRules: {
+            entities: [
+              { id: 'ext1', name: 'Ext One', enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true },
+            ],
+          },
+          groupRules: {
+            entities: [
+              { id: 'grp1', name: 'Group A', extensions: ['ext1'], enabledUrls: '', disabledUrls: '', active: true },
+            ],
+          },
+        },
+      },
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    fireEvent.click(screen.getByRole('button', { name: /Confirm/ }));
+
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument());
+    expect(chrome.management.setEnabled).not.toHaveBeenCalled();
   });
 
   // Regression coverage for the "open rule" arrow on the Extensions grid, which links to
@@ -97,14 +175,19 @@ describe('ExtensionRules', () => {
   });
 
   it('shows an "Edit rule" identity header instead of the combobox when editing an existing rule', () => {
-    renderWithHeader(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
-      route: '/extension-rules/ext1/edit',
-      initialState: {
-        extensionRules: {
-          entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: 'example.com', disabledUrls: '', active: true }],
+    renderWithHeader(
+      <Routes>
+        <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+      </Routes>,
+      {
+        route: '/extension-rules/ext1/edit',
+        initialState: {
+          extensionRules: {
+            entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: 'example.com', disabledUrls: '', active: true }],
+          },
         },
       },
-    });
+    );
 
     expect(screen.getByRole('heading', { name: 'Ext One' })).toBeInTheDocument();
     expect(screen.getByText('Edit rule')).toBeInTheDocument();
@@ -144,14 +227,19 @@ describe('ExtensionRules', () => {
     });
 
     it('shows a dot on the Enabled URLs tab when the rule enables on the currently open tab', async () => {
-      render(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
-        route: '/extension-rules/ext1/edit',
-        initialState: {
-          extensionRules: {
-            entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: 'example.com', disabledUrls: '', active: true }],
+      render(
+        <Routes>
+          <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+        </Routes>,
+        {
+          route: '/extension-rules/ext1/edit',
+          initialState: {
+            extensionRules: {
+              entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: 'example.com', disabledUrls: '', active: true }],
+            },
           },
         },
-      });
+      );
 
       const enabledTab = await screen.findByRole('tab', { name: /Enabled URLs/ });
       expect(within(enabledTab).getByTestId('current-page-dot')).toBeInTheDocument();
@@ -161,27 +249,39 @@ describe('ExtensionRules', () => {
     });
 
     it('shows no dot when the rule is inactive even if its pattern matches', () => {
-      render(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
-        route: '/extension-rules/ext1/edit',
-        initialState: {
-          extensionRules: {
-            entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: 'example.com', disabledUrls: '', active: false }],
+      render(
+        <Routes>
+          <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+        </Routes>,
+        {
+          route: '/extension-rules/ext1/edit',
+          initialState: {
+            extensionRules: {
+              entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: 'example.com', disabledUrls: '', active: false }],
+            },
           },
         },
-      });
+      );
 
       expect(screen.queryByTestId('current-page-dot')).not.toBeInTheDocument();
     });
 
     it('shows no dot when no pattern matches the currently open tab', () => {
-      render(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
-        route: '/extension-rules/ext1/edit',
-        initialState: {
-          extensionRules: {
-            entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: 'other-site.com', disabledUrls: '', active: true }],
+      render(
+        <Routes>
+          <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+        </Routes>,
+        {
+          route: '/extension-rules/ext1/edit',
+          initialState: {
+            extensionRules: {
+              entities: [
+                { id: 'ext1', name: 'Ext One', enabledUrls: 'other-site.com', disabledUrls: '', active: true },
+              ],
+            },
           },
         },
-      });
+      );
 
       expect(screen.queryByTestId('current-page-dot')).not.toBeInTheDocument();
     });
@@ -192,7 +292,7 @@ describe('ExtensionRules', () => {
       vi.mocked(chrome.tabs.query).mockResolvedValue([{ url: 'https://example.com/path' }] as chrome.tabs.Tab[]);
     });
 
-    it('adds the open tab\'s domain to the Disabled URLs field when clicked, then swaps to a Remove button', async () => {
+    it("adds the open tab's domain to the Disabled URLs field when clicked, then swaps to a Remove button", async () => {
       render(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
 
       const addButton = await screen.findByRole('button', { name: 'Add example.com' });
@@ -205,14 +305,19 @@ describe('ExtensionRules', () => {
     });
 
     it('removes the domain when the Remove button is clicked, swapping back to Add', async () => {
-      render(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
-        route: '/extension-rules/ext1/edit',
-        initialState: {
-          extensionRules: {
-            entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: '', disabledUrls: 'example.com', active: true }],
+      render(
+        <Routes>
+          <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+        </Routes>,
+        {
+          route: '/extension-rules/ext1/edit',
+          initialState: {
+            extensionRules: {
+              entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: '', disabledUrls: 'example.com', active: true }],
+            },
           },
         },
-      });
+      );
 
       const removeButton = await screen.findByRole('button', { name: 'Remove example.com' });
       fireEvent.click(removeButton);
@@ -233,14 +338,19 @@ describe('ExtensionRules', () => {
     });
 
     it('shows a Remove button instead of Add when the domain is already in the list', async () => {
-      render(<Routes><Route path="/extension-rules/:id/edit" element={<ExtensionRules />} /></Routes>, {
-        route: '/extension-rules/ext1/edit',
-        initialState: {
-          extensionRules: {
-            entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: '', disabledUrls: 'example.com', active: true }],
+      render(
+        <Routes>
+          <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
+        </Routes>,
+        {
+          route: '/extension-rules/ext1/edit',
+          initialState: {
+            extensionRules: {
+              entities: [{ id: 'ext1', name: 'Ext One', enabledUrls: '', disabledUrls: 'example.com', active: true }],
+            },
           },
         },
-      });
+      );
 
       expect(await screen.findByRole('button', { name: 'Remove example.com' })).toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Add example.com' })).not.toBeInTheDocument();

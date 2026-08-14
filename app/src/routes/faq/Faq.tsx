@@ -11,7 +11,7 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     question: 'How do Extension Rules work?',
     answer:
-      "An Extension Rule automatically enables or disables a single extension based on the website you're on. Create one from the Extensions grid by double-clicking an icon.",
+      "An Extension Rule automatically enables or disables a single extension based on the website you're on. Create one from the Extensions grid by double-clicking an icon, and remove it with the Delete button on its edit page.",
   },
   {
     question: 'How do Extension Groups work?',
@@ -50,7 +50,7 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     question: 'What happens when a rule for an extension and a rule for a group both apply?',
     answer:
-      "An active individual Extension Rule always wins over any Extension Group containing that extension, even if the individual rule's own URL patterns don't match the current page. Within a single rule, a Disabled match always wins over an Enabled one.",
+      "An active individual Extension Rule with at least one Enabled or Disabled URL always wins over any Extension Group containing that extension, even if the individual rule's own URL patterns don't match the current page. An individual rule with no URLs saved has no effect and won't block a group. Within a single rule, a Disabled match always wins over an Enabled one.",
   },
   {
     question: 'Can I back up or transfer my rules?',
