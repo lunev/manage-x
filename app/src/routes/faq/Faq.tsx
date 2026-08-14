@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import { ArrowLeftIcon } from '@radix-ui/react-icons';
+import { useSetHeaderIdentity } from '@/components/layout/header/HeaderIdentityContext';
 
 type FaqItem = { question: string; answer: React.ReactNode };
 
@@ -7,7 +6,7 @@ const FAQ_ITEMS: FaqItem[] = [
   {
     question: 'How do I turn an extension on or off?',
     answer:
-      "Click its icon in the Extensions grid to toggle it directly. Double-click the icon to open (or create) its rule instead.",
+      'Click its icon in the Extensions grid to toggle it directly. Double-click the icon to open (or create) its rule instead.',
   },
   {
     question: 'How do Extension Rules work?',
@@ -59,21 +58,21 @@ const FAQ_ITEMS: FaqItem[] = [
   },
 ];
 
-const Faq: React.FC = () => (
-  <div className="fade-in rounded-xl bg-card p-4 shadow-soft">
-    <Link to="/" className="mb-3 flex gap-1 uppercase text-xxs">
-      <ArrowLeftIcon /> Back to dashboard
-    </Link>
-    <h1 className="mb-2 text-base font-semibold">FAQ</h1>
-    <div className="divide-y divide-border text-xs">
-      {FAQ_ITEMS.map((item) => (
-        <details key={item.question} className="py-2 first:pt-0 last:pb-0">
-          <summary className="cursor-pointer font-medium">{item.question}</summary>
-          <div className="mt-1.5 text-muted-foreground">{item.answer}</div>
-        </details>
-      ))}
+const Faq: React.FC = () => {
+  useSetHeaderIdentity({ heading: 'FAQ', avatar: false });
+
+  return (
+    <div className="fade-in rounded-xl bg-card p-4 shadow-soft">
+      <div className="divide-y divide-border text-xs">
+        {FAQ_ITEMS.map((item) => (
+          <details key={item.question} className="py-2 first:pt-0 last:pb-0">
+            <summary className="cursor-pointer font-medium">{item.question}</summary>
+            <div className="mt-1.5 text-muted-foreground">{item.answer}</div>
+          </details>
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Faq;

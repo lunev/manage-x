@@ -1,14 +1,26 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@test-utils';
 import ImportRulesPage from './ImportRules';
+import Header from '@/components/layout/header/Header';
+import { HeaderIdentityProvider } from '@/components/layout/header/HeaderIdentityContext';
+
+// The page title now renders in the shared Header (next to the back button) instead of the
+// page body, so tests asserting on it need Header mounted alongside.
+const renderWithHeader = (ui: React.ReactElement, options?: Parameters<typeof render>[1]) =>
+  render(
+    <HeaderIdentityProvider>
+      <Header />
+      {ui}
+    </HeaderIdentityProvider>,
+    { route: '/import/', ...options },
+  );
 
 describe('ImportRulesPage', () => {
-  it('renders a back link, heading, and the import form', () => {
-    render(<ImportRulesPage />);
+  it('renders the heading (in the header) and the import form', () => {
+    renderWithHeader(<ImportRulesPage />);
 
-    expect(screen.getByRole('link', { name: /back to dashboard/i })).toHaveAttribute('href', '/');
     expect(screen.getByRole('heading', { name: 'Import URL Rules' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Import' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Select file' })).toBeInTheDocument();
   });
 
   // Fallback for the known browser bug where opening a file dialog can close an extension

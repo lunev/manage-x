@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import { useAppDispatch } from '@/app/hooks';
 import { ExportedData } from '@/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AlertCircleIcon, CheckCircle2Icon } from 'lucide-react';
 import { mergeExtensionRules } from '@/features/extension-rules/extension-rules-slice';
@@ -15,9 +14,9 @@ interface ImportRulesProps {
 }
 
 const ImportRules = ({ showHeading = true }: ImportRulesProps) => {
-  const [importedData, setImportedData] = useState<ExportedData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [fileName, setFileName] = useState('');
   const dispatch = useAppDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -25,51 +24,46 @@ const ImportRules = ({ showHeading = true }: ImportRulesProps) => {
     const file = inputRef.current?.files?.[0];
     if (!file) return;
 
+    setFileName(file.name);
+    setMessage(null);
+
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const text = e.target?.result;
         if (typeof text !== 'string') throw new Error('File read error');
 
-        const data = parseImportedRulesFile(text);
+        const data: ExportedData = parseImportedRulesFile(text);
 
-        setImportedData(data);
+        dispatch(mergeExtensionRules(data.extensionRules));
+        dispatch(mergeGroupRules(data.groupRules));
+        setMessage('URL Rules have been imported.');
         setError(null);
       } catch (error) {
         setError(`Import failed: ${(error as Error).message}`);
+      } finally {
+        if (inputRef.current) {
+          inputRef.current.value = '';
+        }
       }
     };
 
     reader.readAsText(file);
   };
 
-  const handleImport = () => {
-    if (importedData?.extensionRules && importedData?.groupRules) {
-      dispatch(mergeExtensionRules(importedData?.extensionRules));
-      dispatch(mergeGroupRules(importedData.groupRules));
-      setMessage('URL Rules have been imported.');
-    }
-
-    setImportedData(null);
-    if (inputRef.current) {
-      inputRef.current.value = '';
-    }
-  };
-
   return (
     <>
       {showHeading && <h2 className="mb-1 muted-heading">Import URL Rules</h2>}
-      <div className="flex gap-2">
-        <Input
-          ref={inputRef}
-          type="file"
-          accept="application/json"
-          className="h-7 text-xs"
-          onChange={handleFileChange}
-        />
-        <Button size="xs" variant="cta" onClick={handleImport} disabled={!importedData}>
-          Import
+      <div
+        className="flex flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border p-4 text-center cursor-pointer"
+        onClick={() => inputRef.current?.click()}
+      >
+        <p className="text-xs text-muted-foreground">Select a JSON file to import</p>
+        <Button type="button" size="xs">
+          Select file
         </Button>
+        <input ref={inputRef} type="file" accept="application/json" className="hidden" onChange={handleFileChange} />
+        {fileName && <p className="text-xs text-muted-foreground">{fileName}</p>}
       </div>
       {error && (
         <Alert className="mt-3 px-3 py-2 text-xs" variant="destructive">

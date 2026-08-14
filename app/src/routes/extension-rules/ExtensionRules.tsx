@@ -1,25 +1,20 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import {
-  addExtensionUrlRule,
-  removeExtensionUrlRule,
-  updateExtensionUrlRule,
-} from '@/features/extension-rules/extension-rules-slice';
+import { addExtensionUrlRule, updateExtensionUrlRule } from '@/features/extension-rules/extension-rules-slice';
 import useExtensions from '@/hooks/useExtensions';
-import { ArrowLeftIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import ExtensionsCombobox from './components/ExtensionsCombobox';
 import { Button } from '@/components/ui/button';
 import { ExtensionRule } from '@/types';
-import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
-import { getDefaultExtensionState, getUrlHost, mergeUrlStrings } from '@/lib/utils';
+import { getUrlHost, mergeUrlStrings } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import CurrentPageDot from '@/components/ui/current-page-dot';
 import CurrentPageDomainButton from '@/components/ui/current-page-domain-button';
 import { matchAction, useCurrentTabUrl } from '@/hooks/useGoverningRule';
+import { useSetHeaderIdentity } from '@/components/layout/header/HeaderIdentityContext';
 
 const ExtensionRules: React.FC = () => {
   const { id } = useParams();
@@ -59,6 +54,16 @@ const ExtensionRules: React.FC = () => {
   const effectiveId = formData.id || preselectedExtension?.id || '';
   const effectiveName = formData.name || preselectedExtension?.name || '';
   const effectiveExtension = extensions.find((ext) => ext.id === effectiveId);
+
+  useSetHeaderIdentity(
+    effectiveId
+      ? {
+          heading: effectiveName,
+          iconUrl: effectiveExtension?.icons?.at(-1)?.url,
+          subheading: editedExtensionRule ? 'Edit rule' : 'Add rule',
+        }
+      : null,
+  );
 
   const tabUrl = useCurrentTabUrl();
   const currentPageAction =
@@ -123,17 +128,6 @@ const ExtensionRules: React.FC = () => {
     }));
   };
 
-  const handleRemove = async (id: string) => {
-    // Restore the extension to its default state. If the default was never cached (e.g. the
-    // extension was installed after ManageX's last init pass), assume enabled rather than
-    // leaving it stuck in whatever state this rule last left it in.
-    const defaultState = await getDefaultExtensionState(id);
-    chrome.management.setEnabled(id, defaultState ? defaultState.enabled : true);
-
-    dispatch(removeExtensionUrlRule({ id }));
-    navigate('/');
-  };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -151,23 +145,7 @@ const ExtensionRules: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="fade-in rounded-xl bg-card p-4 shadow-soft">
-      <Link to="/" className="mb-3 flex gap-1 uppercase text-xxs">
-        <ArrowLeftIcon /> Back to dashboard
-      </Link>
-      {effectiveId ? (
-        <div className="mb-4 flex items-center gap-3">
-          <Avatar className="size-10 shrink-0 text-sm text-white">
-            <AvatarImage src={effectiveExtension?.icons?.at(-1)?.url} alt={effectiveName} />
-            <AvatarFallback className="bg-primary text-primary-foreground">
-              {effectiveName.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
-          <div className="min-w-0">
-            <h1 className="truncate text-base font-semibold leading-tight">{effectiveName}</h1>
-            <p className="muted-heading">{editedExtensionRule ? 'Edit rule' : 'Add rule'}</p>
-          </div>
-        </div>
-      ) : (
+      {!effectiveId && (
         <>
           <h1 className="mb-2 text-base font-semibold">Extension Rules</h1>
           <div className="mb-3">
@@ -183,7 +161,7 @@ const ExtensionRules: React.FC = () => {
         </>
       )}
       <div className="mb-3">
-        <label className="muted-heading mb-0.5 flex gap-1 items-center">
+        <label className="muted-heading mb-1 flex gap-1 items-center">
           <span>URL Rules</span>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -212,54 +190,60 @@ const ExtensionRules: React.FC = () => {
             </TooltipContent>
           </Tooltip>
         </label>
-        <Tabs defaultValue={initialUrlTab}>
-          <TabsList>
-            <TabsTrigger value="enabled">
-              Enabled URLs
-              {currentPageAction === 'enabled' && <CurrentPageDot />}
-            </TabsTrigger>
-            <TabsTrigger value="disabled">
-              Disabled URLs
-              {currentPageAction === 'disabled' && <CurrentPageDot />}
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="enabled">
-            <Textarea
-              rows={6}
-              className="text-xs"
-              name="enabledUrls"
-              value={formData.enabledUrls}
-              onChange={handleChange}
-              placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
-            />
-            {currentDomain && (
-              <CurrentPageDomainButton
-                domain={currentDomain}
-                isAdded={isDomainInEnabled}
-                onAdd={() => handleAddDomain('enabledUrls')}
-                onRemove={() => handleRemoveDomain('enabledUrls')}
+        <div className="rounded-md border overflow-hidden">
+          <Tabs defaultValue={initialUrlTab}>
+            <TabsList>
+              <TabsTrigger value="enabled">
+                Enabled URLs
+                {currentPageAction === 'enabled' && <CurrentPageDot />}
+              </TabsTrigger>
+              <TabsTrigger value="disabled">
+                Disabled URLs
+                {currentPageAction === 'disabled' && <CurrentPageDot />}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="enabled">
+              <Textarea
+                rows={6}
+                className="rounded-none border-0 shadow-none text-xs"
+                name="enabledUrls"
+                value={formData.enabledUrls}
+                onChange={handleChange}
+                placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
               />
-            )}
-          </TabsContent>
-          <TabsContent value="disabled">
-            <Textarea
-              rows={6}
-              className="text-xs"
-              name="disabledUrls"
-              value={formData.disabledUrls}
-              onChange={handleChange}
-              placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
-            />
-            {currentDomain && (
-              <CurrentPageDomainButton
-                domain={currentDomain}
-                isAdded={isDomainInDisabled}
-                onAdd={() => handleAddDomain('disabledUrls')}
-                onRemove={() => handleRemoveDomain('disabledUrls')}
+              {currentDomain && (
+                <div className="px-2 pb-2">
+                  <CurrentPageDomainButton
+                    domain={currentDomain}
+                    isAdded={isDomainInEnabled}
+                    onAdd={() => handleAddDomain('enabledUrls')}
+                    onRemove={() => handleRemoveDomain('enabledUrls')}
+                  />
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="disabled">
+              <Textarea
+                rows={6}
+                className="rounded-none border-0 shadow-none text-xs"
+                name="disabledUrls"
+                value={formData.disabledUrls}
+                onChange={handleChange}
+                placeholder={`example.com\n*.example.com\n*.subdomain.com\nlocalhost:3000`}
               />
-            )}
-          </TabsContent>
-        </Tabs>
+              {currentDomain && (
+                <div className="px-2 pb-2">
+                  <CurrentPageDomainButton
+                    domain={currentDomain}
+                    isAdded={isDomainInDisabled}
+                    onAdd={() => handleAddDomain('disabledUrls')}
+                    onRemove={() => handleRemoveDomain('disabledUrls')}
+                  />
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
       <div className="flex gap-2">
         <div className="flex-1 flex gap-2">
@@ -275,7 +259,6 @@ const ExtensionRules: React.FC = () => {
             Cancel
           </Button>
         </div>
-        {editedExtensionRule && <ConfirmDeleteButton onConfirm={() => handleRemove(editedExtensionRule.id)} />}
       </div>
     </form>
   );
