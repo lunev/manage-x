@@ -67,6 +67,10 @@ Google Chrome on Windows and Mac.
 
 All notable user-facing changes are listed here. Internal work like dependency upgrades, refactors, and build tooling is left out.
 
+### 2.0.30 - 2026-08-14
+- Restored the Delete button on the individual Extension Rule edit page — an empty rule wasn't actually equivalent to no rule at all, so there was no way to remove one once created.
+- Fixed an Extension Rule saved with no Enabled/Disabled URLs permanently overriding an Extension Group for that extension, instead of letting the group keep controlling it.
+
 ### 2.0.29 - 2026-08-14
 - The extension and group rule edit pages now show the rule's icon and name in the shared header, matching the rest of the popup, instead of a separate block on the page itself.
 - Removed the Delete button from the individual Extension Rule edit page — clearing both its Enabled/Disabled URL fields already leaves an equivalent empty rule.

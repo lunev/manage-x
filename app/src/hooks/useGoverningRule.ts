@@ -51,7 +51,13 @@ export function useGoverningRule(extId: string): GoverningRule {
     return null;
   }
 
-  const extensionRule = extensionRules.find((rule) => rule.id === extId && rule.active);
+  // A rule with no URLs saved at all can never match anything itself, so it shouldn't take
+  // precedence over a Group Rule either — otherwise a patternless individual rule would
+  // report as "governing" while the background (which applies the same precedence) actually
+  // lets the group control the extension, leaving the UI's lock badge/toast out of sync.
+  const extensionRule = extensionRules.find(
+    (rule) => rule.id === extId && rule.active && (rule.enabledUrls.trim() !== '' || rule.disabledUrls.trim() !== ''),
+  );
 
   if (extensionRule) {
     const action = matchAction(tabUrl, extensionRule.enabledUrls, extensionRule.disabledUrls);

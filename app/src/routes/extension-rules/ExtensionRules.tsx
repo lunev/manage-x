@@ -1,15 +1,20 @@
 import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { addExtensionUrlRule, updateExtensionUrlRule } from '@/features/extension-rules/extension-rules-slice';
+import {
+  addExtensionUrlRule,
+  removeExtensionUrlRule,
+  updateExtensionUrlRule,
+} from '@/features/extension-rules/extension-rules-slice';
 import useExtensions from '@/hooks/useExtensions';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import ExtensionsCombobox from './components/ExtensionsCombobox';
 import { Button } from '@/components/ui/button';
+import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
 import { ExtensionRule } from '@/types';
-import { getUrlHost, mergeUrlStrings } from '@/lib/utils';
+import { getDefaultExtensionState, getUrlHost, mergeUrlStrings } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import CurrentPageDot from '@/components/ui/current-page-dot';
 import CurrentPageDomainButton from '@/components/ui/current-page-domain-button';
@@ -20,6 +25,7 @@ const ExtensionRules: React.FC = () => {
   const { id } = useParams();
   const { extensions } = useExtensions();
   const extensionRules = useAppSelector((state) => state.extensionRules.entities);
+  const groupRules = useAppSelector((state) => state.groupRules.entities);
   const editedExtensionRule = extensionRules.find((ext) => ext.id === id);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -143,6 +149,23 @@ const ExtensionRules: React.FC = () => {
     navigate('/');
   };
 
+  const handleRemove = async (ruleId: string) => {
+    // Restore the extension to its default enabled/disabled state — but only if no active
+    // Group Rule still governs it. Otherwise this would stomp that group's decision; leave
+    // the extension alone and let the group keep governing it.
+    const stillGoverned = groupRules.some((group) => group.active && group.extensions.includes(ruleId));
+
+    if (!stillGoverned) {
+      // If the default was never cached (e.g. the extension was installed after ManageX's
+      // last init pass), assume enabled rather than leaving it stuck disabled.
+      const defaultState = await getDefaultExtensionState(ruleId);
+      chrome.management.setEnabled(ruleId, defaultState ? defaultState.enabled : true);
+    }
+
+    dispatch(removeExtensionUrlRule({ id: ruleId }));
+    navigate('/');
+  };
+
   return (
     <form onSubmit={handleSubmit} className="fade-in rounded-xl bg-card p-4 shadow-soft">
       {!effectiveId && (
@@ -182,9 +205,9 @@ const ExtensionRules: React.FC = () => {
                   Supports <code>localhost</code> and IPs like <code>localhost:3000</code> or <code>192.168.1.*</code>.
                 </li>
                 <li>
-                  An active individual rule always overrides matching extension groups entirely, regardless of whether
-                  its own patterns match the current page; if a URL matches both an Enabled and Disabled pattern,
-                  Disabled wins.
+                  An active individual rule with at least one Enabled or Disabled URL always overrides matching
+                  extension groups entirely, regardless of whether its own patterns match the current page; if a URL
+                  matches both an Enabled and Disabled pattern, Disabled wins.
                 </li>
               </ul>
             </TooltipContent>
@@ -259,6 +282,7 @@ const ExtensionRules: React.FC = () => {
             Cancel
           </Button>
         </div>
+        {editedExtensionRule && <ConfirmDeleteButton onConfirm={() => handleRemove(editedExtensionRule.id)} />}
       </div>
     </form>
   );

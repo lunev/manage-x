@@ -252,6 +252,55 @@ describe('ExtensionGrid', () => {
       ).toBeInTheDocument();
       expect(screen.getByText("Can't toggle Alpha Ext")).toBeInTheDocument();
     });
+
+    // Regression test: an active Extension Rule with no URLs saved at all (allowed since
+    // v2.0.28) used to be treated as "governing" purely because it was active, hiding the
+    // Extension Group that should actually control this extension. The background service
+    // worker already falls through to the group in this case, so the UI must agree — otherwise
+    // a click here would toggle the extension directly and the background would silently
+    // revert it on the next tab change.
+    it('shows a toast naming the governing Extension Group when the Extension Rule for that extension has no URLs saved', async () => {
+      render(
+        <>
+          <ExtensionGrid />
+          <Toaster />
+        </>,
+        {
+          initialState: {
+            extensionRules: {
+              entities: [{ id: 'ext1', name: 'Alpha Ext', enabledUrls: '', disabledUrls: '', active: true }],
+            },
+            groupRules: {
+              entities: [
+                {
+                  id: 'grp2',
+                  name: 'Focus Sites',
+                  extensions: ['ext1'],
+                  enabledUrls: '',
+                  disabledUrls: 'example.com',
+                  active: true,
+                },
+              ],
+            },
+          },
+        },
+      );
+
+      const tile = await screen.findByRole('button', {
+        name: 'Open extension rule for Alpha Ext, currently enabled, controlled by rule "Focus Sites"',
+      });
+      fireEvent.click(tile);
+      vi.advanceTimersByTime(250);
+      vi.useRealTimers();
+
+      expect(chrome.management.setEnabled).not.toHaveBeenCalled();
+      expect(
+        await screen.findByText(
+          'The Extension Group "Focus Sites" is keeping it disabled on this page. Turn off or edit that rule to toggle it manually.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Can't toggle Alpha Ext")).toBeInTheDocument();
+    });
   });
 
   describe('hover tooltip', () => {
@@ -395,7 +444,9 @@ describe('ExtensionGrid', () => {
 
   it('shows an accessible loading skeleton until chrome.management.getAll resolves, then replaces it with the grid', async () => {
     let resolveGetAll: ((result: chrome.management.ExtensionInfo[]) => void) | undefined;
-    vi.mocked(chrome.management.getAll).mockImplementation(((cb: (result: chrome.management.ExtensionInfo[]) => void) => {
+    vi.mocked(chrome.management.getAll).mockImplementation(((
+      cb: (result: chrome.management.ExtensionInfo[]) => void,
+    ) => {
       resolveGetAll = cb;
     }) as typeof chrome.management.getAll);
 

@@ -36,7 +36,9 @@ describe('manageExtensions', () => {
   // URL, the engine must assume "enabled" as the fallback instead of leaving the extension
   // stuck in whatever state a previous rule left it in.
   it('assumes enabled when no rule matches and the default state was never cached', async () => {
-    mockStoredRules([{ id: 'ext1', name: 'AdBlocker', enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true }]);
+    mockStoredRules([
+      { id: 'ext1', name: 'AdBlocker', enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true },
+    ]);
 
     await manageExtensions();
 
@@ -45,7 +47,9 @@ describe('manageExtensions', () => {
 
   it('still disables the extension when the current URL matches a disabled pattern', async () => {
     vi.mocked(chrome.tabs.query).mockResolvedValue([{ url: 'chrome://extensions/' }] as chrome.tabs.Tab[]);
-    mockStoredRules([{ id: 'ext1', name: 'AdBlocker', enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true }]);
+    mockStoredRules([
+      { id: 'ext1', name: 'AdBlocker', enabledUrls: '', disabledUrls: 'chrome://extensions/', active: true },
+    ]);
 
     await manageExtensions();
 
@@ -200,6 +204,33 @@ describe('manageExtensions', () => {
 
       expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', true);
       expect(chrome.action.setBadgeText).toHaveBeenCalledWith({ text: '' });
+    });
+
+    // Regression test: an active Extension Rule with no URLs at all (allowed to be saved as
+    // of v2.0.28) used to still take precedence over a Group Rule via the same rule?.active
+    // check as a rule with real patterns — permanently and silently blocking the group with
+    // no way to fix it, since an empty rule also has no UI path to be deleted or edited back
+    // to inactive. An empty rule should have no effect and the Group Rule should still apply.
+    it('lets an active Group Rule apply when the Extension Rule for that extension has no URLs saved', async () => {
+      mockStoredRules(
+        [{ id: 'ext1', name: 'AdBlocker', enabledUrls: '', disabledUrls: '', active: true }],
+        [
+          {
+            id: 'grp1',
+            name: 'Streaming Sites',
+            extensions: ['ext1'],
+            enabledUrls: '',
+            disabledUrls: 'example.com',
+            active: true,
+          },
+        ],
+        [{ id: 'ext1', name: 'AdBlocker', enabled: true }],
+      );
+
+      await manageExtensions();
+
+      expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', false);
+      expect(chrome.action.setBadgeText).toHaveBeenCalledWith({ text: '1' });
     });
 
     // Documents a real bug rather than desired behavior: rules can reference an extension
