@@ -72,13 +72,13 @@ describe('Header', () => {
     expect(screen.queryByRole('heading', { name: 'Claude' })).not.toBeInTheDocument();
   });
 
-  it('opens the actions menu and lists Export, Import, then FAQ in order', () => {
+  it('opens the actions menu and lists Export, Import, Feedback & Support, then FAQ in order', () => {
     render(<Header />);
 
     fireEvent.pointerDown(screen.getByRole('button', { name: 'More actions' }));
 
     const items = screen.getAllByRole('menuitem').map((item) => item.textContent?.trim());
-    expect(items).toEqual(['Export URL Rules', 'Import URL Rules', 'FAQ']);
+    expect(items).toEqual(['Export URL Rules', 'Import URL Rules', 'Feedback & Support', 'FAQ']);
   });
 
   it('exports URL rules when the Export item is selected', () => {

@@ -67,6 +67,10 @@ Google Chrome on Windows and Mac.
 
 All notable user-facing changes are listed here. Internal work like dependency upgrades, refactors, and build tooling is left out.
 
+### 2.0.31 - 2026-08-28
+- Added a "Feedback & Support" link to the header menu, and an occasional dismissible prompt in the corner, both linking to the Chrome Web Store support page.
+- The Extensions search box now slides open and closed smoothly instead of popping in and out.
+
 ### 2.0.30 - 2026-08-14
 - Restored the Delete button on the individual Extension Rule edit page — an empty rule wasn't actually equivalent to no rule at all, so there was no way to remove one once created.
 - Fixed an Extension Rule saved with no Enabled/Disabled URLs permanently overriding an Extension Group for that extension, instead of letting the group keep controlling it.

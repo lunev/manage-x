@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { APP_NAME } from '@/constants';
 import {
   ArrowLeftIcon,
+  ChatBubbleIcon,
   DotsVerticalIcon,
   DownloadIcon,
   QuestionMarkCircledIcon,
@@ -87,6 +88,15 @@ const Header = () => {
             <DownloadIcon /> Import URL Rules
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <a
+              href="https://chromewebstore.google.com/detail/eehodmhoejonfpbjbpiiennlakcjmbbd/support"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ChatBubbleIcon /> Feedback & Support
+            </a>
+          </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => navigate('/faq/')}>
             <QuestionMarkCircledIcon /> FAQ
           </DropdownMenuItem>
