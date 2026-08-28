@@ -67,7 +67,7 @@ const ExtensionTile = ({ ext, toggle }: ExtensionTileProps) => {
         >
           <span className="relative inline-flex">
             <Avatar
-              className={`${!ext.enabled ? 'grayscale opacity-60' : 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm'} size-6 text-[10px] text-white transition-all duration-150`}
+              className={`${!ext.enabled ? 'grayscale opacity-60' : 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm'} size-6 text-xxs text-white transition-all duration-150`}
             >
               <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
               <AvatarFallback className="bg-primary text-primary-foreground rounded-md">

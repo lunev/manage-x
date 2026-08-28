@@ -94,7 +94,8 @@ describe('Dashboard', () => {
       fireEvent.change(screen.getByRole('textbox', { name: 'Search extensions' }), { target: { value: 'alpha' } });
       fireEvent.click(screen.getByRole('button', { name: 'Close search' }));
 
-      expect(screen.queryByRole('textbox', { name: 'Search extensions' })).not.toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: 'Search extensions' })).toHaveAttribute('tabindex', '-1');
+      expect(screen.getByRole('button', { name: 'Search extensions' })).toBeInTheDocument();
       expect(screen.getByText('Extension grid content')).toBeInTheDocument();
     });
 
@@ -107,7 +108,8 @@ describe('Dashboard', () => {
       fireEvent.change(input, { target: { value: 'alpha' } });
       fireEvent.keyDown(input, { key: 'Escape' });
 
-      expect(screen.queryByRole('textbox', { name: 'Search extensions' })).not.toBeInTheDocument();
+      expect(screen.getByRole('textbox', { name: 'Search extensions' })).toHaveAttribute('tabindex', '-1');
+      expect(screen.getByRole('button', { name: 'Search extensions' })).toBeInTheDocument();
       expect(screen.getByText('Extension grid content')).toBeInTheDocument();
     });
   });
