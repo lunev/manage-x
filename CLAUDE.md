@@ -11,7 +11,7 @@ Three build entry points (see `app/vite.config.ts`): the popup (`index.html`), t
 ## Layout
 
 - `app/` — all application code and build tooling (self-contained npm package: `package.json`, `node_modules`, `src/`, `public/`, `test/`, `vite.config.ts`, `tsconfig*.json`, `eslint.config.js`, etc.). Run all npm commands from inside `app/`.
-- `design/` — design/marketing source assets (`psd/`, `png/`, `store-screenshots/`). Not code, not built.
+- `design/` — design/marketing assets (`png/`, `store-screenshots/`; `psd/` sources are gitignored, local only). Not code, not built.
 - `chrome-webstore/` — Chrome Web Store assets: `releases/` (zip archives), `description.txt` (listing copy), `testing-instructions.txt` (reviewer notes). Committed to the repo at the top level (see gotcha below).
 - `site/` — public landing page: a static Vite + React SPA with its own `package.json` (run its npm commands from inside `site/`: `npm run dev`, `npm run build`). Copy lives in `site/src/content.ts`; keep it in sync by hand with `chrome-webstore/description.txt`. `.github/workflows/pages.yml` deploys it to https://lunev.github.io/manage-x/ on pushes to `main` that touch `site/`. Needs a public repo with Settings → Pages → Source set to "GitHub Actions", and `base` in `site/vite.config.ts` must equal the repo name.
 

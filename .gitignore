@@ -25,3 +25,11 @@ coverage
 
 # --- Landing page build ---
 site/dist/
+
+# --- Environment variables ---
+.env
+.env.*
+!.env.example
+
+# --- Design source files (large; kept out of git) ---
+design/**/*.psd
