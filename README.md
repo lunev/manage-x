@@ -8,6 +8,10 @@
   A Chrome extension that automatically enables or disables your other Chrome extensions based on the website you're visiting.
 </p>
 
+<p align="center">
+  <a href="https://lunev.github.io/manage-x/">Website</a> · <a href="https://chromewebstore.google.com/detail/eehodmhoejonfpbjbpiiennlakcjmbbd">Chrome Web Store</a>
+</p>
+
 ## Why
 
 Most extensions run all the time, even on sites where you don't need them. ManageX lets you define simple URL-based rules so extensions turn on or off automatically as you browse — keeping your toolbar focused and reducing background clutter.

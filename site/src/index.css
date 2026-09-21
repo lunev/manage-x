@@ -1,0 +1,51 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/fraunces/wght-italic.css';
+
+@theme inline {
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Fraunces Variable', ui-serif, Georgia, serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+}
+
+:root {
+  color-scheme: light dark;
+  --background: oklch(0.969 0.012 91);
+  --foreground: oklch(0.23 0.014 60);
+  --card: oklch(0.986 0.009 91);
+  --primary: oklch(0.46 0.075 153);
+  --primary-foreground: oklch(0.98 0.012 91);
+  --muted-foreground: oklch(0.52 0.018 70);
+  --border: oklch(0.88 0.014 85);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: oklch(0.19 0.008 80);
+    --foreground: oklch(0.93 0.012 90);
+    --card: oklch(0.23 0.009 80);
+    --primary: oklch(0.7 0.09 150);
+    --primary-foreground: oklch(0.19 0.008 80);
+    --muted-foreground: oklch(0.68 0.015 85);
+    --border: oklch(1 0 0 / 12%);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+}
