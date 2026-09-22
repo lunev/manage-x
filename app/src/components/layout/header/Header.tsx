@@ -9,7 +9,7 @@ import {
   UploadIcon,
 } from '@radix-ui/react-icons';
 import { exportUrlRules } from '@/lib/export';
-import Logo from '@/components/ui/logo';
+import logoUrl from '@/assets/logo.svg';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import ExtensionIconMosaic from '@/components/ui/extension-icon-mosaic';
@@ -33,7 +33,7 @@ const Header = () => {
       <div className="flex min-w-0 flex-1 items-center gap-2.5">
         {isRoot ? (
           <>
-            <Logo width={32} height={32} />
+            <img src={logoUrl} width={32} height={32} alt="" className="size-8 shrink-0" />
             <Link to="/" className="truncate text-base font-bold text-foreground">
               {APP_NAME}
             </Link>
