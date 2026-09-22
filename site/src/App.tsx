@@ -1,12 +1,12 @@
-import { Check, Download } from 'lucide-react';
+import { Check, Download } from "lucide-react";
 
-import { content } from './content';
+import { content } from "./content";
 
 const base = import.meta.env.BASE_URL;
 const storeUrl = `https://chromewebstore.google.com/detail/${content.id}`;
 
 const navLink =
-  'font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground';
+  "font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground";
 
 function StoreButton() {
   return (
@@ -32,7 +32,7 @@ export default function App() {
             className="flex items-center gap-3 font-serif text-lg font-semibold tracking-tight"
           >
             <img
-              src={`${base}logo.png`}
+              src={`${base}logo.svg`}
               alt=""
               width={28}
               height={28}
@@ -41,10 +41,20 @@ export default function App() {
             {content.shortName}
           </a>
           <nav className="flex items-center gap-6" aria-label="Links">
-            <a href={storeUrl} target="_blank" rel="noreferrer" className={navLink}>
+            <a
+              href={storeUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={navLink}
+            >
               Web Store
             </a>
-            <a href={content.repoUrl} target="_blank" rel="noreferrer" className={navLink}>
+            <a
+              href={content.repoUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={navLink}
+            >
               GitHub
             </a>
           </nav>
@@ -82,7 +92,10 @@ export default function App() {
           </h2>
           <div className="space-y-5">
             {content.narrative.body.map((paragraph) => (
-              <p key={paragraph} className="text-pretty text-lg leading-relaxed text-muted-foreground">
+              <p
+                key={paragraph}
+                className="text-pretty text-lg leading-relaxed text-muted-foreground"
+              >
                 {paragraph}
               </p>
             ))}
@@ -90,15 +103,19 @@ export default function App() {
         </section>
 
         <section className="mt-16 border-t border-border pt-12">
-          <h2 className="font-mono text-xs uppercase tracking-widest text-primary">How it works</h2>
+          <h2 className="font-mono text-xs uppercase tracking-widest text-primary">
+            How it works
+          </h2>
           <ol className="mt-8 grid gap-px overflow-hidden rounded-sm border border-border bg-border md:grid-cols-3">
             {content.steps.map((step, i) => (
               <li key={step.title} className="bg-card p-6">
                 <span className="font-serif text-4xl text-primary">
-                  {String(i + 1).padStart(2, '0')}
+                  {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="mt-4 font-serif text-xl">{step.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {step.body}
+                </p>
               </li>
             ))}
           </ol>
@@ -106,14 +123,25 @@ export default function App() {
 
         <section className="mt-16 grid gap-8 border-t border-border pt-12 md:grid-cols-[1fr_1.4fr]">
           <div>
-            <p className="font-mono text-xs uppercase tracking-widest text-primary">Key features</p>
-            <h2 className="mt-3 font-serif text-3xl tracking-tight">What&apos;s inside</h2>
+            <p className="font-mono text-xs uppercase tracking-widest text-primary">
+              Key features
+            </p>
+            <h2 className="mt-3 font-serif text-3xl tracking-tight">
+              What&apos;s inside
+            </h2>
           </div>
           <ul className="space-y-4">
             {content.features.map((feature) => (
-              <li key={feature} className="flex items-start gap-3 border-b border-border pb-4">
+              <li
+                key={feature}
+                className="flex items-start gap-3 border-b border-border pb-4"
+              >
                 <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                  <Check className="size-3" strokeWidth={3} aria-hidden="true" />
+                  <Check
+                    className="size-3"
+                    strokeWidth={3}
+                    aria-hidden="true"
+                  />
                 </span>
                 <span className="leading-relaxed">{feature}</span>
               </li>
@@ -123,8 +151,12 @@ export default function App() {
 
         <section className="mt-16 flex flex-col items-start justify-between gap-6 rounded-sm border border-border bg-card p-8 sm:flex-row sm:items-center md:p-10">
           <div>
-            <h2 className="font-serif text-2xl md:text-3xl">Try {content.shortName} today</h2>
-            <p className="mt-2 text-sm text-muted-foreground">Free to install. No account required.</p>
+            <h2 className="font-serif text-2xl md:text-3xl">
+              Try {content.shortName} today
+            </h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Free to install. No account required.
+            </p>
           </div>
           <StoreButton />
         </section>
@@ -133,13 +165,16 @@ export default function App() {
       <footer className="border-t border-border bg-card/40">
         <div className="mx-auto flex max-w-5xl flex-col items-start justify-between gap-2 px-6 py-8 sm:flex-row sm:items-center">
           <p className="font-mono text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()}{' '}
-            <a href="https://lunevdev.com" className="underline-offset-4 hover:underline">
+            &copy; {new Date().getFullYear()}{" "}
+            <a
+              href="https://lunevdev.com"
+              className="underline-offset-4 hover:underline"
+            >
               Alex L.
             </a>
           </p>
           <p className="font-mono text-xs text-muted-foreground">
-            Open source on{' '}
+            Open source on{" "}
             <a
               href={content.repoUrl}
               target="_blank"
