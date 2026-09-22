@@ -6,10 +6,8 @@
   "scripts": {
     "dev": "vite",
     "generate-icons": "node scripts/generate-icons.js",
-    "prewatch": "npm run generate-icons",
-    "watch": "cross-env NODE_ENV=development vite build --mode development --watch",
-    "prebuild": "npm run generate-icons",
-    "build": "tsc -b && NODE_ENV=production vite build",
+    "watch": "npm run generate-icons && cross-env NODE_ENV=development vite build --mode development --watch",
+    "build": "npm run generate-icons && tsc -b && NODE_ENV=production vite build",
     "release": "npm run build && node scripts/release.js",
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
