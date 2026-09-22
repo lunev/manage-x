@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "generate-icons": "node scripts/generate-icons.js",
+    "prewatch": "npm run generate-icons",
     "watch": "cross-env NODE_ENV=development vite build --mode development --watch",
+    "prebuild": "npm run generate-icons",
     "build": "tsc -b && NODE_ENV=production vite build",
     "release": "npm run build && node scripts/release.js",
     "test": "vitest",
@@ -68,6 +71,7 @@
     "jsdom": "^25.0.1",
     "postcss": "^8.5.26",
     "prettier": "^3.3.3",
+    "sharp": "^0.35.4",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.12.2",
