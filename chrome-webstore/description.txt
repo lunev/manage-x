@@ -11,3 +11,5 @@ Key features:
 • Export & Import URL Rules — back up your rules to a JSON file and restore them anytime, from the menu in the top right.
 
 ManageX runs entirely in your browser. Your rules and settings are stored locally using Chrome's storage APIs — nothing is sent to any external server.
+
+Open source on GitHub: github.com/lunev/manage-x
