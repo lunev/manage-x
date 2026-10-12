@@ -7,6 +7,9 @@ on:
     paths:
       - 'site/**'
       - '.github/workflows/pages.yml'
+  schedule:
+    # Daily rebuild to refresh Chrome Web Store rating/users (scripts/fetch-stats.mjs)
+    - cron: '0 4 * * *'
   workflow_dispatch:
 
 permissions:
@@ -33,6 +36,10 @@ jobs:
       - name: Install dependencies
         working-directory: site
         run: npm ci
+
+      - name: Fetch Chrome Web Store stats
+        working-directory: site
+        run: npm run stats
 
       - name: Build site
         working-directory: site

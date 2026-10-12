@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "stats": "node scripts/fetch-stats.mjs",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview"
   },

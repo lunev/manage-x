@@ -1,6 +1,10 @@
-import { Check, Download } from "lucide-react";
+import { Check, Download, Star, Users } from "lucide-react";
 
 import { content } from "./content";
+import statsJson from "./stats.json";
+
+// Refreshed at build time by scripts/fetch-stats.mjs; null when the scrape failed.
+const stats = statsJson as { rating: number | null; users: number | null };
 
 const base = import.meta.env.BASE_URL;
 const storeUrl = `https://chromewebstore.google.com/detail/${content.id}`;
@@ -73,6 +77,33 @@ export default function App() {
             <p className="mt-4 max-w-xl text-balance font-serif text-xl italic leading-snug text-muted-foreground md:text-2xl">
               {content.tagline}
             </p>
+            {(stats.rating !== null || stats.users !== null) && (
+              <div className="mt-6 flex flex-wrap items-center gap-6 text-sm">
+                {stats.rating !== null && (
+                  <span className="flex items-center gap-2">
+                    <Star
+                      className="size-4 fill-primary text-primary"
+                      aria-hidden="true"
+                    />
+                    <span className="font-mono">{stats.rating}</span>
+                    <span className="text-muted-foreground">rating</span>
+                  </span>
+                )}
+                {stats.users !== null && (
+                  <span className="flex items-center gap-2">
+                    <Users
+                      className="size-4 text-primary"
+                      strokeWidth={1.75}
+                      aria-hidden="true"
+                    />
+                    <span className="font-mono">
+                      {stats.users.toLocaleString("en-US")}
+                    </span>
+                    <span className="text-muted-foreground">users</span>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           <StoreButton />
         </div>
