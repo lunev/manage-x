@@ -11,6 +11,8 @@ const createRulesService = <T extends { id: string }>(prefix: string) => ({
       .map(([, value]) => value);
   },
   save: (rule: T) => chrome.storage.sync.set({ [prefix + rule.id]: rule }),
+  // One storage call for many rules — sync allows only 120 write operations per minute.
+  saveAll: (rules: T[]) => chrome.storage.sync.set(Object.fromEntries(rules.map((rule) => [prefix + rule.id, rule]))),
   remove: (id: string) => chrome.storage.sync.remove(prefix + id),
 });
 

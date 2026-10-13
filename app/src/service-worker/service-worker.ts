@@ -8,6 +8,13 @@ import {
 } from '@/lib/utils';
 import { setupRulesManager } from './utils/rulesManager';
 import { consumeProgrammaticToggle } from './utils/programmaticToggleTracker';
+import { migrateLegacyRules } from './utils/migrateLegacyRules';
+
+/**
+ * Moves rules saved before sync support into chrome.storage.sync. Runs on every worker
+ * start, but is a no-op after the first successful run on this device.
+ */
+migrateLegacyRules();
 
 /**
  * On extension install or update:

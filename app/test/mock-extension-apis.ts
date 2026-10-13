@@ -3,10 +3,9 @@ import { vi } from 'vitest';
 global.chrome = {
   storage: {
     sync: {
-      set: vi.fn(),
-      get: vi.fn(),
-      remove: vi.fn(),
-      listen: vi.fn(),
+      set: vi.fn().mockResolvedValue(undefined),
+      get: vi.fn().mockResolvedValue({}),
+      remove: vi.fn().mockResolvedValue(undefined),
     },
     local: {
       set: vi.fn().mockImplementation((_items, cb?: () => void) => {

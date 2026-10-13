@@ -3,4 +3,5 @@ export const STORAGE_KEY_ROOT = 'persist:localStorage';
 export const STORAGE_KEYS = {
   defaultExtensionsState: 'defaultExtState',
   pendingUpdateVersion: 'pendingUpdateVersion',
+  legacyRulesMigrated: 'legacyRulesMigrated',
 };
