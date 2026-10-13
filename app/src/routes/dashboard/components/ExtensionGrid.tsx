@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useExtensions from '@/hooks/useExtensions';
 import { useGoverningRule } from '@/hooks/useGoverningRule';
-import { useAppSelector } from '@/app/hooks';
+import { useRules } from '@/hooks/useRules';
 import { toggleDefaultExtensionState } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,7 +22,8 @@ type ExtensionTileProps = {
 const ExtensionTile = ({ ext, toggle }: ExtensionTileProps) => {
   const navigate = useNavigate();
   const governingRule = useGoverningRule(ext.id);
-  const existingRule = useAppSelector((state) => state.extensionRules.entities.find((rule) => rule.id === ext.id));
+  const { extensionRules } = useRules();
+  const existingRule = extensionRules.find((rule) => rule.id === ext.id);
   const ruleLink = existingRule ? `/extension-rules/${ext.id}/edit/` : `/extension-rules/new/?ext=${ext.id}`;
   // Deep-links to the tab (Enabled/Disabled URLs) that's actually keeping the extension in
   // its current state, so editing the rule doesn't require hunting for which list it's in.

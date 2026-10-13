@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAppSelector } from '@/app/hooks';
+import { useRules } from '@/hooks/useRules';
 import matchUrl from 'match-url-wildcard';
 import { getCurrentTabParams } from '@/lib/utils';
 
@@ -37,15 +37,13 @@ export function useCurrentTabUrl(): string | null {
   return tabUrl;
 }
 
-// Same URL-matching precedence as useExtensionHasRules (an active Extension Rule for this
-// extension wins over any active Group Rule containing it), but reports which rule is
-// actually responsible instead of a plain boolean, so the UI can explain why an extension
-// is locked instead of just that it is.
+// Same URL-matching precedence as the background rules manager (an active Extension Rule
+// for this extension wins over any active Group Rule containing it), reporting which rule is
+// actually responsible, so the UI can explain why an extension is locked.
 export function useGoverningRule(extId: string): GoverningRule {
   const tabUrl = useCurrentTabUrl();
 
-  const extensionRules = useAppSelector((state) => state.extensionRules.entities);
-  const groupRules = useAppSelector((state) => state.groupRules.entities);
+  const { extensionRules, groupRules } = useRules();
 
   if (!tabUrl) {
     return null;

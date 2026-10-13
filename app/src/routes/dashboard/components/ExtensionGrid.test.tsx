@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within, mockManagementGetAll } from '@test-utils';
+import { render, screen, fireEvent, waitFor, within, act, mockManagementGetAll } from '@test-utils';
 import ExtensionGrid from './ExtensionGrid';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -85,7 +85,7 @@ describe('ExtensionGrid', () => {
       expect(chrome.management.setEnabled).not.toHaveBeenCalled();
     });
 
-    it('navigates to edit the existing rule when one already governs the extension', () => {
+    it('navigates to edit the existing rule when one already governs the extension', async () => {
       render(<ExtensionGrid />, {
         initialState: {
           extensionRules: {
@@ -96,11 +96,14 @@ describe('ExtensionGrid', () => {
         },
       });
 
-      fireEvent.doubleClick(
-        screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }),
-      );
-
-      expect(mockNavigate).toHaveBeenCalledWith('/extension-rules/ext1/edit/');
+      // The (inactive) rule loads asynchronously and leaves nothing visible to wait on, so retry
+      // the double click until it navigates to the rule's edit page.
+      await waitFor(() => {
+        fireEvent.doubleClick(
+          screen.getByRole('button', { name: 'Open extension rule for Alpha Ext, currently enabled' }),
+        );
+        expect(mockNavigate).toHaveBeenCalledWith('/extension-rules/ext1/edit/');
+      });
     });
   });
 
@@ -419,7 +422,7 @@ describe('ExtensionGrid', () => {
       expect(await screen.findByTestId('rule-badge')).toHaveClass('bg-[#e6001e]');
     });
 
-    it('shows no badge when the matching rule is inactive', () => {
+    it('shows no badge when the matching rule is inactive', async () => {
       render(<ExtensionGrid />, {
         initialState: {
           extensionRules: {
@@ -429,6 +432,8 @@ describe('ExtensionGrid', () => {
           },
         },
       });
+      // Let the rules finish loading from chrome.storage.sync, or the assertion passes trivially.
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
 
       expect(screen.queryByTestId('rule-badge')).not.toBeInTheDocument();
     });
