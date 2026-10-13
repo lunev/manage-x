@@ -32,16 +32,13 @@ global.chrome = {
     },
     onChanged: {
       addListener: vi.fn(),
+      removeListener: vi.fn(),
     },
   },
   tabs: {
     query: vi.fn().mockResolvedValue([{ url: 'https://example.com' }]),
-    create: vi
-      .fn()
-      .mockImplementation((props) => Promise.resolve({ ...props })),
-    update: vi
-      .fn()
-      .mockImplementation((props) => Promise.resolve({ ...props })),
+    create: vi.fn().mockImplementation((props) => Promise.resolve({ ...props })),
+    update: vi.fn().mockImplementation((props) => Promise.resolve({ ...props })),
     onUpdated: {
       addListener: vi.fn(),
       removeListener: vi.fn(),
