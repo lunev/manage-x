@@ -9,9 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { GroupRule } from '@/types';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { addGroupUrlRule, removeGroupUrlRule, updateGroupUrlRule } from '@/features/group-rules/group-rules-slice';
+import { ExtensionRule, GroupRule } from '@/types';
+import { useRules } from '@/hooks/useRules';
+import { groupRulesService } from '@/lib/rules-service';
 import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
 import { getDefaultExtensionState, getUrlHost, mergeUrlStrings } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -22,17 +22,19 @@ import { useSetHeaderIdentity } from '@/components/layout/header/HeaderIdentityC
 
 const NAME_TYPING_PLACEHOLDERS = ['Work tools', 'Social media', 'Dev extensions', 'Ad blockers', 'Shopping'];
 
-const GroupRules = () => {
+// The form seeds its state from the edited group on first render, so it only mounts once the
+// rules have loaded from chrome.storage.sync (see GroupRules below).
+const GroupRuleForm: React.FC<{ rules: GroupRule[]; extensionRules: ExtensionRule[] }> = ({
+  rules,
+  extensionRules,
+}) => {
   const { id } = useParams();
-  const rules = useAppSelector((state) => state.groupRules.entities);
-  const extensionRules = useAppSelector((state) => state.extensionRules.entities);
   const editedGroupRule = rules.find((rule) => rule.id === id);
   const [formData, setFormData] = useState<GroupRule>(
     editedGroupRule
       ? editedGroupRule
       : {
           id: nanoid(),
-          createdAt: Date.now(),
           name: '',
           extensions: [],
           enabledUrls: '',
@@ -42,7 +44,6 @@ const GroupRules = () => {
   );
   const { extensions } = useExtensions();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const animatedNamePlaceholder = useTypewriter(NAME_TYPING_PLACEHOLDERS);
   const [extensionSearch, setExtensionSearch] = useState('');
 
@@ -95,16 +96,13 @@ const GroupRules = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
-    if (editedGroupRule) {
-      dispatch(updateGroupUrlRule(formData));
-    } else {
-      dispatch(addGroupUrlRule(formData));
-    }
+    // New groups are dated when saved, which is what orders them in the Extension Groups grid.
+    await groupRulesService.save(editedGroupRule ? formData : { ...formData, createdAt: Date.now() });
     navigate('/');
   };
 
@@ -160,7 +158,7 @@ const GroupRules = () => {
       }
     }
 
-    dispatch(removeGroupUrlRule({ id }));
+    await groupRulesService.remove(id);
     navigate('/');
   };
 
@@ -333,6 +331,14 @@ const GroupRules = () => {
       </div>
     </form>
   );
+};
+
+const GroupRules = () => {
+  const { groupRules, extensionRules, isLoading } = useRules();
+
+  if (isLoading) return null;
+
+  return <GroupRuleForm rules={groupRules} extensionRules={extensionRules} />;
 };
 
 export default GroupRules;

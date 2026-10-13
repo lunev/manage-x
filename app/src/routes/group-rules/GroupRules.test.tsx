@@ -12,8 +12,16 @@ const mockExtensions = [
 
 // The identity header (a static "Add group rule"/"Edit group rule" title) renders in the shared
 // Header, so tests asserting on it need Header mounted alongside.
+// The form only mounts once the rules have loaded from chrome.storage.sync, so every render
+// waits for it (its Save button is always there) before the test starts interacting.
+const renderForm = async (ui: React.ReactElement, options?: Parameters<typeof render>[1]) => {
+  const result = render(ui, options);
+  await screen.findByRole('button', { name: /save/i });
+  return result;
+};
+
 const renderWithHeader = (ui: React.ReactElement, options?: Parameters<typeof render>[1]) =>
-  render(
+  renderForm(
     <HeaderIdentityProvider>
       <Header />
       {ui}
@@ -32,8 +40,8 @@ describe('GroupRules', () => {
   // was a Radix Checkbox (Presence-driven) re-rendered inside a cmdk CommandItem on click.
   // The picker is now a plain icon grid (like the Extensions dashboard) instead of a cmdk
   // list, but it's still worth guarding against a re-render loop on tile click.
-  it('selects an extension from the picker without crashing', () => {
-    render(<GroupRules />, { route: '/group-rules/new' });
+  it('selects an extension from the picker without crashing', async () => {
+    await renderForm(<GroupRules />, { route: '/group-rules/new' });
 
     const tile = screen.getByRole('button', { name: 'Ext One, not selected' });
     expect(() => fireEvent.click(tile)).not.toThrow();
@@ -42,8 +50,8 @@ describe('GroupRules', () => {
     expect(screen.getByRole('button', { name: 'Ext One, selected' })).toBeInTheDocument();
   });
 
-  it('deselects an already-selected extension on a second click', () => {
-    render(<GroupRules />, { route: '/group-rules/new' });
+  it('deselects an already-selected extension on a second click', async () => {
+    await renderForm(<GroupRules />, { route: '/group-rules/new' });
 
     fireEvent.click(screen.getByRole('button', { name: 'Ext One, not selected' }));
     expect(screen.getByText('Extensions (1)')).toBeInTheDocument();
@@ -53,8 +61,8 @@ describe('GroupRules', () => {
     expect(screen.getByRole('button', { name: 'Ext One, not selected' })).toBeInTheDocument();
   });
 
-  it('filters the extension list via the search input', () => {
-    render(<GroupRules />, { route: '/group-rules/new' });
+  it('filters the extension list via the search input', async () => {
+    await renderForm(<GroupRules />, { route: '/group-rules/new' });
 
     const search = screen.getByPlaceholderText('Search extensions...');
     fireEvent.change(search, { target: { value: 'Two' } });
@@ -63,8 +71,8 @@ describe('GroupRules', () => {
     expect(screen.queryByRole('button', { name: /Ext One/ })).not.toBeInTheDocument();
   });
 
-  it('shows validation errors when submitting an empty form', () => {
-    render(<GroupRules />, { route: '/group-rules/new' });
+  it('shows validation errors when submitting an empty form', async () => {
+    await renderForm(<GroupRules />, { route: '/group-rules/new' });
 
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
@@ -72,8 +80,8 @@ describe('GroupRules', () => {
     expect(screen.getByText('At least one extension is required')).toBeInTheDocument();
   });
 
-  it('shows a static "Add group rule" header identity with no avatar, regardless of what is typed', () => {
-    renderWithHeader(<GroupRules />, { route: '/group-rules/new' });
+  it('shows a static "Add group rule" header identity with no avatar, regardless of what is typed', async () => {
+    await renderWithHeader(<GroupRules />, { route: '/group-rules/new' });
 
     expect(screen.getByRole('heading', { name: 'Add group rule' })).toBeInTheDocument();
     expect(document.querySelector('header')?.querySelectorAll('img').length).toBe(0);
@@ -85,8 +93,8 @@ describe('GroupRules', () => {
     expect(screen.queryByRole('heading', { name: 'Work tools' })).not.toBeInTheDocument();
   });
 
-  it('shows an "Edit group rule" identity header when editing an existing group', () => {
-    renderWithHeader(
+  it('shows an "Edit group rule" identity header when editing an existing group', async () => {
+    await renderWithHeader(
       <Routes>
         <Route path="/group-rules/:id/edit" element={<GroupRules />} />
       </Routes>,
@@ -106,7 +114,7 @@ describe('GroupRules', () => {
   });
 
   it('saves successfully with no Enabled/Disabled URLs at all', async () => {
-    render(
+    await renderForm(
       <Routes>
         <Route path="/" element={<div>Dashboard placeholder</div>} />
         <Route path="/group-rules/new" element={<GroupRules />} />
@@ -127,7 +135,7 @@ describe('GroupRules', () => {
   // matching URL, and its default enabled/disabled state was never cached. Deleting the
   // group should still restore it to enabled, not leave it stuck disabled.
   it('restores every extension in the group to enabled on delete when no default state was ever cached', async () => {
-    render(
+    await renderForm(
       <Routes>
         <Route path="/group-rules/:id/edit" element={<GroupRules />} />
       </Routes>,
@@ -162,7 +170,7 @@ describe('GroupRules', () => {
   it('does not force an extension to its default state on group delete if another active rule still governs it', async () => {
     mockStorageLocalGet({ defaultExtState: [{ id: 'ext1', enabled: true }] });
 
-    render(
+    await renderForm(
       <Routes>
         <Route path="/group-rules/:id/edit" element={<GroupRules />} />
       </Routes>,
@@ -199,8 +207,8 @@ describe('GroupRules', () => {
 
   // Regression test for Finding #14: the URL rules help tooltip should document rule
   // precedence (individual rules over group rules, disabled over enabled).
-  it('shows rule precedence guidance in the URL rules help tooltip', () => {
-    render(<GroupRules />, { route: '/group-rules/new' });
+  it('shows rule precedence guidance in the URL rules help tooltip', async () => {
+    await renderForm(<GroupRules />, { route: '/group-rules/new' });
 
     fireEvent.focus(screen.getByLabelText('Help'));
 
@@ -214,7 +222,7 @@ describe('GroupRules', () => {
     });
 
     it('shows a dot on the Disabled URLs tab when the group disables on the currently open tab', async () => {
-      render(
+      await renderForm(
         <Routes>
           <Route path="/group-rules/:id/edit" element={<GroupRules />} />
         </Routes>,
@@ -244,8 +252,8 @@ describe('GroupRules', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('shows no dot when the group rule is inactive even if its pattern matches', () => {
-      render(
+    it('shows no dot when the group rule is inactive even if its pattern matches', async () => {
+      await renderForm(
         <Routes>
           <Route path="/group-rules/:id/edit" element={<GroupRules />} />
         </Routes>,
@@ -271,8 +279,8 @@ describe('GroupRules', () => {
       expect(screen.queryByTestId('current-page-dot')).not.toBeInTheDocument();
     });
 
-    it('shows no dot when no pattern matches the currently open tab', () => {
-      render(
+    it('shows no dot when no pattern matches the currently open tab', async () => {
+      await renderForm(
         <Routes>
           <Route path="/group-rules/:id/edit" element={<GroupRules />} />
         </Routes>,
@@ -305,7 +313,7 @@ describe('GroupRules', () => {
     });
 
     it("adds the open tab's domain to the Disabled URLs field when clicked, then swaps to a Remove button", async () => {
-      render(<GroupRules />, { route: '/group-rules/new' });
+      await renderForm(<GroupRules />, { route: '/group-rules/new' });
 
       const addButton = await screen.findByRole('button', { name: 'Add example.com' });
       fireEvent.click(addButton);
@@ -317,7 +325,7 @@ describe('GroupRules', () => {
     });
 
     it('removes the domain when the Remove button is clicked, swapping back to Add', async () => {
-      render(
+      await renderForm(
         <Routes>
           <Route path="/group-rules/:id/edit" element={<GroupRules />} />
         </Routes>,
@@ -349,7 +357,7 @@ describe('GroupRules', () => {
     });
 
     it('shows a Remove button instead of Add when the domain is already in the list', async () => {
-      render(
+      await renderForm(
         <Routes>
           <Route path="/group-rules/:id/edit" element={<GroupRules />} />
         </Routes>,
@@ -377,7 +385,7 @@ describe('GroupRules', () => {
     });
 
     it('adds the domain to the Enabled URLs field instead once that tab is selected', async () => {
-      render(<GroupRules />, { route: '/group-rules/new' });
+      await renderForm(<GroupRules />, { route: '/group-rules/new' });
 
       fireEvent.mouseDown(await screen.findByRole('tab', { name: /Enabled URLs/ }));
       fireEvent.click(await screen.findByRole('button', { name: 'Add example.com' }));
@@ -388,7 +396,7 @@ describe('GroupRules', () => {
 
     it('shows no add/remove-domain button when the open tab has no usable host', async () => {
       vi.mocked(chrome.tabs.query).mockResolvedValue([{ url: 'about:blank' }] as chrome.tabs.Tab[]);
-      render(<GroupRules />, { route: '/group-rules/new' });
+      await renderForm(<GroupRules />, { route: '/group-rules/new' });
 
       await waitFor(() => expect(chrome.tabs.query).toHaveBeenCalled());
       expect(screen.queryByRole('button', { name: /^(Add|Remove) /i })).not.toBeInTheDocument();
@@ -396,15 +404,15 @@ describe('GroupRules', () => {
   });
 
   describe('?tab= deep link', () => {
-    it('opens on the Enabled URLs tab when linked with ?tab=enabled', () => {
-      render(<GroupRules />, { route: '/group-rules/new?tab=enabled' });
+    it('opens on the Enabled URLs tab when linked with ?tab=enabled', async () => {
+      await renderForm(<GroupRules />, { route: '/group-rules/new?tab=enabled' });
 
       expect(screen.getByRole('tab', { name: /Enabled URLs/ })).toHaveAttribute('data-state', 'active');
       expect(screen.getByRole('tab', { name: /Disabled URLs/ })).toHaveAttribute('data-state', 'inactive');
     });
 
-    it('defaults to the Disabled URLs tab when no ?tab= is given', () => {
-      render(<GroupRules />, { route: '/group-rules/new' });
+    it('defaults to the Disabled URLs tab when no ?tab= is given', async () => {
+      await renderForm(<GroupRules />, { route: '/group-rules/new' });
 
       expect(screen.getByRole('tab', { name: /Disabled URLs/ })).toHaveAttribute('data-state', 'active');
       expect(screen.getByRole('tab', { name: /Enabled URLs/ })).toHaveAttribute('data-state', 'inactive');
