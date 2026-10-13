@@ -233,13 +233,11 @@ describe('manageExtensions', () => {
       expect(chrome.action.setBadgeText).toHaveBeenCalledWith({ text: '1' });
     });
 
-    // Documents a real bug rather than desired behavior: rules can reference an extension
-    // that's since been uninstalled (chrome.management.setEnabled then rejects for that id).
-    // None of the per-extension promises in manageExtensions have a .catch(), so Promise.all
-    // rejects, manageExtensions itself throws, and the badge-setting code never runs — even
-    // for every *other* extension whose own setEnabled call succeeded. The badge is left
-    // showing whatever stale count it had before, with no indication anything went wrong.
-    it('BUG: one stale rule referencing an uninstalled extension blocks the badge from updating at all', async () => {
+    // Regression: a rule can name an extension that isn't installed on this device (it was
+    // uninstalled, or the rule synced from another computer), and chrome.management.setEnabled
+    // rejects for that id. That used to reject the whole pass, so the badge never updated even
+    // for the extensions that were toggled fine. Now the missing one is skipped.
+    it('skips an extension that is not installed and still updates the badge for the rest', async () => {
       mockStoredRules(
         [
           { id: 'ext1', name: 'AdBlocker', enabledUrls: '', disabledUrls: 'example.com', active: true },
@@ -256,12 +254,11 @@ describe('manageExtensions', () => {
         return Promise.resolve();
       }) as typeof chrome.management.setEnabled);
 
-      await expect(manageExtensions()).rejects.toThrow();
+      await expect(manageExtensions()).resolves.toBeUndefined();
 
-      // ext1's setEnabled call did succeed...
       expect(chrome.management.setEnabled).toHaveBeenCalledWith('ext1', false);
-      // ...but the badge never gets set at all, for either extension.
-      expect(chrome.action.setBadgeText).not.toHaveBeenCalled();
+      // Only ext1 counts: ext2 was never actually toggled.
+      expect(chrome.action.setBadgeText).toHaveBeenCalledWith({ text: '1' });
     });
   });
 });

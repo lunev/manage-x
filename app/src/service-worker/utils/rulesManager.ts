@@ -81,12 +81,22 @@ export const manageExtensions = async () => {
           newState = defaultEnabled;
         }
 
-        if (newState !== defaultEnabled) {
-          affectedCount++;
+        const forcedAwayFromDefault = newState !== defaultEnabled;
+        if (forcedAwayFromDefault) {
           markProgrammaticToggle(extId);
         }
 
-        await chrome.management.setEnabled(extId, newState);
+        try {
+          await chrome.management.setEnabled(extId, newState);
+        } catch {
+          // Rules sync across devices, so a rule can name an extension that isn't installed
+          // here. Skip it rather than letting it fail the whole pass (and the badge update).
+          return;
+        }
+
+        if (forcedAwayFromDefault) {
+          affectedCount++;
+        }
       })(),
     );
   }
