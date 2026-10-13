@@ -1,24 +1,24 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { manageExtensions } from './rulesManager';
+import { ExtensionRule, GroupRule } from '@/types';
 
-const PERSIST_ROOT_KEY = 'persist:localStorage';
 const DEFAULT_STATE_KEY = 'defaultExtState';
 
 const mockStoredRules = (
-  extensionRuleEntities: unknown[],
-  groupRuleEntities: unknown[] = [],
+  extensionRuleEntities: (Partial<ExtensionRule> & { id: string })[],
+  groupRuleEntities: (Partial<GroupRule> & { id: string })[] = [],
   defaultExtStateEntities: unknown[] = [],
 ) => {
+  vi.mocked(chrome.storage.sync.get).mockImplementation((() =>
+    Promise.resolve(
+      Object.fromEntries([
+        ...extensionRuleEntities.map((rule) => [`er:${rule.id}`, rule]),
+        ...groupRuleEntities.map((rule) => [`gr:${rule.id}`, rule]),
+      ]),
+    )) as typeof chrome.storage.sync.get);
+
   vi.mocked(chrome.storage.local.get).mockImplementation(((keys: unknown) => {
     const key = Array.isArray(keys) ? keys[0] : keys;
-    if (key === PERSIST_ROOT_KEY) {
-      return Promise.resolve({
-        [PERSIST_ROOT_KEY]: JSON.stringify({
-          extensionRules: JSON.stringify({ entities: extensionRuleEntities }),
-          groupRules: JSON.stringify({ entities: groupRuleEntities }),
-        }),
-      });
-    }
     if (key === DEFAULT_STATE_KEY) {
       return Promise.resolve({ [DEFAULT_STATE_KEY]: defaultExtStateEntities });
     }

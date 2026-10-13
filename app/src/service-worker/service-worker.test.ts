@@ -7,20 +7,16 @@ import { describe, it, expect, vi } from 'vitest';
 // interplay between rulesManager's manageExtensions() and service-worker.ts's
 // syncExtensionState()/handleToggleExtensionState(), not just manageExtensions() in isolation.
 
-const PERSIST_ROOT_KEY = 'persist:localStorage';
 const DEFAULT_STATE_KEY = 'defaultExtState';
 
 describe('service worker: rule-driven disable on chrome://extensions/ then navigate away', () => {
   it('re-enables the extension once the tab no longer matches the disabled pattern', async () => {
+    vi.mocked(chrome.storage.sync.get).mockImplementation((() =>
+      Promise.resolve({
+        'er:ext1': { id: 'ext1', name: 'AdBlocker', enabledUrls: '', disabledUrls: 'chrome://extensions/*', active: true },
+      })) as typeof chrome.storage.sync.get);
+
     let store: Record<string, unknown> = {
-      [PERSIST_ROOT_KEY]: JSON.stringify({
-        extensionRules: JSON.stringify({
-          entities: [
-            { id: 'ext1', name: 'AdBlocker', enabledUrls: '', disabledUrls: 'chrome://extensions/*', active: true },
-          ],
-        }),
-        groupRules: JSON.stringify({ entities: [] }),
-      }),
       [DEFAULT_STATE_KEY]: [{ id: 'ext1', name: 'AdBlocker', enabled: true }],
     };
 

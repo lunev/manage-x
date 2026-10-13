@@ -1,6 +1,6 @@
-import { ExtensionRule, GroupRule } from '@/types';
 import matchUrl from 'match-url-wildcard';
-import { storagePersisted, getDefaultExtensionState, getCurrentTabParams } from '@/lib/utils';
+import { getDefaultExtensionState, getCurrentTabParams } from '@/lib/utils';
+import { extensionRulesService, groupRulesService } from '@/lib/rules-service';
 import { markProgrammaticToggle } from './programmaticToggleTracker';
 
 export const manageExtensions = async () => {
@@ -8,11 +8,8 @@ export const manageExtensions = async () => {
   const tabUrl = activeTab?.url;
   if (!tabUrl) return;
 
-  const extensionRules = await storagePersisted.get('extensionRules');
-  const groupRules = await storagePersisted.get('groupRules');
-
-  const individualRules = (extensionRules?.entities ?? []) as ExtensionRule[];
-  const groups = (groupRules?.entities ?? []) as GroupRule[];
+  const individualRules = await extensionRulesService.getAll();
+  const groups = await groupRulesService.getAll();
 
   const extRuleMap = new Map(individualRules.map((r) => [r.id, r]));
   const extIds = new Set([...individualRules.map((r) => r.id), ...groups.flatMap((g) => g.extensions)]);
