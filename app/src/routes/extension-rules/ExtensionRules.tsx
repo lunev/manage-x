@@ -1,11 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import {
-  addExtensionUrlRule,
-  removeExtensionUrlRule,
-  updateExtensionUrlRule,
-} from '@/features/extension-rules/extension-rules-slice';
+import { useRules } from '@/hooks/useRules';
+import { extensionRulesService } from '@/lib/rules-service';
 import useExtensions from '@/hooks/useExtensions';
 import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -13,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import ExtensionsCombobox from './components/ExtensionsCombobox';
 import { Button } from '@/components/ui/button';
 import ConfirmDeleteButton from '@/components/ui/confirm-delete-button';
-import { ExtensionRule } from '@/types';
+import { ExtensionRule, GroupRule } from '@/types';
 import { getDefaultExtensionState, getUrlHost, mergeUrlStrings } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import CurrentPageDot from '@/components/ui/current-page-dot';
@@ -21,14 +17,16 @@ import CurrentPageDomainButton from '@/components/ui/current-page-domain-button'
 import { matchAction, useCurrentTabUrl } from '@/hooks/useGoverningRule';
 import { useSetHeaderIdentity } from '@/components/layout/header/HeaderIdentityContext';
 
-const ExtensionRules: React.FC = () => {
+// The form seeds its state from the edited rule on first render, so it only mounts once the
+// rules have loaded from chrome.storage.sync (see ExtensionRules below).
+const ExtensionRuleForm: React.FC<{ extensionRules: ExtensionRule[]; groupRules: GroupRule[] }> = ({
+  extensionRules,
+  groupRules,
+}) => {
   const { id } = useParams();
   const { extensions } = useExtensions();
-  const extensionRules = useAppSelector((state) => state.extensionRules.entities);
-  const groupRules = useAppSelector((state) => state.groupRules.entities);
   const editedExtensionRule = extensionRules.find((ext) => ext.id === id);
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   // Supports deep-linking into a fresh rule with the extension already chosen (e.g. the
   // "open rule" arrow on the Extensions grid) via /extension-rules/new/?ext=<id>, instead of
@@ -134,18 +132,14 @@ const ExtensionRules: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     const ruleToSave: ExtensionRule = { ...formData, id: effectiveId, name: effectiveName };
 
-    if (editedExtensionRule) {
-      dispatch(updateExtensionUrlRule(ruleToSave));
-    } else {
-      dispatch(addExtensionUrlRule(ruleToSave));
-    }
+    await extensionRulesService.save(ruleToSave);
     navigate('/');
   };
 
@@ -162,7 +156,7 @@ const ExtensionRules: React.FC = () => {
       chrome.management.setEnabled(ruleId, defaultState ? defaultState.enabled : true);
     }
 
-    dispatch(removeExtensionUrlRule({ id: ruleId }));
+    await extensionRulesService.remove(ruleId);
     navigate('/');
   };
 
@@ -286,6 +280,14 @@ const ExtensionRules: React.FC = () => {
       </div>
     </form>
   );
+};
+
+const ExtensionRules: React.FC = () => {
+  const { extensionRules, groupRules, isLoading } = useRules();
+
+  if (isLoading) return null;
+
+  return <ExtensionRuleForm extensionRules={extensionRules} groupRules={groupRules} />;
 };
 
 export default ExtensionRules;

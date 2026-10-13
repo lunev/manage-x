@@ -9,8 +9,16 @@ const mockExtensions = [{ id: 'ext1', name: 'Ext One', enabled: true, icons: [{ 
 
 // The identity header (avatar + name + Add/Edit rule label) now renders in the shared Header
 // once an extension is selected, so tests asserting on it need Header mounted alongside.
+// The form only mounts once the rules have loaded from chrome.storage.sync, so every render
+// waits for it (its Save button is always there) before the test starts interacting.
+const renderForm = async (ui: React.ReactElement, options?: Parameters<typeof render>[1]) => {
+  const result = render(ui, options);
+  await screen.findByRole('button', { name: /save/i });
+  return result;
+};
+
 const renderWithHeader = (ui: React.ReactElement, options?: Parameters<typeof render>[1]) =>
-  render(
+  renderForm(
     <HeaderIdentityProvider>
       <Header />
       {ui}
@@ -24,8 +32,8 @@ describe('ExtensionRules', () => {
     mockStorageLocalGet({});
   });
 
-  it('selects an extension from the combobox and swaps to its identity header', () => {
-    renderWithHeader(<ExtensionRules />, { route: '/extension-rules/new' });
+  it('selects an extension from the combobox and swaps to its identity header', async () => {
+    await renderWithHeader(<ExtensionRules />, { route: '/extension-rules/new' });
 
     fireEvent.click(screen.getByRole('combobox'));
     expect(() => fireEvent.click(screen.getByText('Ext One'))).not.toThrow();
@@ -34,8 +42,8 @@ describe('ExtensionRules', () => {
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
   });
 
-  it('shows a validation error when submitting without an extension selected', () => {
-    render(<ExtensionRules />, { route: '/extension-rules/new' });
+  it('shows a validation error when submitting without an extension selected', async () => {
+    await renderForm(<ExtensionRules />, { route: '/extension-rules/new' });
 
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
 
@@ -43,7 +51,7 @@ describe('ExtensionRules', () => {
   });
 
   it('saves successfully with no Enabled/Disabled URLs at all', async () => {
-    render(
+    await renderForm(
       <Routes>
         <Route path="/" element={<div>Dashboard placeholder</div>} />
         <Route path="/extension-rules/new" element={<ExtensionRules />} />
@@ -57,8 +65,8 @@ describe('ExtensionRules', () => {
     await waitFor(() => expect(screen.getByText('Dashboard placeholder')).toBeInTheDocument());
   });
 
-  it('clears the extension error once one is selected', () => {
-    render(<ExtensionRules />, { route: '/extension-rules/new' });
+  it('clears the extension error once one is selected', async () => {
+    await renderForm(<ExtensionRules />, { route: '/extension-rules/new' });
 
     fireEvent.click(screen.getByRole('button', { name: /save/i }));
     expect(screen.getByText('Please select an extension')).toBeInTheDocument();
@@ -69,8 +77,8 @@ describe('ExtensionRules', () => {
     expect(screen.queryByText('Please select an extension')).not.toBeInTheDocument();
   });
 
-  it('does not show a Delete button when creating a new rule', () => {
-    render(<ExtensionRules />, { route: '/extension-rules/new' });
+  it('does not show a Delete button when creating a new rule', async () => {
+    await renderForm(<ExtensionRules />, { route: '/extension-rules/new' });
 
     expect(screen.queryByRole('button', { name: 'Delete' })).not.toBeInTheDocument();
   });
@@ -79,7 +87,7 @@ describe('ExtensionRules', () => {
   // path to remove or deactivate an individual Extension Rule once created (double-click on
   // an Extensions tile is the only way in). Restored so a rule can be undone.
   it('shows a Delete button on the edit page and removes the rule on confirm', async () => {
-    render(
+    await renderForm(
       <Routes>
         <Route path="/" element={<div>Dashboard placeholder</div>} />
         <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
@@ -106,7 +114,7 @@ describe('ExtensionRules', () => {
   // URL, and its default enabled/disabled state was never cached. Deleting the rule should
   // still restore it to enabled, not leave it stuck disabled.
   it('restores the extension to enabled on delete when no default state was ever cached', async () => {
-    render(
+    await renderForm(
       <Routes>
         <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
       </Routes>,
@@ -134,7 +142,7 @@ describe('ExtensionRules', () => {
   it('does not force the extension to its default state on delete if an active group rule still governs it', async () => {
     mockStorageLocalGet({ defaultExtState: [{ id: 'ext1', enabled: true }] });
 
-    render(
+    await renderForm(
       <Routes>
         <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
       </Routes>,
@@ -165,8 +173,8 @@ describe('ExtensionRules', () => {
   // Regression coverage for the "open rule" arrow on the Extensions grid, which links to
   // /extension-rules/new/?ext=<id> so the user doesn't have to re-pick an extension they
   // already had highlighted.
-  it('preselects the extension from the ?ext= query param on the new-rule route, showing its identity header instead of the combobox', () => {
-    renderWithHeader(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
+  it('preselects the extension from the ?ext= query param on the new-rule route, showing its identity header instead of the combobox', async () => {
+    await renderWithHeader(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
 
     expect(screen.getByRole('heading', { name: 'Ext One' })).toBeInTheDocument();
     expect(screen.getByText('Add rule')).toBeInTheDocument();
@@ -174,8 +182,8 @@ describe('ExtensionRules', () => {
     expect(screen.queryByText('Please select an extension')).not.toBeInTheDocument();
   });
 
-  it('shows an "Edit rule" identity header instead of the combobox when editing an existing rule', () => {
-    renderWithHeader(
+  it('shows an "Edit rule" identity header instead of the combobox when editing an existing rule', async () => {
+    await renderWithHeader(
       <Routes>
         <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
       </Routes>,
@@ -195,7 +203,7 @@ describe('ExtensionRules', () => {
   });
 
   it('submits successfully with the preselected extension without the combobox ever being touched', async () => {
-    render(
+    await renderForm(
       <Routes>
         <Route path="/" element={<div>Dashboard placeholder</div>} />
         <Route path="/extension-rules/new" element={<ExtensionRules />} />
@@ -212,8 +220,8 @@ describe('ExtensionRules', () => {
 
   // Regression test for Finding #14: the URL rules help tooltip should document rule
   // precedence (individual rules over group rules, disabled over enabled).
-  it('shows rule precedence guidance in the URL rules help tooltip', () => {
-    render(<ExtensionRules />, { route: '/extension-rules/new' });
+  it('shows rule precedence guidance in the URL rules help tooltip', async () => {
+    await renderForm(<ExtensionRules />, { route: '/extension-rules/new' });
 
     fireEvent.focus(screen.getByLabelText('Help'));
 
@@ -227,7 +235,7 @@ describe('ExtensionRules', () => {
     });
 
     it('shows a dot on the Enabled URLs tab when the rule enables on the currently open tab', async () => {
-      render(
+      await renderForm(
         <Routes>
           <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
         </Routes>,
@@ -248,8 +256,8 @@ describe('ExtensionRules', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('shows no dot when the rule is inactive even if its pattern matches', () => {
-      render(
+    it('shows no dot when the rule is inactive even if its pattern matches', async () => {
+      await renderForm(
         <Routes>
           <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
         </Routes>,
@@ -266,8 +274,8 @@ describe('ExtensionRules', () => {
       expect(screen.queryByTestId('current-page-dot')).not.toBeInTheDocument();
     });
 
-    it('shows no dot when no pattern matches the currently open tab', () => {
-      render(
+    it('shows no dot when no pattern matches the currently open tab', async () => {
+      await renderForm(
         <Routes>
           <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
         </Routes>,
@@ -293,7 +301,7 @@ describe('ExtensionRules', () => {
     });
 
     it("adds the open tab's domain to the Disabled URLs field when clicked, then swaps to a Remove button", async () => {
-      render(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
+      await renderForm(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
 
       const addButton = await screen.findByRole('button', { name: 'Add example.com' });
       fireEvent.click(addButton);
@@ -305,7 +313,7 @@ describe('ExtensionRules', () => {
     });
 
     it('removes the domain when the Remove button is clicked, swapping back to Add', async () => {
-      render(
+      await renderForm(
         <Routes>
           <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
         </Routes>,
@@ -328,7 +336,7 @@ describe('ExtensionRules', () => {
     });
 
     it('adds the domain to the Enabled URLs field instead once that tab is selected', async () => {
-      render(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
+      await renderForm(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
 
       fireEvent.mouseDown(await screen.findByRole('tab', { name: 'Enabled URLs' }));
       fireEvent.click(await screen.findByRole('button', { name: 'Add example.com' }));
@@ -338,7 +346,7 @@ describe('ExtensionRules', () => {
     });
 
     it('shows a Remove button instead of Add when the domain is already in the list', async () => {
-      render(
+      await renderForm(
         <Routes>
           <Route path="/extension-rules/:id/edit" element={<ExtensionRules />} />
         </Routes>,
@@ -358,7 +366,7 @@ describe('ExtensionRules', () => {
 
     it('shows no add/remove-domain button when the open tab has no usable host', async () => {
       vi.mocked(chrome.tabs.query).mockResolvedValue([{ url: 'about:blank' }] as chrome.tabs.Tab[]);
-      renderWithHeader(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
+      await renderWithHeader(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
 
       await screen.findByRole('heading', { name: 'Ext One' });
       expect(screen.queryByRole('button', { name: /^(Add|Remove) /i })).not.toBeInTheDocument();
@@ -366,15 +374,15 @@ describe('ExtensionRules', () => {
   });
 
   describe('?tab= deep link', () => {
-    it('opens on the Enabled URLs tab when linked with ?tab=enabled', () => {
-      render(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1&tab=enabled' });
+    it('opens on the Enabled URLs tab when linked with ?tab=enabled', async () => {
+      await renderForm(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1&tab=enabled' });
 
       expect(screen.getByRole('tab', { name: /Enabled URLs/ })).toHaveAttribute('data-state', 'active');
       expect(screen.getByRole('tab', { name: 'Disabled URLs' })).toHaveAttribute('data-state', 'inactive');
     });
 
-    it('defaults to the Disabled URLs tab when no ?tab= is given', () => {
-      render(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
+    it('defaults to the Disabled URLs tab when no ?tab= is given', async () => {
+      await renderForm(<ExtensionRules />, { route: '/extension-rules/new?ext=ext1' });
 
       expect(screen.getByRole('tab', { name: 'Disabled URLs' })).toHaveAttribute('data-state', 'active');
       expect(screen.getByRole('tab', { name: /Enabled URLs/ })).toHaveAttribute('data-state', 'inactive');
