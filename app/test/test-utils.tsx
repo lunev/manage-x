@@ -1,4 +1,5 @@
 import { createMockStore } from './mockStore';
+import { mockSyncStorage } from './mockChrome';
 import { render, RenderOptions } from '@testing-library/react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
@@ -14,14 +15,16 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'queries'> {
 
 const customRender = (
   ui: ReactElement,
-  {
-    route = '/',
-    routerProps = {},
-    initialState = {},
-    ...options
-  }: CustomRenderOptions = {},
+  { route = '/', routerProps = {}, initialState = {}, ...options }: CustomRenderOptions = {},
 ) => {
   const store = createMockStore(initialState);
+  // Same rules into the mocked chrome.storage.sync, for components already reading via useRules().
+  mockSyncStorage(
+    Object.fromEntries([
+      ...(initialState.extensionRules?.entities ?? []).map((rule) => [`er:${rule.id}`, rule]),
+      ...(initialState.groupRules?.entities ?? []).map((rule) => [`gr:${rule.id}`, rule]),
+    ]),
+  );
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[route]} {...routerProps}>
@@ -34,4 +37,4 @@ const customRender = (
 // ignore-next-line
 export * from '@testing-library/react';
 export { customRender as render };
-export { mockManagementGetAll, mockStorageLocalGet } from './mockChrome';
+export { mockManagementGetAll, mockStorageLocalGet, mockSyncStorage } from './mockChrome';

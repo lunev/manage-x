@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { toggleGroupUrlRule } from '@/features/group-rules/group-rules-slice';
+import { groupRulesService } from '@/lib/rules-service';
+import { useRules } from '@/hooks/useRules';
 import useExtensions from '@/hooks/useExtensions';
 import { matchAction, useCurrentTabUrl } from '@/hooks/useGoverningRule';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -22,7 +22,6 @@ const GroupRuleTile: React.FC<{ rule: GroupRule; extensions: chrome.management.E
   extensions,
 }) => {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const clickTimer = useRef<ReturnType<typeof setTimeout>>();
   const tabUrl = useCurrentTabUrl();
   const isGoverningTab =
@@ -33,7 +32,7 @@ const GroupRuleTile: React.FC<{ rule: GroupRule; extensions: chrome.management.E
 
   const handleClick = () => {
     clearTimeout(clickTimer.current);
-    clickTimer.current = setTimeout(() => dispatch(toggleGroupUrlRule({ id: rule.id })), CLICK_DELAY_MS);
+    clickTimer.current = setTimeout(() => groupRulesService.save({ ...rule, active: !rule.active }), CLICK_DELAY_MS);
   };
 
   const handleDoubleClick = () => {
@@ -105,14 +104,16 @@ const AddGroupRuleTile: React.FC = () => {
 };
 
 const GroupRulesList: React.FC = () => {
-  const rules = useAppSelector((state) => state.groupRules.entities);
+  const { groupRules: rules, isLoading } = useRules();
   const { extensions } = useExtensions();
   // Oldest first; groups created before `createdAt` existed sort first, keeping their stored order.
   const sortedRules = [...rules].sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
 
   return (
     <>
-      {rules?.length === 0 && <p className="text-xs text-muted-foreground mb-2">No rules yet — create one below</p>}
+      {!isLoading && rules.length === 0 && (
+        <p className="text-xs text-muted-foreground mb-2">No rules yet — create one below</p>
+      )}
       <div className="fade-in grid grid-cols-8 gap-2 p-1">
         {sortedRules.map((rule: GroupRule) => (
           <GroupRuleTile key={rule.id} rule={rule} extensions={extensions} />

@@ -18,6 +18,9 @@ const groupRuleState = {
   },
 };
 
+// Rules load asynchronously from chrome.storage.sync, so wait for the tile before asserting.
+const findGroupTile = () => screen.findByRole('button', { name: /^Open group rule for My Group/ });
+
 describe('GroupRulesList', () => {
   beforeEach(() => {
     mockManagementGetAll(mockExtensions);
@@ -111,7 +114,7 @@ describe('GroupRulesList', () => {
       expect(await screen.findByTestId('rule-badge')).toBeInTheDocument();
     });
 
-    it('shows no badge when the group rule is inactive', () => {
+    it('shows no badge when the group rule is inactive', async () => {
       render(<GroupRulesList />, {
         initialState: {
           groupRules: {
@@ -128,11 +131,12 @@ describe('GroupRulesList', () => {
           },
         },
       });
+      await findGroupTile();
 
       expect(screen.queryByTestId('rule-badge')).not.toBeInTheDocument();
     });
 
-    it('shows no badge when the group is active but its pattern does not match the current page', () => {
+    it('shows no badge when the group is active but its pattern does not match the current page', async () => {
       render(<GroupRulesList />, {
         initialState: {
           groupRules: {
@@ -149,21 +153,23 @@ describe('GroupRulesList', () => {
           },
         },
       });
+      await findGroupTile();
 
       expect(screen.queryByTestId('rule-badge')).not.toBeInTheDocument();
     });
   });
 
   describe('avatar fill', () => {
-    it('fills the whole avatar with the icon of a single-extension group', () => {
+    it('fills the whole avatar with the icon of a single-extension group', async () => {
       const { container } = render(<GroupRulesList />, { initialState: groupRuleState });
+      await findGroupTile();
 
       const images = container.querySelectorAll('img');
       expect(images).toHaveLength(1);
       expect(images[0]).toHaveAttribute('src', 'a.png');
     });
 
-    it('shows a mosaic of icons for a multi-extension group', () => {
+    it('shows a mosaic of icons for a multi-extension group', async () => {
       const multiExtensions = [
         { id: 'ext1', name: 'Ext One', enabled: true, icons: [{ url: 'a.png' }] },
         { id: 'ext2', name: 'Ext Two', enabled: true, icons: [{ url: 'b.png' }] },
@@ -186,13 +192,14 @@ describe('GroupRulesList', () => {
           },
         },
       });
+      await findGroupTile();
 
       const images = container.querySelectorAll('img');
       expect(images).toHaveLength(3);
       expect(Array.from(images).map((img) => img.getAttribute('src'))).toEqual(['a.png', 'b.png', 'c.png']);
     });
 
-    it('caps the mosaic at 3 icons plus a "+N" overflow cell for larger groups', () => {
+    it('caps the mosaic at 3 icons plus a "+N" overflow cell for larger groups', async () => {
       const manyExtensions = Array.from({ length: 6 }, (_, i) => ({
         id: `ext${i}`,
         name: `Ext ${i}`,
@@ -216,12 +223,13 @@ describe('GroupRulesList', () => {
           },
         },
       });
+      await findGroupTile();
 
       expect(container.querySelectorAll('img')).toHaveLength(3);
       expect(screen.getByText('+3')).toBeInTheDocument();
     });
 
-    it('falls back to an initial-letter avatar when none of the group\'s extensions are currently installed', () => {
+    it('falls back to an initial-letter avatar when none of the group\'s extensions are currently installed', async () => {
       render(<GroupRulesList />, {
         initialState: {
           groupRules: {
@@ -239,7 +247,7 @@ describe('GroupRulesList', () => {
         },
       });
 
-      expect(screen.getByText('M')).toBeInTheDocument();
+      expect(await screen.findByText('M')).toBeInTheDocument();
     });
   });
 
@@ -256,14 +264,15 @@ describe('GroupRulesList', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/group-rules/new/');
   });
 
-  it('shows a guidance message when there are no group rules yet', () => {
+  it('shows a guidance message when there are no group rules yet', async () => {
     render(<GroupRulesList />);
 
-    expect(screen.getByText('No rules yet — create one below')).toBeInTheDocument();
+    expect(await screen.findByText('No rules yet — create one below')).toBeInTheDocument();
   });
 
-  it('does not show the guidance message when a group rule already exists', () => {
+  it('does not show the guidance message when a group rule already exists', async () => {
     render(<GroupRulesList />, { initialState: groupRuleState });
+    await findGroupTile();
 
     expect(screen.queryByText('No rules yet — create one below')).not.toBeInTheDocument();
   });
