@@ -1,12 +1,10 @@
 import { ExportedData } from '@/types';
-import store from '@/app/store';
+import { extensionRulesService, groupRulesService } from '@/lib/rules-service';
 
-export const exportUrlRules = () => {
-  const { extensionRules, groupRules } = store.getState();
-
+export const exportUrlRules = async () => {
   const data: ExportedData = {
-    extensionRules: extensionRules.entities,
-    groupRules: groupRules.entities,
+    extensionRules: await extensionRulesService.getAll(),
+    groupRules: await groupRulesService.getAll(),
   };
 
   const blob = new Blob([JSON.stringify(data, null, 2)], {
