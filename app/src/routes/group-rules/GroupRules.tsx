@@ -32,6 +32,7 @@ const GroupRules = () => {
       ? editedGroupRule
       : {
           id: nanoid(),
+          createdAt: Date.now(),
           name: '',
           extensions: [],
           enabledUrls: '',

@@ -107,12 +107,14 @@ const AddGroupRuleTile: React.FC = () => {
 const GroupRulesList: React.FC = () => {
   const rules = useAppSelector((state) => state.groupRules.entities);
   const { extensions } = useExtensions();
+  // Oldest first; groups created before `createdAt` existed sort first, keeping their stored order.
+  const sortedRules = [...rules].sort((a, b) => (a.createdAt ?? 0) - (b.createdAt ?? 0));
 
   return (
     <>
       {rules?.length === 0 && <p className="text-xs text-muted-foreground mb-2">No rules yet — create one below</p>}
       <div className="fade-in grid grid-cols-8 gap-2 p-1">
-        {rules.map((rule: GroupRule) => (
+        {sortedRules.map((rule: GroupRule) => (
           <GroupRuleTile key={rule.id} rule={rule} extensions={extensions} />
         ))}
         <AddGroupRuleTile />

@@ -18,6 +18,7 @@ export type GroupRule = {
   enabledUrls: string;
   disabledUrls: string;
   active: boolean;
+  createdAt?: number; // Date.now() at creation; absent on groups created before this field existed
 };
 
 export type ExtensionRule = {
