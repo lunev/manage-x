@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
-import { useAppDispatch } from '@/app/hooks';
 import { ExportedData } from '@/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { AlertCircleIcon, CheckCircle2Icon } from 'lucide-react';
-import { mergeExtensionRules } from '@/features/extension-rules/extension-rules-slice';
-import { mergeGroupRules } from '@/features/group-rules/group-rules-slice';
+import { useRules } from '@/hooks/useRules';
+import { extensionRulesService, groupRulesService } from '@/lib/rules-service';
+import { mergeExtensionRules, mergeGroupRules } from '@/lib/rules-merge';
 import { parseImportedRulesFile } from '@/lib/importValidation';
 
 interface ImportRulesProps {
@@ -17,7 +17,7 @@ const ImportRules = ({ showHeading = true }: ImportRulesProps) => {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [fileName, setFileName] = useState('');
-  const dispatch = useAppDispatch();
+  const { extensionRules, groupRules } = useRules();
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = () => {
@@ -28,15 +28,15 @@ const ImportRules = ({ showHeading = true }: ImportRulesProps) => {
     setMessage(null);
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const text = e.target?.result;
         if (typeof text !== 'string') throw new Error('File read error');
 
         const data: ExportedData = parseImportedRulesFile(text);
 
-        dispatch(mergeExtensionRules(data.extensionRules));
-        dispatch(mergeGroupRules(data.groupRules));
+        await extensionRulesService.saveAll(mergeExtensionRules(extensionRules, data.extensionRules));
+        await groupRulesService.saveAll(mergeGroupRules(groupRules, data.groupRules));
         setMessage('URL Rules have been imported.');
         setError(null);
       } catch (error) {
