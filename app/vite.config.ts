@@ -37,7 +37,7 @@ export default defineConfig({
     setupFiles: ['./test/setup.ts', './test/mock-extension-apis.ts'],
     coverage: {
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/types/*', 'src/features/*', 'src/main.tsx', 'src/App.tsx', 'src/app/*', 'src/vite-env.d.ts'],
+      exclude: ['src/types/*', 'src/main.tsx', 'src/App.tsx', 'src/vite-env.d.ts'],
       thresholds: {
         statements: 80,
         branches: 70,

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-ManageX is a Chrome Extension (Manifest V3) for managing/toggling other extensions and grouping them into rules. Built with React 18 + TypeScript + Vite + Redux Toolkit (persisted via `redux-persist-webextension-storage`) + Tailwind + shadcn/ui (Radix primitives, style "new-york", see `components.json`). `@mui/material`/`@emotion/*` are listed in `package.json` but unused in `src/` — don't treat them as part of the actual stack.
+ManageX is a Chrome Extension (Manifest V3) for managing/toggling other extensions and grouping them into rules. Built with React 18 + TypeScript + Vite + Tailwind + shadcn/ui (Radix primitives, style "new-york", see `components.json`). No state library: rules live in `chrome.storage.sync`, one key per rule (`er:<extensionId>`, `gr:<groupId>`), read/written via `src/lib/rules-service.ts` and read in components via the `useRules()` hook (re-reads on `chrome.storage.onChanged`), so they sync across the user's Chrome profile. Rules saved before sync support (a redux-persist blob under `persist:localStorage` in `chrome.storage.local`) are copied over once per device by `src/service-worker/utils/migrateLegacyRules.ts`; the blob is intentionally left in place as a backup. `@mui/material`/`@emotion/*` are listed in `package.json` but unused in `src/` — don't treat them as part of the actual stack.
 
 Three build entry points (see `app/vite.config.ts`): the popup (`index.html`), the options page (`options.html`), and the background service worker (`src/service-worker`).
 
