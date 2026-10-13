@@ -33,3 +33,6 @@ site/dist/
 
 # --- Design source files (large; kept out of git) ---
 design/**/*.psd
+
+# --- Claude Code plans (local only) ---
+.claude/plans/
