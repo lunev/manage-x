@@ -21,27 +21,28 @@ Most extensions run all the time, even on sites where you don't need them. Manag
 - **Extension rules** — enable or disable a single extension based on "Enabled URLs" / "Disabled URLs" patterns (exact domains, `*.subdomain` wildcards, mid-string wildcards like `docs.*.com`, `localhost`, and IP patterns like `192.168.1.*`).
 - **Group rules** — bundle multiple extensions together and control them with one shared rule.
 - **Automatic enforcement** — a background service worker matches the active tab's URL against your rules in real time (on tab navigation, tab switch, and rule changes) and toggles extensions accordingly.
-- **Dashboard** — one place to see all installed extensions (grouped by enabled/disabled) and manage your rules.
+- **Dashboard** — one place to see all installed extensions and manage your rules. Hover an icon and open its ⋮ menu to add or edit its rule.
+- **Sync across devices** — rules are stored in `chrome.storage.sync`, so they follow you to every computer signed in to the same Chrome profile.
 - **Badge counter** — the toolbar badge shows how many extensions changed state on the current page.
 - **Export/Import** — back up your rules to a JSON file from the popup, and restore them from the Options page.
 - **Keyboard shortcut** — `Ctrl/Cmd + Shift + E` opens ManageX instantly.
 - Extensions controlled by an active rule are locked in the dashboard (their toggle is disabled) to avoid conflicting manual changes, and are restored to their original state if the rule is removed.
 - Follows your OS's light/dark theme automatically.
 
-Everything runs locally — rules and settings are stored in the browser via `chrome.storage`, and nothing is sent to any external server.
+Everything runs in your browser — rules are stored via `chrome.storage` and synced between your own devices by Chrome Sync when it's turned on; nothing is sent to any ManageX or third-party server.
 
 ## Usage
 
 1. Install the extension and pin it to the Chrome toolbar.
 2. Click the extension icon, or press `Ctrl/Cmd + Shift + E`.
-3. In "Extensions", click an extension's icon to open its rule page. Under "Enabled URLs" (or "Disabled URLs"), enter a pattern (e.g. `*.youtube.com`) and save.
+3. In "Extensions", hover an extension's icon and open its ⋮ menu → **Add rule** (or double-click the icon). Under "Enabled URLs" (or "Disabled URLs"), enter a pattern (e.g. `*.youtube.com`) and save.
 4. Visit a matching URL — the extension turns on or off automatically.
-5. Double-click an extension's icon in the popup to toggle it directly (icons controlled by an active rule can't be toggled this way).
+5. Click an extension's icon in the popup to toggle it directly (icons controlled by an active rule can't be toggled this way).
 6. Use "Extension Groups" the same way to control several extensions with one shared rule.
 
 ## Development
 
-Manifest V3 extension (popup + options page + background service worker) built with React, Redux Toolkit, Vite, TypeScript, Tailwind, and shadcn/ui.
+Manifest V3 extension (popup + options page + background service worker) built with React, Vite, TypeScript, Tailwind, and shadcn/ui. Rules are kept in `chrome.storage.sync`, one key per rule — no state library.
 
 ```sh
 cd app
@@ -70,6 +71,11 @@ Google Chrome on Windows and Mac.
 ## Changelog
 
 All notable user-facing changes are listed here. Internal work like dependency upgrades, refactors, and build tooling is left out.
+
+### 2.0.32 - 2026-10-14
+- Your URL Rules now sync across every computer signed in to the same Chrome profile. Rules you already have are kept and synced automatically.
+- Hover an extension or group icon and open its ⋮ menu to add or edit its rule.
+- The options page now follows your light/dark theme.
 
 ### 2.0.31 - 2026-08-28
 - Added a "Feedback & Support" link to the header menu, and an occasional dismissible prompt in the corner, both linking to the Chrome Web Store support page.
