@@ -43,7 +43,7 @@ describe('ExtensionGrid', () => {
     it('shows every extension when no searchQuery is given', () => {
       render(<ExtensionGrid />);
 
-      expect(screen.getAllByRole('button')).toHaveLength(3);
+      expect(screen.getAllByRole('button', { name: /^Open extension rule for / })).toHaveLength(3);
     });
 
     it('filters to extensions whose name contains the query, case-insensitively', () => {
@@ -62,7 +62,7 @@ describe('ExtensionGrid', () => {
       expect(
         screen.getByRole('button', { name: 'Open extension rule for Beta Ext, currently disabled' }),
       ).toBeInTheDocument();
-      expect(screen.getAllByRole('button')).toHaveLength(1);
+      expect(screen.getAllByRole('button', { name: /^Open extension rule for / })).toHaveLength(1);
     });
 
     it('shows a no-match message instead of an empty grid when nothing matches', () => {
@@ -104,6 +104,38 @@ describe('ExtensionGrid', () => {
         );
         expect(mockNavigate).toHaveBeenCalledWith('/extension-rules/ext1/edit/');
       });
+    });
+  });
+
+  describe('actions menu', () => {
+    it('offers Add rule when the extension has no rule yet, opening a new one preselected', () => {
+      render(<ExtensionGrid />);
+
+      fireEvent.pointerDown(screen.getByRole('button', { name: 'More actions for Alpha Ext' }));
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Add rule' }));
+
+      expect(mockNavigate).toHaveBeenCalledWith('/extension-rules/new/?ext=ext1');
+      expect(chrome.management.setEnabled).not.toHaveBeenCalled();
+    });
+
+    it('offers Edit rule once the extension has one, opening it', async () => {
+      render(<ExtensionGrid />, {
+        initialState: {
+          extensionRules: {
+            entities: [
+              { id: 'ext1', name: 'Work Hours Only', enabledUrls: 'example.com', disabledUrls: '', active: false },
+            ],
+          },
+        },
+      });
+
+      // Let the rules finish loading from chrome.storage.sync before opening the menu.
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+      fireEvent.pointerDown(screen.getByRole('button', { name: 'More actions for Alpha Ext' }));
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Edit rule' }));
+
+      expect(mockNavigate).toHaveBeenCalledWith('/extension-rules/ext1/edit/');
     });
   });
 

@@ -13,7 +13,14 @@ const mockExtensions = [{ id: 'ext1', name: 'Ext One', enabled: true, icons: [{ 
 const groupRuleState = {
   groupRules: {
     entities: [
-      { id: 'grp1', name: 'My Group', extensions: ['ext1'], enabledUrls: 'example.com', disabledUrls: '', active: true },
+      {
+        id: 'grp1',
+        name: 'My Group',
+        extensions: ['ext1'],
+        enabledUrls: 'example.com',
+        disabledUrls: '',
+        active: true,
+      },
     ],
   },
 };
@@ -49,6 +56,19 @@ describe('GroupRulesList', () => {
 
     const tooltip = await screen.findByRole('tooltip');
     expect(tooltip).toHaveTextContent('My Group (1)');
+  });
+
+  describe('actions menu', () => {
+    it('names the group and opens it for editing from the Edit group item', async () => {
+      render(<GroupRulesList />, { initialState: groupRuleState });
+
+      fireEvent.pointerDown(await screen.findByRole('button', { name: 'More actions for My Group' }));
+
+      expect(screen.getByRole('menu')).toHaveTextContent('My Group');
+      fireEvent.click(screen.getByRole('menuitem', { name: 'Edit group' }));
+
+      expect(mockNavigate).toHaveBeenCalledWith('/group-rules/grp1/edit/');
+    });
   });
 
   describe('double click', () => {
@@ -102,7 +122,9 @@ describe('GroupRulesList', () => {
 
       expect(mockNavigate).toHaveBeenCalledWith('/group-rules/grp1/edit/');
       expect(
-        screen.getByRole('button', { name: 'Open group rule for My Group, currently active, controlling extensions on this page' }),
+        screen.getByRole('button', {
+          name: 'Open group rule for My Group, currently active, controlling extensions on this page',
+        }),
       ).toBeInTheDocument();
     });
   });
@@ -229,7 +251,7 @@ describe('GroupRulesList', () => {
       expect(screen.getByText('+3')).toBeInTheDocument();
     });
 
-    it('falls back to an initial-letter avatar when none of the group\'s extensions are currently installed', async () => {
+    it("falls back to an initial-letter avatar when none of the group's extensions are currently installed", async () => {
       render(<GroupRulesList />, {
         initialState: {
           groupRules: {
