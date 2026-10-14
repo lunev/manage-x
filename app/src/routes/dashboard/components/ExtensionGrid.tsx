@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import { Pencil1Icon } from '@radix-ui/react-icons';
+import { useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import useExtensions from '@/hooks/useExtensions';
 import { useGoverningRule } from '@/hooks/useGoverningRule';
 import { useRules } from '@/hooks/useRules';
@@ -10,12 +10,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Button } from '@/components/ui/button';
 import RuleBadge from './RuleBadge';
 
+// Distinguishing a single click from the first half of a double click needs a short delay:
+// the browser can't tell them apart until this much time has passed with no second click.
+const CLICK_DELAY_MS = 250;
+
 type ExtensionTileProps = {
   ext: chrome.management.ExtensionInfo;
   toggle: (id: string, newState: boolean) => void;
 };
 
 const ExtensionTile = ({ ext, toggle }: ExtensionTileProps) => {
+  const navigate = useNavigate();
   const governingRule = useGoverningRule(ext.id);
   const { extensionRules } = useRules();
   const existingRule = extensionRules.find((rule) => rule.id === ext.id);
@@ -27,72 +32,72 @@ const ExtensionTile = ({ ext, toggle }: ExtensionTileProps) => {
       ? `/extension-rules/${governingRule.id}/edit/?tab=${governingRule.action}`
       : `/group-rules/${governingRule.id}/edit/?tab=${governingRule.action}`
     : null;
+  const clickTimer = useRef<ReturnType<typeof setTimeout>>();
+
   const handleClick = () => {
-    if (governingRule) {
-      const editHint = governingRule.type === 'group' ? 'Turn off or edit' : 'Edit';
-      toast({
-        title: `Can't toggle ${ext.name}`,
-        description: `The ${governingRule.type === 'extension' ? 'Extension Rule' : 'Extension Group'} "${governingRule.name}" is keeping it ${governingRule.action} on this page. ${editHint} that rule to toggle it manually.`,
-      });
-      return;
-    }
-    toggle(ext.id, !ext.enabled);
+    clearTimeout(clickTimer.current);
+    clickTimer.current = setTimeout(() => {
+      if (governingRule) {
+        const editHint = governingRule.type === 'group' ? 'Turn off or edit' : 'Edit';
+        toast({
+          title: `Can't toggle ${ext.name}`,
+          description: `The ${governingRule.type === 'extension' ? 'Extension Rule' : 'Extension Group'} "${governingRule.name}" is keeping it ${governingRule.action} on this page. ${editHint} that rule to toggle it manually.`,
+        });
+        return;
+      }
+      toggle(ext.id, !ext.enabled);
+    }, CLICK_DELAY_MS);
+  };
+
+  const handleDoubleClick = () => {
+    clearTimeout(clickTimer.current);
+    navigate(ruleLink);
   };
 
   return (
-    // `group` reveals the edit pencil while the tile is hovered or anything in it has focus.
-    <div className="group relative">
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleClick}
-            aria-label={`Toggle ${ext.name}, currently ${ext.enabled ? 'enabled' : 'disabled'}${governingRule ? `, controlled by rule "${governingRule.name}"` : ''}`}
-            size="icon"
-            className="rounded-full"
-          >
-            <span className="relative inline-flex">
-              <Avatar
-                className={`${!ext.enabled ? 'grayscale opacity-60' : 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm'} size-6 text-xxs text-white transition-all duration-150`}
-              >
-                <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
-                <AvatarFallback className="bg-primary text-primary-foreground rounded-md">
-                  {ext.name.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {governingRule && (
-                <RuleBadge colorClassName={governingRule.type === 'group' ? 'bg-[#e6001e]' : 'bg-primary'} />
-              )}
-            </span>
-          </Button>
-        </TooltipTrigger>
-        {governingRule && governingRuleLink && (
-          <TooltipContent side="top" align="center" className="max-w-56 text-left">
-            <p>
-              The {governingRule.type === 'extension' ? 'Extension Rule' : 'Extension Group'}{' '}
-              <span className="font-medium">&ldquo;{governingRule.name}&rdquo;</span> is keeping this extension{' '}
-              <span className="font-semibold">{governingRule.action}</span> on this page.
-            </p>
-            <p className="mt-1 first-letter:uppercase">
-              {governingRule.type === 'group' && 'turn off or '}
-              <Link to={governingRuleLink} className="font-medium underline underline-offset-2 hover:opacity-80">
-                edit that rule
-              </Link>{' '}
-              to toggle it manually.
-            </p>
-          </TooltipContent>
-        )}
-      </Tooltip>
-      {/* A sibling of the tile button, not inside it: interactive elements can't nest. */}
-      <Link
-        to={ruleLink}
-        aria-label={`${existingRule ? 'Edit' : 'Add'} rule for ${ext.name}`}
-        className="absolute -right-0.5 -bottom-0.5 flex size-4 items-center justify-center rounded-full bg-background text-muted-foreground shadow-sm ring-1 ring-border opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 hover:text-foreground"
-      >
-        <Pencil1Icon className="size-2.5" />
-      </Link>
-    </div>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handleClick}
+          onDoubleClick={handleDoubleClick}
+          aria-label={`Open extension rule for ${ext.name}, currently ${ext.enabled ? 'enabled' : 'disabled'}${governingRule ? `, controlled by rule "${governingRule.name}"` : ''}`}
+          size="icon"
+          className="rounded-full"
+        >
+          <span className="relative inline-flex">
+            <Avatar
+              className={`${!ext.enabled ? 'grayscale opacity-60' : 'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-sm'} size-6 text-xxs text-white transition-all duration-150`}
+            >
+              <AvatarImage src={ext.icons?.at(-1)?.url} alt={ext.name} />
+              <AvatarFallback className="bg-primary text-primary-foreground rounded-md">
+                {ext.name.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            {governingRule && (
+              <RuleBadge colorClassName={governingRule.type === 'group' ? 'bg-[#e6001e]' : 'bg-primary'} />
+            )}
+          </span>
+        </Button>
+      </TooltipTrigger>
+      {governingRule && governingRuleLink && (
+        <TooltipContent side="top" align="center" className="max-w-56 text-left">
+          <p>
+            The {governingRule.type === 'extension' ? 'Extension Rule' : 'Extension Group'}{' '}
+            <span className="font-medium">&ldquo;{governingRule.name}&rdquo;</span> is keeping this extension{' '}
+            <span className="font-semibold">{governingRule.action}</span> on this page.
+          </p>
+          <p className="mt-1 first-letter:uppercase">
+            {governingRule.type === 'group' && 'turn off or '}
+            <Link to={governingRuleLink} className="font-medium underline underline-offset-2 hover:opacity-80">
+              edit that rule
+            </Link>{' '}
+            to toggle it manually.
+          </p>
+        </TooltipContent>
+      )}
+    </Tooltip>
   );
 };
 

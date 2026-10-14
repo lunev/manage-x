@@ -32,8 +32,8 @@ const Dashboard = () => {
               <TooltipContent side="right" className="max-w-60 text-xs">
                 <p>
                   Click an icon to toggle it enabled or disabled directly — color means enabled, gray means disabled.
-                  Hover an icon and click the pencil to open its rule. An icon controlled by an active rule can&apos;t
-                  be toggled manually; clicking it explains why instead.
+                  Double-click to open its rule. An icon controlled by an active rule can&apos;t be toggled manually;
+                  clicking it explains why instead.
                 </p>
               </TooltipContent>
             </Tooltip>
