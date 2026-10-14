@@ -3,7 +3,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { nanoid } from 'nanoid';
 import useExtensions from '@/hooks/useExtensions';
 import useTypewriter from '@/hooks/useTypewriter';
-import { QuestionMarkCircledIcon } from '@radix-ui/react-icons';
+import { MagnifyingGlassIcon, QuestionMarkCircledIcon } from '@radix-ui/react-icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -183,13 +183,19 @@ const GroupRuleForm: React.FC<{ rules: GroupRule[]; extensionRules: ExtensionRul
           Extensions {formData.extensions.length > 0 && `(${formData.extensions.length})`}
         </label>
         <div className="rounded-md border overflow-hidden">
-          <Input
-            className="h-8 rounded-none border-0 border-b shadow-none text-xs focus-visible:ring-0"
-            aria-label="Search extensions"
-            placeholder="Search extensions..."
-            value={extensionSearch}
-            onChange={(e) => setExtensionSearch(e.target.value)}
-          />
+          <div className="relative border-b">
+            <MagnifyingGlassIcon
+              className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <Input
+              className="h-8 rounded-none border-0 pl-8 shadow-none text-xs focus-visible:ring-0"
+              aria-label="Search extensions"
+              placeholder="Search extensions..."
+              value={extensionSearch}
+              onChange={(e) => setExtensionSearch(e.target.value)}
+            />
+          </div>
           <div className="grid max-h-[160px] grid-cols-9 gap-2 overflow-y-auto p-2">
             {filteredExtensions.length === 0 && (
               <p className="col-span-9 py-2 text-center text-xs text-muted-foreground">No extensions found.</p>
@@ -273,7 +279,7 @@ const GroupRuleForm: React.FC<{ rules: GroupRule[]; extensionRules: ExtensionRul
             <TabsContent value="enabled">
               <Textarea
                 rows={4}
-                className="rounded-none border-0 shadow-none text-xs"
+                className="rounded-none border-0 shadow-none text-xs focus-visible:ring-0"
                 name="enabledUrls"
                 value={formData.enabledUrls}
                 onChange={handleChange}
@@ -293,7 +299,7 @@ const GroupRuleForm: React.FC<{ rules: GroupRule[]; extensionRules: ExtensionRul
             <TabsContent value="disabled">
               <Textarea
                 rows={4}
-                className="rounded-none border-0 shadow-none text-xs"
+                className="rounded-none border-0 shadow-none text-xs focus-visible:ring-0"
                 name="disabledUrls"
                 value={formData.disabledUrls}
                 onChange={handleChange}

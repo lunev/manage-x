@@ -222,7 +222,7 @@ const ExtensionRuleForm: React.FC<{ extensionRules: ExtensionRule[]; groupRules:
             <TabsContent value="enabled">
               <Textarea
                 rows={6}
-                className="rounded-none border-0 shadow-none text-xs"
+                className="rounded-none border-0 shadow-none text-xs focus-visible:ring-0"
                 name="enabledUrls"
                 value={formData.enabledUrls}
                 onChange={handleChange}
@@ -242,7 +242,7 @@ const ExtensionRuleForm: React.FC<{ extensionRules: ExtensionRule[]; groupRules:
             <TabsContent value="disabled">
               <Textarea
                 rows={6}
-                className="rounded-none border-0 shadow-none text-xs"
+                className="rounded-none border-0 shadow-none text-xs focus-visible:ring-0"
                 name="disabledUrls"
                 value={formData.disabledUrls}
                 onChange={handleChange}
