@@ -60,6 +60,5 @@ export const CHANGELOG: Record<string, string[]> = {
   '2.0.32': [
     'Your URL Rules now sync across every computer signed in to the same Chrome profile. Rules you already have are kept and synced automatically.',
     'Hover an extension or group icon and open its ⋮ menu to add or edit its rule.',
-    'Icons are now shown 7 per row, and the options page follows your dark/light theme.',
   ],
 };
