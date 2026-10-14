@@ -1,9 +1,9 @@
 No login required.
 
-1. Click the toolbar icon to open the popup.
-2. In "Extensions", double-click an extension's icon to open its rule page. Under "Enabled URLs", enter a pattern (e.g. *.youtube.com), save.
-3. Visit that URL in a new tab — the extension turns on automatically.
-4. Back in the popup, click that extension's icon — it toggles on/off directly (icons controlled by an active rule can't be toggled this way).
-5. Try "Extension Groups" the same way: click the "+" tile to create a group, add 2+ extensions, set a URL pattern, save.
+1. Open the popup from the toolbar icon.
+2. In Extensions, hover an icon, open its ⋮ menu > Add rule. Under Enabled URLs enter *.youtube.com, save.
+3. Open youtube.com in a new tab: the extension turns on.
+4. Click an icon to toggle it directly (rule-controlled icons can't be).
+5. Groups: click +, pick 2+ extensions, add a URL, save.
 
-Permissions: storage (save rules), management (toggle extensions), tabs (read active tab URL). No network requests; all data stays local.
+Permissions: storage (rules, synced by Chrome Sync), management (toggle extensions), tabs (active tab URL). No network requests.

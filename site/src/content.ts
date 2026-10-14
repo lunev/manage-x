@@ -34,13 +34,14 @@ export const content: Content = {
       body: "Tell ManageX – Extension Manager which groups to enable or disable automatically on specific domains.",
     },
     {
-      title: "Export and sync",
-      body: "Export your setup as a file to back up or share across machines in seconds.",
+      title: "Sync and back up",
+      body: "Your rules sync automatically to every computer signed in to your Chrome profile — and export to a file for backup.",
     },
   ],
   features: [
     "Group extensions and toggle whole groups at once",
     "URL-based automatic enable and disable rules",
+    "Rules sync across your devices via Chrome Sync",
     "Export and import your full configuration",
     "Fast search across every installed extension",
     "Clean, keyboard-friendly interface",

@@ -7,9 +7,10 @@ Key features:
 • Group rules — bundle several extensions together and control them with one shared rule.
 • Automatic matching — rules are evaluated instantly whenever you switch or navigate tabs.
 • Badge counter — see at a glance how many extensions changed state on the current page.
-• Dashboard — one view of all your installed extensions and active rules.
+• Sync across devices — your rules follow you to every computer signed in to the same Chrome profile.
+• Dashboard — one view of all your installed extensions and active rules; hover an icon and open its ⋮ menu to add or edit its rule.
 • Export & Import URL Rules — back up your rules to a JSON file and restore them anytime, from the menu in the top right.
 
-ManageX runs entirely in your browser. Your rules and settings are stored locally using Chrome's storage APIs — nothing is sent to any external server.
+ManageX runs entirely in your browser. Your rules are stored with Chrome's storage APIs and synced between your own devices by Chrome Sync when it's turned on — nothing is sent to any ManageX or third-party server.
 
 Open source on GitHub: github.com/lunev/manage-x
