@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { Route, Routes } from 'react-router-dom';
-import { render, screen, fireEvent, waitFor, within, mockManagementGetAll, mockStorageLocalGet } from '@test-utils';
+import { render, act, screen, fireEvent, waitFor, within, mockManagementGetAll, mockStorageLocalGet } from '@test-utils';
 import ExtensionRules from './ExtensionRules';
 import Header from '@/components/layout/header/Header';
 import { HeaderIdentityProvider } from '@/components/layout/header/HeaderIdentityContext';
@@ -14,6 +14,9 @@ const mockExtensions = [{ id: 'ext1', name: 'Ext One', enabled: true, icons: [{ 
 const renderForm = async (ui: React.ReactElement, options?: Parameters<typeof render>[1]) => {
   const result = render(ui, options);
   await screen.findByRole('button', { name: /save/i });
+  // The form mounted outside act(), so let its own effects (e.g. loading the installed
+  // extensions) run before the test queries them.
+  await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
   return result;
 };
 
