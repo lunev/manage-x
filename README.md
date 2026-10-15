@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://lunev.github.io/manage-x/">Website</a> · <a href="https://chromewebstore.google.com/detail/eehodmhoejonfpbjbpiiennlakcjmbbd">Chrome Web Store</a>
+  <a href="https://chromewebstore.google.com/detail/eehodmhoejonfpbjbpiiennlakcjmbbd">Chrome Web Store</a>
 </p>
 
 ## Why

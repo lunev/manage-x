@@ -24,7 +24,6 @@ coverage
 *.sw?
 
 # --- Landing page build ---
-site/dist/
 
 # --- Environment variables ---
 .env
